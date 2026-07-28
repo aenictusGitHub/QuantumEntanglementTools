@@ -1,0 +1,282 @@
+# Validation report
+
+Evidence date: 2026-07-28.
+
+Status: Tier A and the reviewed Tier B--Tier E slices plus the native
+entanglement pipeline locally tested; no general parity claim.
+
+## Summary
+
+The Tier A subsystem kernel passes 304/304 tests and the Tier B
+operators/states/random slice passes 941/941 tests locally on Julia 1.12.6.
+The Tier C channels/maps slice passes 154/154 focused package assertions, the
+Tier D measures/criteria slice passes 162/162, and the project-native
+entanglement pipeline passes 68/68. Tier E coherence passes 52/52, product
+analysis passes 175/175 native plus 52/52 compatibility assertions, matrix
+analysis passes 127/127 native plus 32/32 compatibility assertions, and matrix
+predicates pass 166/166 native plus 37/37 compatibility assertions. The
+integrated 2,270-assertion package corpus passes on Julia 1.12.6 and the
+minimum supported Julia 1.10.11. This establishes a local development
+baseline, not complete QETLAB parity or a supported release. Remote
+cross-platform CI has not yet produced cited evidence. MATLAB is absent.
+
+| Validation class | Current evidence |
+|---|---|
+| Package load | Passed as part of `Pkg.test()` |
+| Core unit tests | Tier A 304/304, Tier B 941/941, Tier C 154/154, Tier D measures/criteria 162/162, native pipeline 68/68, Tier E coherence 52/52, product analysis 175/175 native plus 52/52 compatibility, matrix analysis 127/127 native plus 32/32 compatibility, and matrix predicates 166/166 native plus 37/37 compatibility pass locally; the integrated total is 2,270/2,270 on Julia 1.12.6 and 1.10.11 |
+| Tier A analytic tests | Bell reduction/PT spectrum, exact bases/projectors, tensor identities |
+| Tier B analytic tests | Operator-basis identities, named-state support/normalization, mixed-state PSD/trace/PPT properties |
+| Tier C analytic tests | Kraus/Choi/superoperator round trips, channel application, CP/TP/unital diagnostics, Hilbert--Schmidt duality, complementary/partial maps, and analytic channel/positive-map formulas |
+| Tier D analytic tests | Schatten/Ky Fan norms, purity/entropy/fidelity/trace distance, negativity, Schmidt reconstruction/rank, two-qubit concurrence, and PPT/realignment/reduction criterion boundaries and witnesses |
+| Tier E coherence analytic tests | Pure and mixed-state coherence formulas, basis transforms, generic precision, strict validation, and the reviewed upstream rank-counting discrepancy |
+| Tier E product analytic tests | Operator-Schmidt reconstruction and rank, multipartite product factors and residuals, pure/mixed entanglement of formation, and structured separable-ball certificate boundaries |
+| Tier E matrix analytic tests | Strong and weak majorization contracts, exact elementary symmetric polynomials, Cauchy--Binet and compound identities, additive finite differences/eigenvalue sums, sparse paths, and reviewed boundary-shape discrepancies |
+| Tier E matrix-predicate analytic tests | Exact and floating PSD, Hermiticity boundaries, principal-submatrix witnesses, strict total positivity, total nonsingularity, structured tri-state results, sparse gates, and combinatorial limits |
+| Native entanglement pipeline | PPT certificates, exact `2×2`/`2×3` PPT separability theorem, higher-dimensional `unknown`, pure-state Schmidt certificates, certificate-first attempt order, backend metadata, and invalid/failure semantics |
+| Property tests | Index and representation round trips, permutation inverse, trace preservation, PT involution, realignment inverse, projector identities, map duality, physicality properties, fidelity symmetry, Schmidt reconstruction, certificate witness checks, and matrix-predicate invariance/scaling/minor properties |
+| Independent formulations | Explicit permutation/projector reconstructions, direct operator/state formulas and perfect matchings, direct Kraus application, Choi block reconstruction, analytic channel/map actions, direct singular-value/eigenvalue identities, phase-independent Schmidt reconstruction, and 130 randomized PSD/minor cross-checks against eigenspectra and compound matrices |
+| QETLAB differential tests | Tier A: 13 source-free Octave/QETLAB fixtures pass 52 assertions. Tier B: 18 fixtures pass 72 assertions. Tier C: 7 fixtures pass 28. Tier D: 13 fixtures pass 34. Tier E coherence: 6 fixtures pass 25. Tier E product: 14 fixtures pass 68. Tier E matrix: 22 fixtures pass 59. Matrix predicates have analytic/property evidence but no MATLAB-family oracle. MATLAB unavailable |
+| Sparse/generic-number tests | Sparse vectors/matrices and representative `Float32`, rational, `BigFloat`, complex, and abstract `Number` paths pass; later slices add sparse representation reshuffles, structure-aware spectral paths, exact symmetric polynomials/minors, and explicit dense-SVD gates |
+| Invalid/adversarial inputs | Dimension/index/repetition/shape, physical-parameter, RNG-option, invalid-label, nonfinite map/state, non-CP recovery, implicit sparse densification, tolerance boundary, unsupported compatibility forms, exact-arithmetic overflow, compound boundary-order, and combinatorial predicate-guard cases covered |
+| Explicit RNG safety | Six Tier B native/wrapper random constructors and the compatibility random `PauliChannel(rng, Q)` form are seeded/property tested; regressions verify the global stream is unchanged |
+| MATLAB compatibility wrappers | Tier A, Tier B, supported Tier C, all 11 Tier D wrappers, six Tier E product entry points, four Tier E matrix entry points, and four structured matrix-predicate entry points pass locally; explicit partial statuses and structured-result differences remain documented |
+| Benchmark smoke | 42 quick cases ran locally, including three product-analysis and three matrix-analysis cases; no regression threshold or comparative performance claim |
+| Optional extension/load order | Not implemented/pending |
+| Optimization statuses | Pending |
+| Doctests/docs build | Strict Documenter build passed locally |
+| Julia 1.10/stable/nightly CI | Local Julia 1.10.11 and 1.12.6 suites pass; workflows are scaffolded, but no remote CI run or nightly result is cited |
+| Linux/macOS/Windows CI | Workflows scaffolded; no run cited |
+
+## Commands and results
+
+Run from an uncommitted pre-alpha worktree on the environment recorded in
+`BUILD_ENVIRONMENT.md`:
+
+```sh
+julia --startup-file=no --project=. -e 'using Pkg; Pkg.test()'
+```
+
+Results on Julia 1.12.6 and Julia 1.10.11: every package testset passed. The
+corpus comprises Tier A `304`, Tier B `577 + 205 + 132 + 27 = 941`, Tier C
+`154`, Tier D measures/criteria `25 + 30 + 11 + 15 + 11 + 38 + 32 = 162`,
+the native pipeline `68`, coherence `52`, product `175 + 52`, matrix analysis
+`127 + 32`, and matrix predicates `166 + 37`, for `2,270 / 2,270`.
+The Julia 1.10 invocation warned that the ignored development
+`Manifest.toml` had been resolved by Julia 1.12 and that project compatibility
+had changed; `Pkg.test()` still resolved its temporary test environment and
+passed. No root manifest is committed, so CI resolves against each configured
+Julia version.
+
+The Tier C slice was also run directly through the package test environment:
+
+```sh
+julia --startup-file=no --project=. -e \
+  'using Test, QuantumEntanglementTools; include("test/tier_c_channels_maps.jl")'
+```
+
+Result: `Tier C channel/map representations | 154 passed / 154 total`.
+Coverage includes the 24 native public map bindings/types and all 11 Tier C
+`MATLABCompat` wrappers. The supported native representation model permits
+unequal input/output Hilbert-space dimensions, but the compatibility layer
+does not yet implement QETLAB's two-sided left/right Kraus-cell form or
+independent rectangular row/column operator spaces.
+
+The development-only oracle generated 13 JSON fixtures from the pinned QETLAB
+checkout with Octave 11.3.0. The committed source-free artifact has a sibling
+SHA-256 record; its comparison run passed 52/52 native/wrapper assertions for
+tensor operations, permutations/swaps, trace, partial transpose (including a
+complex non-Hermitian input), realignment, and symmetric/antisymmetric
+projectors. This is function-specific supplementary evidence, not a blanket
+claim that Octave reproduces MATLAB/QETLAB behavior.
+
+```sh
+scripts/matlab_oracle/run_tier_a_oracle.sh --engine octave
+julia --project=test/oracle -e \
+  'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+julia --project=test/oracle test/oracle/compare_tier_a_oracle.jl \
+  test/oracle/fixtures/tier_a_octave_11_3_qetlab_d858961.json
+```
+
+Result: `QETLAB Tier A differential fixture | 52 passed / 52 total`. MATLAB,
+CVX, and a CVX solver were not detected; the fixture metadata records that
+absence.
+
+The analogous deterministic Tier B artifact was generated from the same pinned
+QETLAB checkout with Octave 11.3.0:
+
+```sh
+scripts/matlab_oracle/run_tier_b_oracle.sh --engine octave
+julia --project=test/oracle test/oracle/compare_tier_b_oracle.jl \
+  test/oracle/fixtures/tier_b_octave_11_3_qetlab_d858961.json
+```
+
+Result: `QETLAB Tier B differential fixture | 72 passed / 72 total` across 18
+fixtures. Both the native and `MATLABCompat` path are checked for each fixture.
+The committed artifact is
+`test/oracle/fixtures/tier_b_octave_11_3_qetlab_d858961.json`, with SHA-256
+`61f9e585b6a608f593272a4c62819cc5865da0c4a7e8d79113a9123087c840e5`.
+Randomized functions are intentionally absent because equal numeric seeds do
+not imply equal streams across Julia and MATLAB-family engines.
+
+The Tier C artifact was generated from the same pinned checkout with Octave
+11.3.0:
+
+```sh
+scripts/matlab_oracle/run_tier_c_oracle.sh --engine octave
+julia --project=test/oracle test/oracle/compare_tier_c_oracle.jl \
+  test/oracle/fixtures/tier_c_octave_11_3_qetlab_d858961.json
+```
+
+Result: `QETLAB Tier C differential fixture | 28 passed / 28 total` across 7
+fixtures. Both native and `MATLABCompat` results are checked for depolarizing,
+dephasing, and Pauli channels, the Choi and reduction maps, whole-map
+application, and partial-map application. The committed artifact is
+`test/oracle/fixtures/tier_c_octave_11_3_qetlab_d858961.json`, with SHA-256
+`46b31802d97ee8366da163d7c723408ac708c94325aa96c83a34307355a15c03`.
+Representation round trips and canonical Kraus recovery use analytic/property
+tests because Kraus bases are not unique. The fixture is supplemental
+function-specific evidence; MATLAB was not run.
+
+The Tier D measures/criteria slice and the project-native pipeline were also
+run directly through the package test environment:
+
+```sh
+julia --startup-file=no --project=. -e \
+  'using Test, QuantumEntanglementTools; include("test/tier_d_measures_criteria.jl")'
+julia --startup-file=no --project=. -e \
+  'using Test, QuantumEntanglementTools; include("test/tier_d_entanglement_pipeline.jl")'
+```
+
+Results: `Tier D scalar measures and criteria | 162 passed / 162 total` and
+`Tier D entanglement pipeline | 68 passed / 68 total`. The first count includes
+all 11 Tier D `MATLABCompat` entry points. The pipeline treats PPT, realignment,
+and reduction passes as inconclusive unless a separately stated theorem is
+sufficient. It certifies PPT separability only in bipartite `2×2` and `2×3`.
+For pure vectors, a trailing Schmidt coefficient above tolerance certifies
+entanglement; separability requires the computed trailing coefficients to be
+exactly zero, while a tolerance-defined rank-one result with nonzero trailing
+coefficients remains `unknown`. The pipeline does not claim full QETLAB
+`IsSeparable`.
+
+The Tier D artifact was generated from the same pinned checkout with Octave
+11.3.0:
+
+```sh
+scripts/matlab_oracle/run_tier_d_oracle.sh --engine octave
+julia --project=test/oracle test/oracle/compare_tier_d_oracle.jl \
+  test/oracle/fixtures/tier_d_octave_11_3_qetlab_d858961.json
+```
+
+Result: `QETLAB Tier D differential fixture | 34 passed / 34 total` across 13
+fixtures. The committed artifact is
+`test/oracle/fixtures/tier_d_octave_11_3_qetlab_d858961.json`, with SHA-256
+`ad0cdc45077390fc1eb736fc7c7ff1ec41696c796a508b536774cb6e0020160a`.
+It covers trace/Schatten/Ky Fan norms, purity, the von Neumann `Entropy`
+`ALPHA=1` branch, unsquared root fidelity, negativity, Schmidt coefficients
+and rank, concurrence, two PPT outcomes, and the realignment trace norm.
+PPT fixture booleans are compared to the corresponding tri-state meaning
+without coercing `CriterionResult` or asserting separability. Schmidt vectors
+are validated by phase-independent reconstruction rather than entrywise
+comparison. This is supplemental function-specific evidence; MATLAB was not
+run.
+
+The Tier E focused suites and supplemental artifacts were run with:
+
+```sh
+julia --project=. -e \
+  'using QuantumEntanglementTools, Test; include("test/tier_e_product_analysis.jl")'
+julia --project=. -e \
+  'using QuantumEntanglementTools, Test; include("test/tier_e_product_compat.jl")'
+julia --project=test/oracle test/oracle/compare_tier_e_product_oracle.jl \
+  test/oracle/fixtures/tier_e_product_octave_11_3_qetlab_d858961.json
+julia --project=test/oracle test/oracle/compare_tier_e_coherence_oracle.jl \
+  test/oracle/fixtures/tier_e_coherence_octave_11_3_qetlab_d858961.json
+julia --project=. -e \
+  'using QuantumEntanglementTools, Test; include("test/tier_e_matrix_analysis.jl"); include("test/tier_e_matrix_analysis_compat.jl")'
+julia --project=test/oracle test/oracle/compare_tier_e_matrix_analysis_oracle.jl \
+  test/oracle/fixtures/tier_e_matrix_analysis_octave_11_3_qetlab_d858961.json
+```
+
+Product analysis passes 175/175 native and 52/52 compatibility assertions.
+Its 14-fixture artifact passes 68/68 with SHA-256
+`ab6414c1a684141db74782616d4c18e79c8e6039aad53a695d8c723eed598d85`.
+Matrix analysis passes 127/127 native and 32/32 compatibility assertions. Its
+22-fixture artifact passes 59/59 with SHA-256
+`e37685c262ce5982d10dd705cef8c172d49d9c55c89a0a67d4de729a5068f540`;
+17 fixtures are agreements and five preserve reviewed QETLAB discrepancies
+without turning them into native expected values. The earlier Tier E coherence
+slice passes 52/52 locally and 25/25 against six fixtures (SHA-256
+`11bcaaee88fac8a595e9a4eff164432dbaa4e141cdd26554da2522e22981811a`).
+MATLAB was not run.
+
+The matrix-predicate slice was run both through the integrated package suite
+and its focused files:
+
+```sh
+julia --startup-file=no --project=. -e \
+  'using QuantumEntanglementTools, Test; include("test/tier_e_matrix_predicates.jl"); include("test/tier_e_matrix_predicates_compat.jl")'
+julia --startup-file=no --project=. scripts/validate_matrix_predicates.jl
+```
+
+Results: 166/166 native and 37/37 compatibility assertions. An independent
+randomized check compared PSD outcomes with eigenspectra and all-minor outcomes
+with compound-matrix determinants for 130/130 assertions. Exact
+integer/rational, `Float32`, `Float64`, `BigFloat`, complex nonsingularity,
+structured diagonal, explicit sparse-densification, tolerance-boundary, witness,
+and combinatorial-guard paths are covered. No MATLAB-family predicate fixture
+has been generated, and the `IsPSD` inventory mapping remains partial because
+the pinned CVX symbolic branch is omitted.
+
+```sh
+julia --project=quality quality/run_quality.jl
+```
+
+Result: Aqua passes 11/11 and all 24 representative JET inference probes pass,
+including four product-analysis and four matrix-analysis calls. The JET smoke
+does not currently include the matrix-predicate slice.
+
+```sh
+julia --project=benchmark benchmark/benchmarks.jl --quick --no-save
+```
+
+Result: all 42 quick benchmark cases completed. The product and matrix slices
+each add exactly three representative cases. The matrix cases cover two dense
+`32×32` matrices compared through singular values, an `8×8` order-three
+compound, and a `16×16`
+order-two additive compound. This is a local allocation/runtime smoke run, not
+a saved regression baseline or a comparative performance claim.
+
+```sh
+julia --project=docs docs/make.jl
+```
+
+Result: Documenter completed doctests, cross-references, strict exported-doc
+checks, and HTML rendering without errors. It emitted a non-failing size
+warning for the generated API page (about 179.4 KiB versus the 100 KiB warning
+threshold).
+
+## Acceptance rule
+
+Update this report only with commands and artifacts actually run. For each
+validated function or group, record:
+
+- repository commit and dirty state;
+- environment/manifest;
+- test and oracle command;
+- input families, sizes, types, and sparsity;
+- comparison definition and tolerance rationale;
+- pass/fail counts and unresolved discrepancies;
+- links to fixtures without copying restricted source or assets.
+
+An upstream match alone is not sufficient when independent mathematical
+evidence is practical. A discrepancy must be investigated, not hidden by a
+broader tolerance.
+
+## Known gaps
+
+The authoritative QETLAB inventory contains 163 rows: 63 are marked
+implemented, 11 are explicitly partial, 2 are explicitly deferred, and 87
+still await manual review. The project-native criteria and orchestration
+bindings do not mark QETLAB `IsSeparable` implemented. Until every public row
+maps to tests and docs, whole-project parity percentages would be misleading
+and are intentionally omitted.

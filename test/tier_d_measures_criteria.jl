@@ -1,0 +1,327 @@
+using LinearAlgebra
+using SparseArrays
+
+const QETD = QuantumEntanglementTools
+const CompatD = QuantumEntanglementTools.MATLABCompat
+
+@testset "Tier D matrix norms" begin
+    matrix = Diagonal([3.0, 2.0, 1.0])
+    @test QETD.trace_norm(matrix) == 6.0
+    @test QETD.schatten_norm(matrix, 1) == 6.0
+    @test QETD.schatten_norm(matrix, 2) ≈ sqrt(14.0)
+    @test QETD.schatten_norm(matrix, Inf) == 3.0
+    @test QETD.ky_fan_norm(matrix, 1) == 3.0
+    @test QETD.ky_fan_norm(matrix, 2) == 5.0
+    @test QETD.ky_fan_norm(matrix, 3) == 6.0
+    @test QETD.schatten_norm(Float32[3 0; 0 1], 2) isa Float32
+
+    rectangular = ComplexF64[1 im 0; 0 2 -im]
+    singular_values = svdvals(rectangular)
+    @test QETD.trace_norm(rectangular) ≈ sum(singular_values)
+    @test QETD.schatten_norm(rectangular, 3) ≈ sum(singular_values .^ 3)^(1 / 3)
+
+    @test QETD.trace_norm(zeros(0, 3)) == 0.0
+    @test QETD.schatten_norm(zeros(0, 3), 2) == 0.0
+    @test_throws ArgumentError QETD.ky_fan_norm(zeros(0, 3), 1)
+    @test_throws ArgumentError QETD.schatten_norm(matrix, 0.5)
+    @test_throws ArgumentError QETD.schatten_norm(matrix, NaN)
+    @test_throws ArgumentError QETD.schatten_norm(matrix, true)
+    @test_throws ArgumentError QETD.ky_fan_norm(matrix, 0)
+    @test_throws ArgumentError QETD.ky_fan_norm(matrix, 4)
+    @test_throws ArgumentError QETD.ky_fan_norm(matrix, 1.0)
+    @test_throws ArgumentError QETD.trace_norm([1.0 NaN; 0.0 1.0])
+    @test_throws ArgumentError QETD.trace_norm(BigFloat[1 0; 0 1])
+
+    sparse_matrix = sparse(matrix)
+    @test_throws ArgumentError QETD.trace_norm(sparse_matrix)
+    @test QETD.trace_norm(sparse_matrix; allow_densify=true) == 6.0
+    @test_throws ArgumentError QETD.schatten_norm(sparse_matrix, 2)
+    @test QETD.schatten_norm(sparse_matrix, 2; allow_densify=true) ≈ sqrt(14.0)
+end
+
+@testset "Tier D density-matrix scalar measures" begin
+    pure_zero = [1.0 0.0; 0.0 0.0]
+    pure_one = [0.0 0.0; 0.0 1.0]
+    maximally_mixed = Matrix{Float64}(I, 4, 4) / 4
+
+    @test QETD.purity(pure_zero) == 1.0
+    @test QETD.purity(maximally_mixed) == 0.25
+    @test QETD.von_neumann_entropy(pure_zero; base=2) == 0.0
+    @test QETD.von_neumann_entropy(maximally_mixed; base=2) == 2.0
+    @test QETD.von_neumann_entropy(maximally_mixed; base=exp(1)) ≈ log(4)
+    @test_throws UndefKeywordError QETD.von_neumann_entropy(maximally_mixed)
+    @test_throws ArgumentError QETD.von_neumann_entropy(maximally_mixed; base=1)
+    @test_throws ArgumentError QETD.von_neumann_entropy(maximally_mixed; base=-2)
+    @test_throws ArgumentError QETD.von_neumann_entropy(maximally_mixed; base=0.5)
+
+    @test QETD.fidelity(pure_zero, pure_zero) == 1.0
+    @test QETD.fidelity(pure_zero, pure_one) == 0.0
+    pure_plus = [0.5 0.5; 0.5 0.5]
+    @test QETD.fidelity(pure_zero, pure_plus) ≈ inv(sqrt(2))
+    @test QETD.fidelity(pure_zero, pure_plus; squared=true) ≈ 0.5
+    rho = ComplexF64[0.7 0.1im; -0.1im 0.3]
+    sigma = ComplexF64[0.4 0.05; 0.05 0.6]
+    @test QETD.fidelity(rho, sigma) ≈ QETD.fidelity(sigma, rho)
+
+    @test QETD.trace_distance(pure_zero, pure_zero) == 0.0
+    @test QETD.trace_distance(pure_zero, pure_one) == 1.0
+    @test QETD.trace_distance(rho, sigma) ≈ QETD.trace_distance(sigma, rho)
+
+    @test_throws DimensionMismatch QETD.fidelity(pure_zero, maximally_mixed)
+    @test_throws DimensionMismatch QETD.trace_distance(pure_zero, maximally_mixed)
+    @test_throws DimensionMismatch QETD.purity(zeros(2, 3))
+    @test_throws ArgumentError QETD.purity(zeros(0, 0))
+    @test_throws ArgumentError QETD.purity([1.0 0.1; 0.0 0.0])
+    @test_throws ArgumentError QETD.purity([0.9 0.0; 0.0 0.0])
+    @test_throws DomainError QETD.purity([1.1 0.0; 0.0 -0.1])
+    @test_throws ArgumentError QETD.purity([1.0 Inf; Inf 0.0])
+    @test_throws ArgumentError QETD.purity(pure_zero; atol=-1)
+    @test_throws ArgumentError QETD.purity(pure_zero; rtol=Inf)
+
+    sparse_state = sparse(maximally_mixed)
+    @test_throws ArgumentError QETD.purity(sparse_state)
+    @test QETD.purity(sparse_state; allow_densify=true) == 0.25
+
+    # A tiny negative eigenvalue is not silently clipped even when it lies
+    # within a deliberately coarse state-validation tolerance.
+    boundary_invalid = Diagonal([-1e-10, 0.5, 0.3, 0.2000000001])
+    @test_throws DomainError QETD.von_neumann_entropy(
+        boundary_invalid; base=2, atol=1e-9, rtol=0
+    )
+end
+
+@testset "Tier D negativity and logarithmic negativity" begin
+    bell = [1.0, 0.0, 0.0, 1.0] / sqrt(2)
+    product = [1.0, 0.0, 0.0, 0.0]
+    bell_density = bell * adjoint(bell)
+
+    @test QETD.negativity(bell, (2, 2)) ≈ 0.5
+    @test QETD.negativity(bell_density, [2, 2]) ≈ 0.5
+    @test QETD.negativity(product, (2, 2)) == 0.0
+    @test QETD.logarithmic_negativity(bell, (2, 2); base=2) ≈ 1.0
+    @test QETD.logarithmic_negativity(product, (2, 2); base=2) == 0.0
+    @test_throws UndefKeywordError QETD.logarithmic_negativity(bell, (2, 2))
+    @test_throws DimensionMismatch QETD.negativity(bell, (4, 2))
+    @test_throws ArgumentError QETD.negativity(bell, (4,))
+    @test_throws ArgumentError QETD.negativity(bell, (2, 2); systems=())
+    @test_throws ArgumentError QETD.negativity(bell, (2, 2); systems=(1, 2))
+    @test_throws ArgumentError QETD.negativity(0.9bell, (2, 2))
+end
+
+@testset "Tier D Schmidt analysis" begin
+    bell = ComplexF64[1, 0, 0, im] / sqrt(2)
+    decomposition = QETD.schmidt_decomposition(bell, (2, 2))
+    @test decomposition.coefficients ≈ [inv(sqrt(2)), inv(sqrt(2))]
+    reconstructed = sum(
+        decomposition.coefficients[index] *
+        kron(decomposition.left_vectors[:, index], decomposition.right_vectors[:, index])
+        for index in eachindex(decomposition.coefficients)
+    )
+    @test reconstructed ≈ bell
+    @test QETD.schmidt_coefficients(bell, [2, 2]) ≈ decomposition.coefficients
+    @test QETD.schmidt_rank(bell, (2, 2)) == 2
+    @test QETD.schmidt_rank(ComplexF64[1, 0, 0, 0], (2, 2)) == 1
+    @test QETD.schmidt_rank(zeros(ComplexF64, 4), (2, 2)) == 0
+
+    rectangular = Float64[1, 2, 3, 4, 5, 6]
+    rectangular_decomposition = QETD.schmidt_decomposition(rectangular, (2, 3))
+    rectangular_reconstruction = sum(
+        rectangular_decomposition.coefficients[index] * kron(
+            rectangular_decomposition.left_vectors[:, index],
+            rectangular_decomposition.right_vectors[:, index],
+        ) for index in eachindex(rectangular_decomposition.coefficients)
+    )
+    @test rectangular_reconstruction ≈ rectangular
+
+    near_product = Float64[1, 0, 0, 1e-7]
+    @test QETD.schmidt_rank(near_product, (2, 2); atol=1e-6, rtol=0) == 1
+    @test QETD.schmidt_rank(near_product, (2, 2); atol=1e-8, rtol=0) == 2
+
+    sparse_bell = sparsevec([1, 4], [inv(sqrt(2)), inv(sqrt(2))], 4)
+    @test_throws ArgumentError QETD.schmidt_coefficients(sparse_bell, (2, 2))
+    @test QETD.schmidt_coefficients(sparse_bell, (2, 2); allow_densify=true) ≈
+        [inv(sqrt(2)), inv(sqrt(2))]
+    @test_throws DimensionMismatch QETD.schmidt_coefficients(bell, (2, 3))
+    @test_throws ArgumentError QETD.schmidt_coefficients(bell, (4,))
+    @test_throws ArgumentError QETD.schmidt_coefficients(ComplexF64[1, NaN, 0, 0], (2, 2))
+    @test_throws ArgumentError QETD.schmidt_coefficients(BigFloat[1, 0, 0, 1], (2, 2))
+end
+
+@testset "Tier D two-qubit concurrence" begin
+    bell = [1.0, 0.0, 0.0, 1.0] / sqrt(2)
+    product = [1.0, 0.0, 0.0, 0.0]
+    theta = 0.31
+    partially_entangled = [cos(theta), 0.0, 0.0, sin(theta)]
+
+    @test QETD.concurrence(bell) ≈ 1.0
+    @test QETD.concurrence(bell * adjoint(bell)) ≈ 1.0
+    @test QETD.concurrence(product) == 0.0
+    @test QETD.concurrence(partially_entangled) ≈ sin(2theta)
+    @test QETD.concurrence(Matrix{Float64}(I, 4, 4) / 4) == 0.0
+    big_bell = BigFloat[1, 0, 0, 1] / sqrt(big(2))
+    @test QETD.concurrence(big_bell) isa BigFloat
+    @test QETD.concurrence(big_bell) ≈ one(BigFloat)
+    @test_throws DimensionMismatch QETD.concurrence(ones(3) / sqrt(3))
+    @test_throws DimensionMismatch QETD.concurrence(Matrix{Float64}(I, 2, 2) / 2)
+    @test_throws ArgumentError QETD.concurrence(0.9bell)
+
+    sparse_bell = sparsevec([1, 4], [inv(sqrt(2)), inv(sqrt(2))], 4)
+    @test QETD.concurrence(sparse_bell) ≈ 1.0
+end
+
+@testset "Tier D structured necessary criteria" begin
+    bell = [1.0, 0.0, 0.0, 1.0] / sqrt(2)
+    bell_density = bell * adjoint(bell)
+    product = [1.0, 0.0, 0.0, 0.0]
+    product_density = product * adjoint(product)
+    maximally_mixed = Matrix{Float64}(I, 4, 4) / 4
+
+    ppt_bell = QETD.ppt_criterion(bell_density, (2, 2))
+    @test ppt_bell isa QETD.CriterionResult
+    @test ppt_bell.criterion === :ppt
+    @test ppt_bell.status === QETD.CriterionEntanglementDetected
+    @test ppt_bell.value ≈ -0.5
+    @test ppt_bell.threshold == 0.0
+    @test ppt_bell.witness !== nothing
+    partial = QETD.partial_transpose(bell_density, (2, 2); systems=(2,))
+    @test real(dot(ppt_bell.witness, partial * ppt_bell.witness)) < 0
+    @test occursin("certifies entanglement", ppt_bell.message)
+
+    ppt_mixed = QETD.ppt_criterion(maximally_mixed, (2, 2))
+    @test ppt_mixed.status === QETD.CriterionSatisfied
+    @test ppt_mixed.witness === nothing
+    @test !occursin("is separable", lowercase(ppt_mixed.message))
+
+    ppt_product = QETD.ppt_criterion(product_density, (2, 2))
+    @test ppt_product.status === QETD.CriterionUnknown
+    @test ppt_product.witness !== nothing
+    @test QETD.ppt_criterion(maximally_mixed, (2, 2); atol=0.3, rtol=0).status ===
+        QETD.CriterionUnknown
+
+    realignment_bell = QETD.realignment_criterion(bell_density, (2, 2))
+    @test realignment_bell.status === QETD.CriterionEntanglementDetected
+    @test realignment_bell.value ≈ 2.0
+    @test realignment_bell.threshold ≈ 1.0
+    @test QETD.realignment_criterion(maximally_mixed, (2, 2)).status ===
+        QETD.CriterionSatisfied
+    @test QETD.realignment_criterion(product_density, (2, 2)).status ===
+        QETD.CriterionUnknown
+
+    reduction_bell = QETD.reduction_criterion(bell_density, (2, 2))
+    @test reduction_bell.status === QETD.CriterionEntanglementDetected
+    @test reduction_bell.value ≈ -0.5
+    @test reduction_bell.witness.side in (:a, :b)
+    @test QETD.reduction_criterion(maximally_mixed, (2, 2)).status ===
+        QETD.CriterionSatisfied
+    @test QETD.reduction_criterion(product_density, (2, 2)).status === QETD.CriterionUnknown
+    @test QETD.reduction_criterion(bell_density, (2, 2); side=:a).status ===
+        QETD.CriterionEntanglementDetected
+    @test QETD.reduction_criterion(bell_density, (2, 2); side=:b).status ===
+        QETD.CriterionEntanglementDetected
+
+    boundary_invalid = Diagonal([-1e-10, 0.5, 0.3, 0.2000000001])
+    boundary_result = QETD.ppt_criterion(boundary_invalid, (2, 2); atol=1e-9, rtol=0)
+    @test boundary_result.status === QETD.CriterionUnknown
+    @test occursin("input", boundary_result.message)
+    near_hermitian = ComplexF64.(maximally_mixed)
+    near_hermitian[1, 2] = 1e-9
+    @test QETD.ppt_criterion(near_hermitian, (2, 2)).status === QETD.CriterionUnknown
+
+    grossly_invalid = Diagonal([-0.1, 0.4, 0.3, 0.4])
+    @test_throws DomainError QETD.ppt_criterion(grossly_invalid, (2, 2); atol=1e-9, rtol=0)
+    @test_throws ArgumentError QETD.ppt_criterion(bell_density, (2, 2); systems=())
+    @test_throws ArgumentError QETD.realignment_criterion(
+        bell_density, (2, 2); systems=(1, 2)
+    )
+    @test_throws ArgumentError QETD.reduction_criterion(bell_density, (2, 2); side=:invalid)
+    @test_throws ArgumentError QETD.reduction_criterion(bell_density, (2, 2, 1))
+
+    sparse_mixed = sparse(maximally_mixed)
+    @test_throws ArgumentError QETD.ppt_criterion(sparse_mixed, (2, 2))
+    @test QETD.ppt_criterion(sparse_mixed, (2, 2); allow_densify=true).status ===
+        QETD.CriterionSatisfied
+
+    shown = sprint(show, ppt_bell)
+    @test occursin("CriterionResult", shown)
+    @test occursin("ppt", shown)
+end
+
+@testset "Tier D MATLAB/QETLAB compatibility wrappers" begin
+    diagonal = Diagonal([3.0, 2.0, 1.0])
+    @test CompatD.TraceNorm(diagonal) == 6.0
+    @test CompatD.SchattenNorm(diagonal, 2) ≈ sqrt(14.0)
+    @test CompatD.KyFanNorm(diagonal, 2) == 5.0
+    @test_throws ArgumentError CompatD.TraceNorm(sparse(diagonal))
+    @test CompatD.TraceNorm(sparse(diagonal); allow_densify=true) == 6.0
+
+    # QETLAB Purity is an unchecked algebraic scalar operation. The
+    # compatibility wrapper preserves that behavior while the native
+    # `purity` API performs density-matrix validation.
+    @test CompatD.Purity([2.0 0.0; 0.0 0.0]) == 4.0
+    @test_throws DimensionMismatch CompatD.Purity(ones(2, 3))
+
+    maximally_mixed = Matrix{Float64}(I, 4, 4) / 4
+    @test CompatD.Entropy(maximally_mixed) == 2.0
+    @test CompatD.Entropy(maximally_mixed, exp(1), 1) ≈ log(4)
+    @test_throws ArgumentError CompatD.Entropy(maximally_mixed, 2, 2)
+
+    pure_zero = [1.0 0.0; 0.0 0.0]
+    pure_plus = [0.5 0.5; 0.5 0.5]
+    @test CompatD.Fidelity(pure_zero, pure_plus) ≈ inv(sqrt(2))
+
+    bell = ComplexF64[1, 0, 0, im] / sqrt(2)
+    bell_density = bell * bell'
+    @test CompatD.Negativity(bell) ≈ 0.5
+    @test CompatD.Negativity(bell_density, 2) ≈ 0.5
+
+    decomposition = CompatD.SchmidtDecomposition(bell, (2, 2), -1)
+    @test decomposition.coefficients ≈ [inv(sqrt(2)), inv(sqrt(2))]
+    reconstructed = sum(
+        decomposition.coefficients[index] *
+        kron(decomposition.left_vectors[:, index], decomposition.right_vectors[:, index])
+        for index in eachindex(decomposition.coefficients)
+    )
+    @test reconstructed ≈ bell
+    @test length(
+        CompatD.SchmidtDecomposition(ComplexF64[1, 0, 0, 0], (2, 2), 0).coefficients
+    ) == 1
+    @test length(CompatD.SchmidtDecomposition(bell, (2, 2), 1).coefficients) == 1
+    @test_throws ArgumentError CompatD.SchmidtDecomposition(bell, (2, 2), 3)
+    @test CompatD.SchmidtRank(bell, (2, 2)) == 2
+    @test CompatD.SchmidtRank(ComplexF64[1, 0, 0, 1e-7], (2, 2), 1e-6) == 1
+
+    @test CompatD.Concurrence(bell) ≈ 1.0
+    @test CompatD.Concurrence(maximally_mixed) == 0.0
+
+    ppt_bell = CompatD.IsPPT(bell_density, 2, (2, 2), 1e-12)
+    @test ppt_bell.status === QETD.CriterionEntanglementDetected
+    @test ppt_bell.value ≈ -0.5
+    @test ppt_bell.witness !== nothing
+
+    ppt_mixed = CompatD.IsPPT(maximally_mixed, 2, (2, 2), 1e-12)
+    @test ppt_mixed.status === QETD.CriterionSatisfied
+    @test ppt_mixed.witness === nothing
+
+    product_density = Diagonal([1.0, 0.0, 0.0, 0.0])
+    @test CompatD.IsPPT(Matrix(product_density), 2, (2, 2), 1e-12).status ===
+        QETD.CriterionUnknown
+
+    # Unlike the native density criterion, compatibility IsPPT accepts
+    # unnormalized Hermitian operators, but still returns a tri-state result.
+    @test CompatD.IsPPT(Matrix{Float64}(I, 4, 4), 2, (2, 2), 1e-12).status ===
+        QETD.CriterionSatisfied
+    @test_throws ArgumentError CompatD.IsPPT(sparse(maximally_mixed))
+    @test CompatD.IsPPT(sparse(maximally_mixed); allow_densify=true).status ===
+        QETD.CriterionSatisfied
+    @test_throws ArgumentError CompatD.IsPPT(
+        ComplexF64[
+            1 1 0 0
+            0 0 0 0
+            0 0 0 0
+            0 0 0 0
+        ],
+        2,
+        (2, 2),
+        1e-12,
+    )
+end

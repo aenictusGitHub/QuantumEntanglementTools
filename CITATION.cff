@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: >-
+  This software is pre-alpha. Please cite the exact version and commit used;
+  archival citation metadata will be added when a release is published.
+type: software
+title: QuantumEntanglementTools.jl
+abstract: >-
+  A provisional, independent Julia package under development for
+  quantum-information and entanglement computations.
+authors:
+  - family-names: Martin
+    given-names: John
+    email: jmartin@uliege.be
+version: 0.1.0
+license: BSD-3-Clause
+keywords:
+  - Julia
+  - quantum information
+  - entanglement

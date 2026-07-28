@@ -1,0 +1,116 @@
+module QuantumEntanglementTools
+
+using LinearAlgebra
+using SparseArrays
+
+export SubsystemLayout,
+    SubsystemPermutationPlan,
+    PartialTracePlan,
+    PartialTransposePlan,
+    RealignmentPlan,
+    basis_to_linear,
+    linear_to_basis,
+    tensor_product,
+    tensor_power,
+    tensor_sum,
+    kronecker_sum,
+    majorizes,
+    elementary_symmetric_polynomial,
+    compound_matrix,
+    additive_compound_matrix,
+    MatrixPredicateStatus,
+    MatrixPredicateResult,
+    MatrixPredicateSatisfied,
+    MatrixPredicateViolated,
+    MatrixPredicateUnknown,
+    is_positive_semidefinite,
+    is_locally_positive_semidefinite,
+    is_totally_positive,
+    is_totally_nonsingular,
+    permute_subsystems,
+    swap_subsystems,
+    permutation_operator,
+    swap_operator,
+    partial_trace,
+    partial_transpose,
+    realign,
+    realignment,
+    reshuffle,
+    inverse_realign,
+    inverse_realignment,
+    inverse_reshuffle,
+    symmetric_projector,
+    antisymmetric_projector,
+    symmetric_projection,
+    antisymmetric_projection,
+    symmetric_subspace_basis,
+    antisymmetric_subspace_basis,
+    SchmidtDecompositionResult,
+    OperatorSchmidtDecompositionResult,
+    ProductAnalysisResult,
+    SeparableBallResult,
+    CriterionStatus,
+    CriterionResult,
+    CriterionEntanglementDetected,
+    CriterionSatisfied,
+    CriterionUnknown,
+    trace_norm,
+    schatten_norm,
+    ky_fan_norm,
+    purity,
+    von_neumann_entropy,
+    fidelity,
+    trace_distance,
+    negativity,
+    logarithmic_negativity,
+    l1_coherence,
+    relative_entropy_coherence,
+    coherence_rank,
+    schmidt_coefficients,
+    schmidt_decomposition,
+    schmidt_rank,
+    operator_schmidt_decomposition,
+    operator_schmidt_coefficients,
+    operator_schmidt_rank,
+    is_product_vector,
+    is_product_operator,
+    concurrence,
+    entanglement_of_formation,
+    in_separable_ball,
+    ppt_criterion,
+    realignment_criterion,
+    reduction_criterion,
+    AbstractEntanglementMethod,
+    AbstractEntanglementBackend,
+    NativeEntanglementBackend,
+    NativePPT,
+    EntanglementAttempt,
+    EntanglementReport,
+    detect_entanglement,
+    analyze_entanglement,
+    backend_capabilities,
+    available_entanglement_backends,
+    MATLABCompat
+
+include("dimensions.jl")
+include("tensor_products.jl")
+include("linear_algebra/matrix_analysis.jl")
+include("linear_algebra/matrix_predicates.jl")
+include("subsystem/permutation.jl")
+include("subsystem/partial_trace.jl")
+include("subsystem/partial_transpose.jl")
+include("subsystem/realignment.jl")
+include("subsystem/projectors.jl")
+include("operators/operators.jl")
+include("states/states.jl")
+include("random/random_objects.jl")
+include("channels/channels.jl")
+include("channels/representations.jl")
+include("measures/scalar_measures.jl")
+include("coherence/coherence.jl")
+include("entanglement/product_analysis.jl")
+include("entanglement/criteria.jl")
+include("entanglement/backend_interface.jl")
+include("compat/MATLABCompat.jl")
+
+end # module QuantumEntanglementTools

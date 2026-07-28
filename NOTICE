@@ -1,0 +1,47 @@
+QuantumEntanglementTools
+Copyright (c) 2026 John Martin
+
+New code and independently written documentation are available under the
+BSD 3-Clause License in LICENSE.
+
+This is an independent project. It is not affiliated with, endorsed by, or
+officially supported by QETLAB, Nathaniel Johnston, QUBIT4MATLAB, Geza Toth,
+or their contributors.
+
+QETLAB is a separate MATLAB project maintained by Nathaniel Johnston:
+
+    Copyright (c) 2014, Nathaniel Johnston
+
+Its complete BSD 2-Clause terms are reproduced in
+licenses/QETLAB-LICENSE.txt and THIRD_PARTY_LICENSES.md. Julia implementations
+informed by QETLAB specifications or source must be identified in
+PROVENANCE.toml.
+
+The QETLAB source tree also carries separate BSD 2-Clause notices for the
+spnull/sporth helpers:
+
+    Copyright (c) 2010, Bruno Luong
+
+Those complete terms are reproduced in
+licenses/QETLAB-BRUNO-LUONG-HELPERS-LICENSE.txt and
+THIRD_PARTY_LICENSES.md. No port of those helpers is claimed solely by listing
+their notices.
+
+QUBIT4MATLAB is a separate MATLAB project by Geza Toth. A license supplied to
+the maintainer states:
+
+    Copyright (c) 2005-2024, Geza Toth
+
+That supplied text is preserved verbatim in
+licenses/QUBIT4MATLAB-LICENSE.txt. It materially conflicts with the license in
+the author-hosted v6.5 archive, so no claim is made that the supplied text
+governs the archive and no source-informed port is currently authorized by this
+engineering workflow.
+
+EntanglementDetection.jl is a separate MIT-licensed project intended only as an
+optional external dependency. Its code is not vendored by this notice.
+
+Complete current status and third-party terms are recorded in
+THIRD_PARTY_LICENSES.md, docs/LEGAL.md, UpstreamManifest.toml, and
+PROVENANCE.toml. Distribution builders must include those files together with
+LICENSE and this NOTICE.

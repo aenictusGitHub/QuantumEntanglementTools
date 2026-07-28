@@ -1,0 +1,135 @@
+name: Quality, provenance, oracle, and benchmark smoke
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  provenance:
+    name: Inventory and public API consistency
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+      - name: Cache Julia artifacts
+        uses: julia-actions/cache@v2
+      - name: Instantiate core environment
+        run: julia --startup-file=no --project=. -e 'using Pkg; Pkg.instantiate()'
+      - name: Check generated upstream inventory
+        run: julia --startup-file=no --project=. scripts/build_upstream_inventory.jl --check
+      - name: Check exports, provenance, and reviewed mappings
+        run: julia --startup-file=no --project=. scripts/check_public_api.jl
+      - name: Cross-check matrix predicates independently
+        run: julia --startup-file=no --project=. scripts/validate_matrix_predicates.jl
+
+  aqua-jet-format:
+    name: Aqua, representative JET, and formatting
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+      - name: Cache Julia artifacts
+        uses: julia-actions/cache@v2
+      - name: Instantiate quality environment with local package
+        run: >-
+          julia --startup-file=no --project=quality -e
+          'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - name: Run Aqua and representative JET checks
+        run: julia --startup-file=no --project=quality quality/run_quality.jl
+      - name: Check Julia formatting without rewriting
+        run: julia --startup-file=no --project=quality quality/format.jl
+
+  committed-oracle:
+    name: Source-free QETLAB oracle fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+      - name: Cache Julia artifacts
+        uses: julia-actions/cache@v2
+      - name: Instantiate oracle environment with local package
+        run: >-
+          julia --startup-file=no --project=test/oracle -e
+          'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - name: Verify fixture digest and native/wrapper comparisons
+        run: >-
+          julia --startup-file=no --project=test/oracle
+          test/oracle/compare_tier_a_oracle.jl
+          test/oracle/fixtures/tier_a_octave_11_3_qetlab_d858961.json
+      - name: Verify Tier B deterministic fixture
+        run: >-
+          julia --startup-file=no --project=test/oracle
+          test/oracle/compare_tier_b_oracle.jl
+          test/oracle/fixtures/tier_b_octave_11_3_qetlab_d858961.json
+      - name: Verify Tier C deterministic fixture
+        run: >-
+          julia --startup-file=no --project=test/oracle
+          test/oracle/compare_tier_c_oracle.jl
+          test/oracle/fixtures/tier_c_octave_11_3_qetlab_d858961.json
+      - name: Verify Tier D deterministic fixture
+        run: >-
+          julia --startup-file=no --project=test/oracle
+          test/oracle/compare_tier_d_oracle.jl
+          test/oracle/fixtures/tier_d_octave_11_3_qetlab_d858961.json
+      - name: Verify Tier E coherence deterministic fixture and discrepancy record
+        run: >-
+          julia --startup-file=no --project=test/oracle
+          test/oracle/compare_tier_e_coherence_oracle.jl
+          test/oracle/fixtures/tier_e_coherence_octave_11_3_qetlab_d858961.json
+      - name: Verify Tier E product-analysis fixture and discrepancy records
+        run: >-
+          julia --startup-file=no --project=test/oracle
+          test/oracle/compare_tier_e_product_oracle.jl
+          test/oracle/fixtures/tier_e_product_octave_11_3_qetlab_d858961.json
+      - name: Verify Tier E matrix-analysis fixture and discrepancy records
+        run: >-
+          julia --startup-file=no --project=test/oracle
+          test/oracle/compare_tier_e_matrix_analysis_oracle.jl
+          test/oracle/fixtures/tier_e_matrix_analysis_octave_11_3_qetlab_d858961.json
+
+  benchmark-smoke:
+    name: Quick benchmark smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      JULIA_NUM_THREADS: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+      - name: Cache Julia artifacts
+        uses: julia-actions/cache@v2
+      - name: Instantiate benchmark environment
+        run: julia --startup-file=no --project=benchmark -e 'using Pkg; Pkg.instantiate()'
+      - name: Run non-recording smoke suite
+        run: >-
+          julia --startup-file=no --project=benchmark
+          benchmark/benchmarks.jl --quick --no-save

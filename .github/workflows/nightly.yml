@@ -1,0 +1,37 @@
+name: Julia nightly compatibility
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-nightly:
+    name: Julia nightly / Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    env:
+      JULIA_NUM_THREADS: "2"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Julia nightly
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: nightly
+      - name: Cache Julia artifacts
+        uses: julia-actions/cache@v2
+      - name: Show dependency and runtime status
+        run: >-
+          julia --startup-file=no --project=. -e
+          'using Pkg, InteractiveUtils; Pkg.status(); versioninfo()'
+      - name: Run package tests
+        uses: julia-actions/julia-runtest@v1

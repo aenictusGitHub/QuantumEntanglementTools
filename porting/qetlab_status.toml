@@ -1,0 +1,1352 @@
+# Reviewed status overlay consumed by scripts/build_upstream_inventory.jl.
+#
+# Add one table per reviewed function. Each entry must identify an existing
+# inventory record by function_name, source_path, or both. Supported overrides:
+# implementation_status, test_status, documentation_status, benchmark_status,
+# license_provenance_status, proposed_julia_name, proposed_julia_signature,
+# compatibility_alias, review_status, and review_notes.
+#
+# Example:
+# [[functions]]
+# function_name = "PartialTrace"
+# source_path = "PartialTrace.m"
+# implementation_status = "implemented"
+# test_status = "analytic_and_differential_tests_pass"
+# documentation_status = "documented"
+# benchmark_status = "baseline_recorded"
+# license_provenance_status = "verified"
+# review_status = "manually_reviewed"
+# review_notes = ["MATLAB optional-argument semantics checked at the pinned SHA."]
+
+schema_version = 1
+
+[[functions]]
+function_name = "Tensor"
+source_path = "Tensor.m"
+implementation_status = "implemented"
+test_status = "local_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "tensor_product"
+proposed_julia_signature = "tensor_product(factors...; copies=nothing); tensor_power(factor, copies)"
+compatibility_alias = "Tensor"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "Native repeated products are split between tensor_product and tensor_power.",
+    "Local Julia and compatibility-wrapper tests pass; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "TensorSum"
+source_path = "TensorSum.m"
+implementation_status = "implemented"
+test_status = "local_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "tensor_sum"
+proposed_julia_signature = "tensor_sum(factors...; weights=nothing)"
+compatibility_alias = "TensorSum"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "Native weights are an explicit keyword; the compatibility wrapper preserves the weighted positional form.",
+    "Local Julia and compatibility-wrapper tests pass; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "KroneckerSum"
+source_path = "KroneckerSum.m"
+implementation_status = "implemented"
+test_status = "local_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "kronecker_sum"
+proposed_julia_signature = "kronecker_sum(factors...; copies=nothing)"
+compatibility_alias = "KroneckerSum"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "Native repeated sums use the copies keyword; the compatibility wrapper preserves the positional copy count.",
+    "Local Julia and compatibility-wrapper tests pass; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "PermuteSystems"
+source_path = "PermuteSystems.m"
+implementation_status = "implemented"
+test_status = "local_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "permute_subsystems"
+proposed_julia_signature = "permute_subsystems(input, dims; permutation, inverse=false, rows_only=false)"
+compatibility_alias = "PermuteSystems"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "Native code accepts reusable plans and explicit row/column plans for rectangular operators.",
+    "Local Julia and compatibility-wrapper tests pass; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "PermutationOperator"
+source_path = "PermutationOperator.m"
+implementation_status = "implemented"
+test_status = "local_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "permutation_operator"
+proposed_julia_signature = "permutation_operator(dims, permutation; inverse=false, T=Bool, sparse_output=true)"
+compatibility_alias = "PermutationOperator"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "Native output is sparse by default; the compatibility wrapper preserves QETLAB's dense default.",
+    "Local Julia and compatibility-wrapper tests pass; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "Swap"
+source_path = "Swap.m"
+implementation_status = "implemented"
+test_status = "local_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "swap_subsystems"
+proposed_julia_signature = "swap_subsystems(input, dims, first, second; rows_only=false)"
+compatibility_alias = "Swap"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "Native code takes explicit subsystem labels and dimensions; the compatibility wrapper preserves QETLAB argument order and defaults.",
+    "Local Julia and compatibility-wrapper tests pass; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "SwapOperator"
+source_path = "SwapOperator.m"
+implementation_status = "implemented"
+test_status = "local_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "swap_operator"
+proposed_julia_signature = "swap_operator(dims; systems=(1, 2), T=Bool, sparse_output=true)"
+compatibility_alias = "SwapOperator"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "Native output is sparse by default; the compatibility wrapper preserves QETLAB's dense default.",
+    "Local Julia and compatibility-wrapper tests pass; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "PartialTrace"
+source_path = "PartialTrace.m"
+implementation_status = "implemented"
+test_status = "local_analytic_property_and_wrapper_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_conventions_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "partial_trace"
+proposed_julia_signature = "partial_trace(input, dims; trace_out)"
+compatibility_alias = "PartialTrace"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "The native kernel selects dense or sparse implementations by dispatch rather than exposing QETLAB MODE.",
+    "Analytic, independent-index, sparse, generic-number, and compatibility-wrapper tests pass locally; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "PartialTranspose"
+source_path = "PartialTranspose.m"
+implementation_status = "implemented"
+test_status = "local_analytic_property_and_wrapper_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_conventions_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "partial_transpose"
+proposed_julia_signature = "partial_transpose(matrix, dims; systems); partial_transpose(matrix, row_dims, column_dims; systems)"
+compatibility_alias = "PartialTranspose"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "Native rectangular operation accepts separate row and column dimensions or a reusable plan.",
+    "Analytic, independent-index, involution, sparse, and compatibility-wrapper tests pass locally; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "Realignment"
+source_path = "Realignment.m"
+implementation_status = "implemented"
+test_status = "local_property_and_wrapper_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "realign"
+proposed_julia_signature = "realign(matrix, dims; systems=(1,)); realign(matrix, row_dims, column_dims; systems=(1,))"
+compatibility_alias = "Realignment"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "The native API generalizes the pinned bipartite map to an explicit subsystem partition and supplies a project-native exact inverse.",
+    "Basis-map, round-trip, sparse, rectangular, and compatibility-wrapper tests pass locally; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "SymmetricProjection"
+source_path = "SymmetricProjection.m"
+implementation_status = "implemented"
+test_status = "local_projector_basis_property_and_wrapper_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "symmetric_projector"
+proposed_julia_signature = "symmetric_projector(local_dimension, copies=2; T=Float64, sparse_output=true); symmetric_subspace_basis(local_dimension, copies=2; T=Float64, sparse_output=true)"
+compatibility_alias = "SymmetricProjection"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "The native API separates projector and orthonormal-basis outputs; the wrapper preserves the QETLAB PARTIAL selector.",
+    "Projector, idempotence, orthonormal-basis, exact-rational, and compatibility-wrapper tests pass locally; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "AntisymmetricProjection"
+source_path = "AntisymmetricProjection.m"
+implementation_status = "implemented"
+test_status = "local_projector_basis_property_and_wrapper_tests_pass_matlab_differential_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "antisymmetric_projector"
+proposed_julia_signature = "antisymmetric_projector(local_dimension, copies=2; T=Float64, sparse_output=true); antisymmetric_subspace_basis(local_dimension, copies=2; T=Float64, sparse_output=true)"
+compatibility_alias = "AntisymmetricProjection"
+review_status = "manually_reviewed_tier_a_mapping"
+review_notes = [
+    "The native API separates projector and orthonormal-basis outputs; the wrapper preserves the QETLAB PARTIAL selector.",
+    "Projector, idempotence, orthonormal-basis, empty-subspace, exact-rational, and compatibility-wrapper tests pass locally; MATLAB differential parity has not been run.",
+]
+
+[[functions]]
+function_name = "Pauli"
+source_path = "Pauli.m"
+implementation_status = "implemented"
+test_status = "local_analytic_property_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "pauli"
+proposed_julia_signature = "pauli(index; sparse_output=false)"
+compatibility_alias = "Pauli"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Native labels are strict and dense output is the native default; the wrapper preserves QETLAB's sparse-output default.",
+    "Function-specific Octave/QETLAB evidence is supplemental and does not establish general MATLAB parity.",
+]
+
+[[functions]]
+function_name = "GenPauli"
+source_path = "GenPauli.m"
+implementation_status = "implemented"
+test_status = "local_unitarity_generic_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "generalized_pauli"
+proposed_julia_signature = "generalized_pauli(shift, clock, dim; sparse_output=false, T=Float64)"
+compatibility_alias = "GenPauli"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The zero-based Weyl indices match the pinned QETLAB contract.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "GellMann"
+source_path = "GellMann.m"
+implementation_status = "implemented"
+test_status = "local_basis_orthogonality_generic_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "gell_mann"
+proposed_julia_signature = "gell_mann(index; sparse_output=false, T=Float64)"
+compatibility_alias = "GellMann"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Hermiticity, trace, Hilbert-Schmidt orthogonality, sparse output, and precision selection are tested.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "GenGellMann"
+source_path = "GenGellMann.m"
+implementation_status = "implemented"
+test_status = "local_basis_orthogonality_generic_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "generalized_gell_mann"
+proposed_julia_signature = "generalized_gell_mann(first, second, dim; sparse_output=false, T=Float64)"
+compatibility_alias = "GenGellMann"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The zero-based basis indices and identity element match the pinned QETLAB contract.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "FourierMatrix"
+source_path = "FourierMatrix.m"
+implementation_status = "implemented"
+test_status = "local_unitarity_bigfloat_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "fourier_matrix"
+proposed_julia_signature = "fourier_matrix(dim; T=Float64)"
+compatibility_alias = "FourierMatrix"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The positive exponential convention matches the pinned QETLAB function.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "MaxEntangled"
+source_path = "MaxEntangled.m"
+implementation_status = "implemented"
+test_status = "local_normalization_sparse_generic_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "maximally_entangled"
+proposed_julia_signature = "maximally_entangled(dim; normalized=true, sparse_output=false, T=Float64)"
+compatibility_alias = "MaxEntangled"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Normalization, sparse output, subsystem order, and floating-point precision are explicit native keywords.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "Bell"
+source_path = "Bell.m"
+implementation_status = "implemented"
+test_status = "local_exact_orthogonality_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "bell_state"
+proposed_julia_signature = "bell_state(index=0; normalized=true, sparse_output=false, T=Float64)"
+compatibility_alias = "Bell"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The native index is validated in 0:3; the wrapper retains QETLAB's modulo-four behavior.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "GHZState"
+source_path = "GHZState.m"
+implementation_status = "implemented"
+test_status = "local_normalization_coefficients_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "ghz_state"
+proposed_julia_signature = "ghz_state(dim, parties; coefficients=nothing, sparse_output=true, T=Float64)"
+compatibility_alias = "GHZState"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Supplied coefficients are used exactly and never silently normalized.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "WState"
+source_path = "WState.m"
+implementation_status = "implemented"
+test_status = "local_normalization_coefficients_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "w_state"
+proposed_julia_signature = "w_state(parties; coefficients=nothing, sparse_output=true, T=Float64)"
+compatibility_alias = "WState"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Coefficient-to-subsystem order follows the package's most-significant-first convention.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "DickeState"
+source_path = "DickeState.m"
+implementation_status = "implemented"
+test_status = "local_combinatorial_normalization_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "dicke_state"
+proposed_julia_signature = "dicke_state(parties, excitations=1; normalized=true, sparse_output=true, T=Float64)"
+compatibility_alias = "DickeState"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The implementation directly constructs the sparse fixed-excitation basis support.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "IsotropicState"
+source_path = "IsotropicState.m"
+implementation_status = "implemented"
+test_status = "local_psd_trace_exact_rational_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "isotropic_state"
+proposed_julia_signature = "isotropic_state(dim, alpha; sparse_output=true)"
+compatibility_alias = "IsotropicState"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The native and wrapper paths reject parameters outside the physical positivity interval rather than constructing a non-state.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "WernerState"
+source_path = "WernerState.m"
+implementation_status = "partially_implemented_bipartite_scalar_only"
+test_status = "bipartite_scalar_local_psd_trace_exact_rational_wrapper_and_octave_fixture_tests_pass"
+documentation_status = "partial_scope_api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "werner_state"
+proposed_julia_signature = "werner_state(dim, alpha::Real; sparse_output=true)"
+compatibility_alias = "WernerState"
+review_status = "manually_reviewed_tier_b_partial_mapping"
+review_notes = [
+    "Only the scalar bipartite family is exported and tested.",
+    "The multipartite vector-parameter form remains deferred pending a separate permutation, normalization, and upstream-semantics review.",
+    "The Octave fixture covers only the scalar bipartite form; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "HorodeckiState"
+source_path = "HorodeckiState.m"
+implementation_status = "implemented"
+test_status = "local_psd_ppt_trace_wrapper_and_two_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "horodecki_state"
+proposed_julia_signature = "horodecki_state(a; dims=(3, 3))"
+compatibility_alias = "HorodeckiState"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Both supported local-dimension choices, (3,3) and (2,4), have separate fixtures.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "GisinState"
+source_path = "GisinState.m"
+implementation_status = "implemented"
+test_status = "local_psd_trace_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "gisin_state"
+proposed_julia_signature = "gisin_state(lambda, theta)"
+compatibility_alias = "GisinState"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The mixing probability is validated in [0,1] and the angle is documented in radians.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "BreuerState"
+source_path = "BreuerState.m"
+implementation_status = "implemented"
+test_status = "local_psd_trace_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "breuer_state"
+proposed_julia_signature = "breuer_state(dim, lambda; sparse_output=true)"
+compatibility_alias = "BreuerState"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Even dimension and convex weight are validated without clipping.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "BrauerStates"
+source_path = "BrauerStates.m"
+implementation_status = "implemented"
+test_status = "local_perfect_matching_sparse_wrapper_and_exact_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "brauer_states"
+proposed_julia_signature = "brauer_states(dim, pairs; T=Float64)"
+compatibility_alias = "BrauerStates"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The perfect-matching column order and values match the tested pinned-QETLAB fixture exactly.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "ChessboardState"
+source_path = "ChessboardState.m"
+implementation_status = "implemented"
+test_status = "local_psd_trace_complex_parameter_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "chessboard_state"
+proposed_julia_signature = "chessboard_state(a, b, c, d, m, n; s=nothing, t=nothing)"
+compatibility_alias = "ChessboardState"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The constructor establishes PSD by construction but does not issue an implicit PPT verdict for arbitrary parameters.",
+    "Function-specific Octave/QETLAB evidence is supplemental and MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "RandomProbabilities"
+source_path = "RandomProbabilities.m"
+implementation_status = "implemented"
+test_status = "local_seeded_simplex_reproducibility_wrapper_and_global_rng_isolation_tests_pass"
+documentation_status = "api_docstring_rng_contract_focused_page_migration_and_reproducibility_docs_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "random_probabilities"
+proposed_julia_signature = "random_probabilities(rng::AbstractRNG, n)"
+compatibility_alias = "RandomProbabilities"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Both API layers require an explicit RNG and leave Julia's global stream unchanged.",
+    "Distributional properties are tested locally; unrelated Julia and MATLAB-family streams are not compared.",
+]
+
+[[functions]]
+function_name = "RandomStateVector"
+source_path = "RandomStateVector.m"
+implementation_status = "implemented"
+test_status = "local_seeded_norm_rank_reproducibility_wrapper_and_global_rng_isolation_tests_pass"
+documentation_status = "api_docstring_rng_contract_focused_page_migration_and_reproducibility_docs_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "random_state_vector"
+proposed_julia_signature = "random_state_vector(rng::AbstractRNG, dimension; real=false, schmidt_rank=nothing)"
+compatibility_alias = "RandomStateVector"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Both API layers require an explicit RNG and leave Julia's global stream unchanged.",
+    "Normalization and requested Schmidt-rank bounds are property-tested; cross-language streams are not compared.",
+]
+
+[[functions]]
+function_name = "RandomDensityMatrix"
+source_path = "RandomDensityMatrix.m"
+implementation_status = "implemented"
+test_status = "local_seeded_psd_trace_rank_bures_reproducibility_wrapper_and_global_rng_isolation_tests_pass"
+documentation_status = "api_docstring_rng_contract_focused_page_migration_and_reproducibility_docs_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "random_density_matrix"
+proposed_julia_signature = "random_density_matrix(rng::AbstractRNG, dim; real=false, rank=dim, distribution=:hilbert_schmidt)"
+compatibility_alias = "RandomDensityMatrix"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Hilbert-Schmidt/induced and Bures paths consume only the supplied RNG.",
+    "PSD, trace, rank, reproducibility, and global-stream isolation are tested locally; cross-language streams are not compared.",
+]
+
+[[functions]]
+function_name = "RandomUnitary"
+source_path = "RandomUnitary.m"
+implementation_status = "implemented"
+test_status = "local_seeded_unitary_orthogonal_reproducibility_wrapper_and_global_rng_isolation_tests_pass"
+documentation_status = "api_docstring_rng_contract_focused_page_migration_and_reproducibility_docs_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "random_unitary"
+proposed_julia_signature = "random_unitary(rng::AbstractRNG, dim; real=false)"
+compatibility_alias = "RandomUnitary"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The phase-corrected QR construction consumes only the supplied RNG.",
+    "Unitary/orthogonal properties and global-stream isolation are tested; cross-language streams are not compared.",
+]
+
+[[functions]]
+function_name = "RandomGraph"
+source_path = "RandomGraph.m"
+implementation_status = "implemented"
+test_status = "local_seeded_graph_property_reproducibility_wrapper_and_global_rng_isolation_tests_pass"
+documentation_status = "api_docstring_rng_contract_focused_page_migration_and_reproducibility_docs_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "random_graph"
+proposed_julia_signature = "random_graph(rng::AbstractRNG, n; edge_probability=0.5)"
+compatibility_alias = "RandomGraph"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "Native output is a symmetric loop-free BitMatrix; the wrapper returns a floating-point matrix.",
+    "Boundary probabilities, reproducibility, and global-stream isolation are tested; cross-language streams are not compared.",
+]
+
+[[functions]]
+function_name = "RandomPOVM"
+source_path = "RandomPOVM.m"
+implementation_status = "implemented"
+test_status = "local_seeded_psd_completeness_reproducibility_wrapper_and_global_rng_isolation_tests_pass"
+documentation_status = "api_docstring_rng_contract_focused_page_migration_and_reproducibility_docs_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "random_povm"
+proposed_julia_signature = "random_povm(rng::AbstractRNG, dim, outcomes; real=false)"
+compatibility_alias = "RandomPOVM"
+review_status = "manually_reviewed_tier_b_mapping"
+review_notes = [
+    "The native implementation uses a Haar isometry and deliberately does not depend on RandomSuperoperator.",
+    "Effect PSD, completeness, reproducibility, and global-stream isolation are tested; no cross-language stream comparison is claimed.",
+]
+
+[[functions]]
+function_name = "RandomSuperoperator"
+source_path = "RandomSuperoperator.m"
+implementation_status = "deferred"
+test_status = "not_started"
+documentation_status = "deferred_with_explicit_reason_documented"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "random_superoperator"
+proposed_julia_signature = "deferred_pending_verified_channel_representations"
+review_status = "manually_reviewed_tier_b_deferred"
+review_notes = [
+    "Not exported: channel representation, trace-preservation, and complete-positivity contracts must be established in the channel milestone first.",
+    "RandomPOVM uses an independent Haar-isometry construction and is not evidence that RandomSuperoperator is implemented.",
+]
+
+[[functions]]
+function_name = "RandomPPTState"
+source_path = "RandomPPTState.m"
+implementation_status = "deferred"
+test_status = "not_started"
+documentation_status = "deferred_with_explicit_reason_documented"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "random_ppt_state"
+proposed_julia_signature = "deferred_pending_optional_optimization_backend_and_status_contract"
+review_status = "manually_reviewed_tier_b_deferred"
+review_notes = [
+    "Not exported: the construction depends on optimization/backend behavior that is outside the verified Tier B core.",
+    "A future implementation must expose explicit RNG and solver/status semantics without making a solver a core dependency.",
+]
+
+[[functions]]
+function_name = "ApplyMap"
+source_path = "ApplyMap.m"
+implementation_status = "partially_implemented_square_operator_spaces_and_one_sided_cp_kraus_only"
+test_status = "supported_slice_local_representation_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "partial_scope_api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "apply_channel"
+proposed_julia_signature = "apply_channel(input, map::AbstractMapRepresentation); apply_channel(input, kraus_operators)"
+compatibility_alias = "ApplyMap"
+review_status = "manually_reviewed_tier_c_partial_mapping"
+review_notes = [
+    "Native and compatibility paths support typed map representations, raw Choi matrices, and one-sided completely-positive Kraus collections on square operator spaces.",
+    "QETLAB's two-column left/right Kraus-cell form and rectangular row/column operator spaces are not implemented.",
+    "The supported slice has local representation/wrapper tests and one supplemental Octave/QETLAB fixture; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "ChoiMatrix"
+source_path = "ChoiMatrix.m"
+implementation_status = "partially_implemented_square_operator_spaces_and_one_sided_cp_kraus_only"
+test_status = "supported_slice_local_copy_round_trip_sparse_wrapper_and_convention_tests_pass"
+documentation_status = "partial_scope_api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "choi_matrix"
+proposed_julia_signature = "choi_matrix(map::AbstractMapRepresentation)"
+compatibility_alias = "ChoiMatrix"
+review_status = "manually_reviewed_tier_c_partial_mapping"
+review_notes = [
+    "The native accessor uses the package's unnormalized input-first Choi convention; the compatibility wrapper implements QETLAB SYS=1/2 ordering for supported Kraus inputs and copies raw Choi matrices.",
+    "QETLAB's two-column left/right Kraus-cell form and rectangular row/column operator spaces are not implemented.",
+    "Local copy, round-trip, sparse-storage, unequal channel-dimension, and wrapper convention tests pass; no function-specific MATLAB evidence is claimed.",
+]
+
+[[functions]]
+function_name = "KrausOperators"
+source_path = "KrausOperators.m"
+implementation_status = "partially_implemented_completely_positive_maps_only"
+test_status = "cp_slice_local_canonical_round_trip_rectangular_channel_wrapper_and_noncp_rejection_tests_pass"
+documentation_status = "partial_scope_api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "kraus_operators"
+proposed_julia_signature = "kraus_operators(map::AbstractMapRepresentation; atol=0, rtol=sqrt(eps(T)))"
+compatibility_alias = "KrausOperators"
+review_status = "manually_reviewed_tier_c_partial_mapping"
+review_notes = [
+    "Canonical completely-positive Kraus recovery is tolerance-controlled and explicitly densifies for the Choi eigendecomposition.",
+    "QETLAB's two-sided output for Hermiticity-preserving and general non-CP maps, including rectangular row/column operator spaces, is not implemented; non-CP inputs raise DomainError.",
+    "Local canonical round-trip, zero-map, unequal channel-dimension, wrapper, and explicit rejection tests pass; no function-specific MATLAB evidence is claimed.",
+]
+
+[[functions]]
+function_name = "ComplementaryMap"
+source_path = "ComplementaryMap.m"
+implementation_status = "partially_implemented_completely_positive_square_operator_spaces_only"
+test_status = "supported_slice_local_dilation_representation_wrapper_cp_and_tp_tests_pass"
+documentation_status = "partial_scope_api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "complementary_channel"
+proposed_julia_signature = "complementary_channel(map::AbstractMapRepresentation; atol=0, rtol=sqrt(eps(T)))"
+compatibility_alias = "ComplementaryMap"
+review_status = "manually_reviewed_tier_c_partial_mapping"
+review_notes = [
+    "A Kraus input fixes the dilation; Choi and superoperator inputs use the tolerance-controlled canonical CP decomposition and preserve the representation kind.",
+    "General two-sided Kraus data and rectangular row/column operator spaces accepted by the pinned QETLAB entry point are not implemented.",
+    "Local dilation, representation-kind, wrapper, complete-positivity, and trace-preservation tests pass; no function-specific MATLAB evidence is claimed.",
+]
+
+[[functions]]
+function_name = "DualMap"
+source_path = "DualMap.m"
+implementation_status = "partially_implemented_square_operator_spaces_and_no_two_sided_kraus_input"
+test_status = "supported_slice_local_hilbert_schmidt_representation_and_wrapper_tests_pass"
+documentation_status = "partial_scope_api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "dual_channel"
+proposed_julia_signature = "dual_channel(map::AbstractMapRepresentation)"
+compatibility_alias = "DualMap"
+review_status = "manually_reviewed_tier_c_partial_mapping"
+review_notes = [
+    "The native API implements the Hilbert-Schmidt dual for all three project representation kinds, including non-CP Choi and superoperator maps between square matrix algebras.",
+    "QETLAB's two-column left/right Kraus-cell form and rectangular row/column operator spaces are not implemented.",
+    "Local Hilbert-Schmidt identity, representation-kind, and raw compatibility-wrapper tests pass; no function-specific MATLAB evidence is claimed.",
+]
+
+[[functions]]
+function_name = "PartialMap"
+source_path = "PartialMap.m"
+implementation_status = "partially_implemented_square_operator_spaces_and_one_sided_maps_only"
+test_status = "supported_slice_local_dense_sparse_rectangular_channel_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "partial_scope_api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "partial_map"
+proposed_julia_signature = "partial_map(input, map::AbstractMapRepresentation, subsystem, dims)"
+compatibility_alias = "PartialMap"
+review_status = "manually_reviewed_tier_c_partial_mapping"
+review_notes = [
+    "The native API applies one typed map to one selected subsystem of a multipartite square operator and permits unequal input/output Hilbert-space dimensions.",
+    "QETLAB's two-column left/right Kraus-cell form and independent rectangular row/column subsystem dimension matrix are not implemented.",
+    "The supported slice has local dense/sparse, changed-output-dimension, invalid-input, wrapper, and supplemental Octave/QETLAB fixture tests; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "DepolarizingChannel"
+source_path = "DepolarizingChannel.m"
+implementation_status = "implemented"
+test_status = "local_native_physical_range_wrapper_raw_parameter_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "depolarizing_channel"
+proposed_julia_signature = "depolarizing_channel(dim, p=0)"
+compatibility_alias = "DepolarizingChannel"
+review_status = "manually_reviewed_tier_c_mapping"
+review_notes = [
+    "The native physical constructor enforces the complete-positivity range -1/(dim^2-1) <= p <= 1 without clipping.",
+    "The compatibility wrapper returns the raw sparse QETLAB Choi formula for every finite real p, including values outside the physical range.",
+    "Local analytic, physicality, sparse, wrapper, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "DephasingChannel"
+source_path = "DephasingChannel.m"
+implementation_status = "implemented"
+test_status = "local_native_physical_range_wrapper_raw_parameter_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "dephasing_channel"
+proposed_julia_signature = "dephasing_channel(dim, p=0)"
+compatibility_alias = "DephasingChannel"
+review_status = "manually_reviewed_tier_c_mapping"
+review_notes = [
+    "The native physical constructor enforces the complete-positivity range -1/(dim-1) <= p <= 1 without clipping.",
+    "The compatibility wrapper returns the raw sparse QETLAB Choi formula for every finite real p, including values outside the physical range.",
+    "Local analytic, physicality, sparse, wrapper, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "PauliChannel"
+source_path = "PauliChannel.m"
+implementation_status = "implemented"
+test_status = "local_probability_multiqubit_sparse_wrapper_explicit_rng_global_isolation_and_octave_fixture_tests_pass"
+documentation_status = "api_docstring_rng_contract_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "pauli_channel"
+proposed_julia_signature = "pauli_channel(probabilities; atol=0, rtol=sqrt(eps(T)))"
+compatibility_alias = "PauliChannel"
+review_status = "manually_reviewed_tier_c_mapping"
+review_notes = [
+    "The deterministic probability form validates 4^q finite nonnegative probabilities and never normalizes or clips them.",
+    "The compatibility random form is PauliChannel(rng::AbstractRNG, Q), requiring an explicit RNG and leaving Julia's global stream unchanged.",
+    "Local probability, multi-qubit, sparse, wrapper, RNG-isolation, and supplemental deterministic Octave/QETLAB fixture tests pass; unrelated cross-language random streams are not compared.",
+]
+
+[[functions]]
+function_name = "ChoiMap"
+source_path = "ChoiMap.m"
+implementation_status = "implemented"
+test_status = "local_formula_general_map_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "choi_map"
+proposed_julia_signature = "choi_map(a=1, b=1, c=0)"
+compatibility_alias = "ChoiMap"
+review_status = "manually_reviewed_tier_c_mapping"
+review_notes = [
+    "The native constructor returns a typed sparse general-map representation and does not infer or claim complete positivity.",
+    "The compatibility wrapper returns the raw QETLAB Choi matrix.",
+    "Local formula/application, invalid-parameter, wrapper, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "ReductionMap"
+source_path = "ReductionMap.m"
+implementation_status = "implemented"
+test_status = "local_formula_general_map_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "reduction_map"
+proposed_julia_signature = "reduction_map(dim, k=1)"
+compatibility_alias = "ReductionMap"
+review_status = "manually_reviewed_tier_c_mapping"
+review_notes = [
+    "The native constructor returns a typed sparse general-map representation and does not infer or claim positivity or complete positivity.",
+    "The compatibility wrapper returns the raw QETLAB Choi matrix.",
+    "Local formula/application, invalid-dimension, wrapper, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "Concurrence"
+source_path = "Concurrence.m"
+implementation_status = "implemented"
+test_status = "local_pure_mixed_analytic_validation_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_migration_and_entanglement_semantics_docs_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "concurrence"
+proposed_julia_signature = "concurrence(state; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "Concurrence"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "Both native methods and the compatibility wrapper implement Wootters concurrence only for normalized two-qubit pure vectors or 4 x 4 density matrices.",
+    "Inputs are validated and never normalized, repaired, or clipped; the defining max(candidate, 0) remains part of the mathematical formula.",
+    "Local analytic, invalid-input, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "Entropy"
+source_path = "Entropy.m"
+implementation_status = "partially_implemented_von_neumann_alpha_one_only"
+test_status = "alpha_one_local_analytic_base_validation_wrapper_and_octave_fixture_tests_pass_renyi_rejected_matlab_not_run"
+documentation_status = "partial_scope_api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "von_neumann_entropy"
+proposed_julia_signature = "von_neumann_entropy(rho; base, atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "Entropy"
+review_status = "manually_reviewed_tier_d_partial_mapping"
+review_notes = [
+    "The native function and compatibility wrapper implement only the verified von Neumann ALPHA=1 branch.",
+    "The native API requires an explicit logarithm base; MATLABCompat.Entropy keeps QETLAB's BASE=2 default and explicitly rejects every Renyi ALPHA != 1 request.",
+    "Local analytic, invalid-input, wrapper, benchmark, and supplemental Octave/QETLAB alpha-one fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "Fidelity"
+source_path = "Fidelity.m"
+implementation_status = "implemented"
+test_status = "local_pure_mixed_symmetry_validation_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "fidelity"
+proposed_julia_signature = "fidelity(rho, sigma; squared=false, atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "Fidelity"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "The native default and compatibility wrapper return QETLAB's unsquared Uhlmann root fidelity; squared=true is an explicit project-native option.",
+    "Density matrices receive strict validation and are never normalized, symmetrized silently, or range-clipped.",
+    "Local analytic, invalid-input, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB and QETLAB's optional CVX path were not run.",
+]
+
+[[functions]]
+function_name = "IsPPT"
+source_path = "IsPPT.m"
+implementation_status = "implemented"
+test_status = "local_certificate_boundary_witness_operator_wrapper_pipeline_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_migration_and_entanglement_tri_state_semantics_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "ppt_criterion"
+proposed_julia_signature = "ppt_criterion(rho, dims; systems=(2,), atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "IsPPT"
+review_status = "manually_reviewed_tier_d_mapping_with_intentional_tri_state_result"
+review_notes = [
+    "The native criterion validates density matrices and returns CriterionResult with entanglement-detected, satisfied-necessary-condition, or unknown status.",
+    "MATLABCompat.IsPPT accepts finite Hermitian operators without requiring unit trace, but intentionally preserves the same tri-state result instead of collapsing numerical-boundary cases to QETLAB's Boolean output.",
+    "PPT satisfaction is not promoted to a separability result except by the separately documented exact 2 x 2 and 2 x 3 theorem in the project-native pipeline.",
+    "Local criterion, witness, tolerance-boundary, wrapper, pipeline, benchmark, and supplemental Octave/QETLAB fixtures pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "KyFanNorm"
+source_path = "KyFanNorm.m"
+implementation_status = "implemented"
+test_status = "local_analytic_invalid_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "ky_fan_norm"
+proposed_julia_signature = "ky_fan_norm(matrix, k; allow_densify=false)"
+compatibility_alias = "KyFanNorm"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "The native and compatibility paths validate 1 <= k <= min(size(matrix)) and compute a full SVD rather than claiming a truncated algorithm.",
+    "Sparse inputs require an explicit allow_densify=true opt-in.",
+    "Local analytic, invalid-input, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "Negativity"
+source_path = "Negativity.m"
+implementation_status = "implemented"
+test_status = "local_bell_product_mixed_validation_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_migration_and_entanglement_semantics_docs_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "negativity"
+proposed_julia_signature = "negativity(state, dims; systems=(2,), atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "Negativity"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "The native API makes the subsystem dimensions and transposed side explicit; the wrapper retains QETLAB's equal-dimension inference and SYS=2 convention.",
+    "Pure vectors and density matrices are validated and never normalized or clipped; sparse spectral work requires explicit densification permission.",
+    "Local analytic, invalid-input, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "Purity"
+source_path = "Purity.m"
+implementation_status = "implemented"
+test_status = "local_strict_native_and_unchecked_wrapper_semantics_validation_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "purity"
+proposed_julia_signature = "purity(rho; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "Purity"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "The native API validates a normalized positive semidefinite density matrix before computing tr(rho^2).",
+    "MATLABCompat.Purity deliberately preserves QETLAB's unchecked real(tr(RHO^2)) operation for finite square matrices rather than delegating to stricter state validation.",
+    "Local native/wrapper distinction, invalid-input, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "SchattenNorm"
+source_path = "SchattenNorm.m"
+implementation_status = "implemented"
+test_status = "local_analytic_invalid_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "schatten_norm"
+proposed_julia_signature = "schatten_norm(matrix, p; allow_densify=false)"
+compatibility_alias = "SchattenNorm"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "The native and compatibility paths validate real p >= 1, including p=Inf.",
+    "The dependency-free implementation computes a full SVD and sparse inputs require an explicit allow_densify=true opt-in.",
+    "Local analytic, invalid-input, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "SchmidtDecomposition"
+source_path = "SchmidtDecomposition.m"
+implementation_status = "implemented"
+test_status = "local_phase_independent_reconstruction_shape_k_selection_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_migration_and_entanglement_semantics_docs_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "schmidt_decomposition"
+proposed_julia_signature = "schmidt_decomposition(psi, dims; allow_densify=false)"
+compatibility_alias = "SchmidtDecomposition"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "The native API returns a typed SchmidtDecompositionResult containing the full thin decomposition.",
+    "The compatibility wrapper returns a named tuple rather than three positional MATLAB outputs and preserves the reviewed K=-1, K=0, and positive-K selection semantics.",
+    "Reconstruction is tested phase-independently; local shape, sparse, wrapper, benchmark, and supplemental Octave/QETLAB coefficient fixtures pass, while singular vectors are not compared entrywise.",
+]
+
+[[functions]]
+function_name = "SchmidtRank"
+source_path = "SchmidtRank.m"
+implementation_status = "implemented"
+test_status = "local_rank_threshold_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_migration_and_entanglement_semantics_docs_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "schmidt_rank"
+proposed_julia_signature = "schmidt_rank(psi, dims; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "SchmidtRank"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "The native return is explicitly a tolerance-defined numerical rank, not an exact algebraic rank claim.",
+    "The wrapper implements QETLAB's reviewed default threshold and treats a supplied TOL as a strict absolute singular-value threshold.",
+    "Local threshold, invalid-input, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "TraceNorm"
+source_path = "TraceNorm.m"
+implementation_status = "implemented"
+test_status = "local_analytic_invalid_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "trace_norm"
+proposed_julia_signature = "trace_norm(matrix; allow_densify=false)"
+compatibility_alias = "TraceNorm"
+review_status = "manually_reviewed_tier_d_mapping"
+review_notes = [
+    "The dependency-free native and compatibility implementations use a full singular-value decomposition.",
+    "Sparse inputs are never densified implicitly and require allow_densify=true after allocation review.",
+    "Local analytic, invalid-input, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "L1NormCoherence"
+source_path = "L1NormCoherence.m"
+implementation_status = "implemented"
+test_status = "local_analytic_generic_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "l1_coherence"
+proposed_julia_signature = "l1_coherence(state; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "L1NormCoherence"
+review_status = "manually_reviewed_tier_e_coherence_mapping"
+review_notes = [
+    "Pure-vector evaluation preserves generic floating precision and sparse storage; density-matrix spectral validation requires a BLAS floating element type.",
+    "Inputs are validated but never normalized, clipped, or repaired; sparse density matrices require explicit allow_densify=true.",
+    "Local analytic, invalid-input, generic, sparse, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "RelEntCoherence"
+source_path = "RelEntCoherence.m"
+implementation_status = "implemented"
+test_status = "local_analytic_base_generic_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "relative_entropy_coherence"
+proposed_julia_signature = "relative_entropy_coherence(state; base, atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "RelEntCoherence"
+review_status = "manually_reviewed_tier_e_coherence_mapping"
+review_notes = [
+    "The native API requires an explicit logarithm base; MATLABCompat.RelEntCoherence keeps QETLAB's base-two default.",
+    "Pure-vector evaluation supports generic floating precision, while density-matrix entropy uses the strict spectral validation policy.",
+    "Local analytic, base-validation, generic, sparse, wrapper, benchmark, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "CoherenceRank"
+source_path = "CoherenceRank.m"
+implementation_status = "implemented"
+test_status = "local_definition_tolerance_basis_generic_sparse_wrapper_and_reviewed_discrepancy_octave_fixtures_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_migration_mapping_and_upstream_discrepancy_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "coherence_rank"
+proposed_julia_signature = "coherence_rank(state; basis=nothing, atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "CoherenceRank"
+review_status = "manually_reviewed_tier_e_mapping_with_intentional_upstream_bug_fix"
+review_notes = [
+    "QETLAB's documentation defines coherence rank as the number of nonzero basis coefficients, but the pinned implementation increments its counter for coefficients at or below tolerance.",
+    "The native API and compatibility entry point follow the documented mathematical definition and intentionally do not reproduce the zero-counting bug.",
+    "The committed Octave/QETLAB fixture records both buggy upstream outputs and the independently tested Julia definition; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "OperatorSchmidtDecomposition"
+source_path = "OperatorSchmidtDecomposition.m"
+implementation_status = "partially_implemented_without_hermitian_factor_repair_or_matlab_positional_output_parity"
+test_status = "local_square_rectangular_complex_reconstruction_sparse_wrapper_k_selection_and_octave_discrepancy_fixtures_pass_matlab_not_run"
+documentation_status = "partial_scope_api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "operator_schmidt_decomposition"
+proposed_julia_signature = "operator_schmidt_decomposition(operator, dims; allow_densify=false); operator_schmidt_decomposition(operator, row_dims, column_dims; allow_densify=false)"
+compatibility_alias = "OperatorSchmidtDecomposition"
+review_status = "manually_reviewed_tier_e_partial_mapping"
+review_notes = [
+    "The native API supports separate rectangular row/column layouts, returns a typed full thin decomposition, and exposes a coefficient-only convenience function.",
+    "The compatibility wrapper returns a named result and preserves reviewed K=-1, K=0, and positive-K selection, but does not perform QETLAB's Hermitian-factor repair.",
+    "Committed fixtures record rather than reproduce pinned failures for rectangular and unequal-local-dimension Hermitian inputs; coefficients and reconstructions pass locally and against the supported Octave fixtures.",
+]
+
+[[functions]]
+function_name = "OperatorSchmidtRank"
+source_path = "OperatorSchmidtRank.m"
+implementation_status = "implemented"
+test_status = "local_rank_threshold_rectangular_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "operator_schmidt_rank"
+proposed_julia_signature = "operator_schmidt_rank(operator, dims; atol=nothing, rtol=nothing, allow_densify=false); operator_schmidt_rank(operator, row_dims, column_dims; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "OperatorSchmidtRank"
+review_status = "manually_reviewed_tier_e_mapping"
+review_notes = [
+    "The native result is a tolerance-defined numerical operator Schmidt rank, not an exact algebraic claim.",
+    "The wrapper preserves QETLAB's reviewed default absolute threshold and supplied-TOL semantics.",
+    "Local analytic, rectangular, sparse-gate, wrapper, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "IsProductVector"
+source_path = "IsProductVector.m"
+implementation_status = "implemented"
+test_status = "local_multipartite_factor_scaled_residual_boundary_sparse_invalid_wrapper_and_away_from_boundary_octave_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "is_product_vector"
+proposed_julia_signature = "is_product_vector(vector, dims; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "IsProductVector"
+review_status = "manually_reviewed_tier_e_mapping_with_intentional_structured_result"
+review_notes = [
+    "Both Julia entry points return ProductAnalysisResult with factors, full Schmidt-tail residuals in original units, a global reconstruction residual, thresholds, and a three-way status.",
+    "Numerical tolerance boundaries are intentionally not collapsed to QETLAB's Boolean output, and the zero vector is rejected because its factors are nonunique.",
+    "Local factor, scaling, boundary, sparse-gate, row-vector wrapper, and away-from-boundary Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "IsProductOperator"
+source_path = "IsProductOperator.m"
+implementation_status = "implemented"
+test_status = "local_multipartite_rectangular_factor_scaled_residual_boundary_sparse_invalid_wrapper_and_away_from_boundary_octave_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "is_product_operator"
+proposed_julia_signature = "is_product_operator(operator, dims; atol=nothing, rtol=nothing, allow_densify=false); is_product_operator(operator, row_dims, column_dims; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "IsProductOperator"
+review_status = "manually_reviewed_tier_e_mapping_with_intentional_structured_result"
+review_notes = [
+    "The native and compatibility APIs support separate rectangular local row/column layouts and return ProductAnalysisResult rather than a Boolean.",
+    "Tolerance boundaries remain explicit, and the zero operator is rejected because its factors are nonunique.",
+    "Local multipartite reconstruction, scaled-residual, boundary, sparse-gate, wrapper, benchmark, and away-from-boundary Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "EntFormation"
+source_path = "EntFormation.m"
+implementation_status = "partially_implemented_exact_pure_bipartite_and_mixed_two_qubit_domains_only"
+test_status = "local_pure_mixed_base_validation_sparse_boundary_wrapper_and_zero_concurrence_discrepancy_octave_tests_pass_matlab_not_run"
+documentation_status = "partial_scope_api_docstring_focused_page_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "entanglement_of_formation"
+proposed_julia_signature = "entanglement_of_formation(state, dims; base=2, atol=nothing, rtol=nothing, allow_densify=false, psd_boundary_policy=:project, range_boundary_policy=:project)"
+compatibility_alias = "EntFormation"
+review_status = "manually_reviewed_tier_e_partial_mapping_with_intentional_zero_limit_fix"
+review_notes = [
+    "Exact normalized pure bipartite vectors and mixed two-qubit density matrices are implemented; higher-dimensional rank-one matrices must be supplied as pure vectors rather than silently reclassified.",
+    "The mixed-state path names bounded PSD and concurrence-range projection policies; no input normalization or unbounded clipping occurs.",
+    "The mathematical zero-concurrence limit returns zero instead of reproducing the pinned implementation's NaN; local and supplemental Octave discrepancy fixtures pass, while MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "InSeparableBall"
+source_path = "InSeparableBall.m"
+implementation_status = "implemented"
+test_status = "local_certificate_outside_boundary_unknown_diagonal_eigenvalue_sparse_invalid_normalizing_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+documentation_status = "api_docstring_focused_page_migration_and_sufficient_certificate_semantics_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "in_separable_ball"
+proposed_julia_signature = "in_separable_ball(rho_or_eigenvalues, dims; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "InSeparableBall"
+review_status = "manually_reviewed_tier_e_mapping_with_structured_certificate"
+review_notes = [
+    "The native API requires normalized input and returns SeparableBallResult distinguishing a sufficient separability certificate, outside-ball failure, and numerical unknown.",
+    "The wrapper retains positive-trace normalization after finite positive-semidefinite validation; neither API turns a failed sufficient test into an entanglement conclusion.",
+    "General matrices use dense spectral validation, while Diagonal matrices and supplied eigenvalues have structure-aware paths; local and supplemental Octave/QETLAB fixture tests pass, MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "Majorizes"
+source_path = "Majorizes.m"
+implementation_status = "implemented"
+test_status = "local_strong-native_weak-compatibility_exact_floating_matrix_sparse_invalid_and-reviewed-discrepancy-octave-tests_pass_matlab_not_run"
+documentation_status = "api_docstrings_focused_page_and_migration_mapping_with-strong-versus-weak-semantics-present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "majorizes"
+proposed_julia_signature = "majorizes(a, b; atol=0, rtol=nothing)"
+compatibility_alias = "Majorizes"
+review_status = "manually_reviewed_tier_e_mapping_with-native-standard-definition-and-pinned-compatibility-semantics"
+review_notes = [
+    "The native API implements standard strong majorization with equal totals, symmetric tolerance, zero-padding before sorting, and singular-value treatment for every matrix shape.",
+    "MATLABCompat.Majorizes preserves pinned weak-total behavior, row/column matrices as vectors, sorting before zero-padding, and the one-sided norm(A)*eps(Float64)^(3/4) default; explicit atol/rtol and sparse densification permission are safe extensions.",
+    "Local native/wrapper tests and five reviewed Octave discrepancy fixtures distinguish the contracts; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "ElemSymPoly"
+source_path = "ElemSymPoly.m"
+implementation_status = "implemented"
+test_status = "local_exact_rational_complex_sparse_property_overflow_invalid_row-column-wrapper_and-octave-fixture-tests_pass_matlab_not_run"
+documentation_status = "api_docstrings_focused_page_and_migration_mapping_present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "elementary_symmetric_polynomial"
+proposed_julia_signature = "elementary_symmetric_polynomial(values, order)"
+compatibility_alias = "ElemSymPoly"
+review_status = "manually_reviewed_tier_e_mapping_with-exact-arithmetic"
+review_notes = [
+    "The descending dynamic program uses O(length(values)*order) arithmetic and O(order) storage without enumerating combinations or densifying sparse vectors.",
+    "Integer, rational, and compatible complex arithmetic is widened internally and checked when narrowed; MATLABCompat.ElemSymPoly also accepts row and column matrices.",
+    "Local property, exact-arithmetic, wrapper, invalid-input, and supplemental Octave/QETLAB fixture tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "CompoundMatrix"
+source_path = "CompoundMatrix.m"
+implementation_status = "implemented"
+test_status = "local_exact_cauchy-binet_rectangular_sparse_overflow_invalid_wrapper_and-reviewed-shape-discrepancy-octave-tests-pass_matlab_not_run"
+documentation_status = "api_docstrings_focused_page_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "compound_matrix"
+proposed_julia_signature = "compound_matrix(matrix, order; sparse_output=issparse(matrix))"
+compatibility_alias = "CompoundMatrix"
+review_status = "manually_reviewed_tier_e_mapping_with-native-mathematical-shape-and-pinned-compatibility-shape"
+review_notes = [
+    "The native API retains binomial(m,order)-by-binomial(n,order) exterior-map shapes, including a zero-by-nonzero result when the order exceeds only one rectangular dimension.",
+    "MATLABCompat.CompoundMatrix preserves pinned QETLAB's 0-by-0 result when order exceeds min(m,n); orders with values use checked exact minor arithmetic and explicit sparse selection.",
+    "Local Cauchy--Binet, exact, sparse, wrapper, benchmark, and reviewed Octave shape-discrepancy tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "AdditiveCompoundMatrix"
+source_path = "AdditiveCompoundMatrix.m"
+implementation_status = "implemented"
+test_status = "local_derivative_eigenvalue-sum_exact_sparse_overflow_invalid_jet_wrapper_and-reviewed-order-zero-discrepancy-octave-tests-pass_matlab_not_run"
+documentation_status = "api_docstrings_focused_page_and_migration_mapping_present"
+benchmark_status = "local_quick_smoke_recorded"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "additive_compound_matrix"
+proposed_julia_signature = "additive_compound_matrix(matrix, order; sparse_output=issparse(matrix))"
+compatibility_alias = "AdditiveCompoundMatrix"
+review_status = "manually_reviewed_tier_e_mapping_with-native-defined-order-zero-and-pinned-compatibility-error"
+review_notes = [
+    "The native exterior-action implementation defines order zero as the 1-by-1 additive zero and preserves sparse output and checked exact arithmetic.",
+    "MATLABCompat.AdditiveCompoundMatrix reproduces the reviewed pinned dependency-path error at order zero; positive orders delegate to the native implementation.",
+    "Local derivative, eigenvalue-sum, exact, sparse, wrapper, JET, benchmark, and reviewed Octave order-zero discrepancy tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "IsPSD"
+source_path = "IsPSD.m"
+implementation_status = "partially_implemented_numeric_matrices_only_cvx_symbolic_branch_omitted"
+test_status = "local_exact_float32_float64_bigfloat_complex_structured_sparse_boundary_witness_invalid_wrapper_and-randomized-spectrum-tests-pass_matlab-not-run"
+documentation_status = "api_docstrings_focused-page-and-migration-mapping-with-structured-boundary-and-CVX-omission-present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "is_positive_semidefinite"
+proposed_julia_signature = "is_positive_semidefinite(matrix; atol=nothing, rtol=nothing, allow_densify=false)"
+compatibility_alias = "IsPSD"
+review_status = "manually_reviewed_tier_e_partial_mapping_with-three-valued-result-and-no-silent-symmetrization"
+review_notes = [
+    "Exact integer/rational inputs are decided exactly; floating tolerance boundaries remain unknown instead of being collapsed to a Boolean.",
+    "Neither native nor compatibility code substitutes the Hermitian part, and sparse spectral work requires explicit densification.",
+    "The pinned CVX branch is intentionally omitted; local native/wrapper and independent randomized spectrum tests pass, but MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "IsLocallyPSD"
+source_path = "IsLocallyPSD.m"
+implementation_status = "implemented"
+test_status = "local_exact_boundary_violation-precedence_witness_sparse_invalid_guard-and-wrapper-tests-pass_matlab-not-run"
+documentation_status = "api_docstrings_focused-page-and-migration-mapping-with-combinatorial-guard-present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "is_locally_positive_semidefinite"
+proposed_julia_signature = "is_locally_positive_semidefinite(matrix, order; atol=nothing, rtol=nothing, allow_densify=false, max_submatrices=100_000)"
+compatibility_alias = "IsLocallyPSD"
+review_status = "manually_reviewed_tier_e-mapping-with-structured-principal-witness"
+review_notes = [
+    "The native result records principal indices and the nested PSD result; robust violations take precedence over earlier numerical boundaries.",
+    "binomial(n,order) work is counted and guarded before enumeration.",
+    "Local exact, floating boundary, sparse, invalid-input, guard, and compatibility tests pass; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "IsTotallyPositive"
+source_path = "IsTotallyPositive.m"
+implementation_status = "implemented"
+test_status = "local_exact_float32_float64_bigfloat_rectangular_property_sparse_boundary_overflow_invalid_guard-and-wrapper-tests-pass_matlab-not-run"
+documentation_status = "api_docstrings_focused-page-and-migration-mapping-with-strict-and-boundary-divergences-present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "is_totally_positive"
+proposed_julia_signature = "is_totally_positive(matrix; orders=nothing, atol=nothing, rtol=nothing, allow_densify=false, max_minors=100_000)"
+compatibility_alias = "IsTotallyPositive"
+review_status = "manually_reviewed_tier_e-mapping-with-strict-minors-and-three-valued-boundaries"
+review_notes = [
+    "Strictly singular minors violate total positivity; nonzero floating determinants inside tolerance are unknown rather than reproducing the pinned permissive Boolean.",
+    "Exact determinants are widened and all-minor work is counted and guarded.",
+    "The wrapper preserves positional SUB_SIZES/TOL and QETLAB's single default determinant tolerance; MATLAB was not run.",
+]
+
+[[functions]]
+function_name = "IsTotallyNonsingular"
+source_path = "IsTotallyNonsingular.m"
+implementation_status = "implemented"
+test_status = "local_exact_float32_float64_bigfloat_complex_rectangular_property_sparse_boundary_overflow_invalid_guard-and-wrapper-tests-pass_matlab-not-run"
+documentation_status = "api_docstrings_focused-page-and-migration-mapping-with-structured-boundary-and-guard-present"
+benchmark_status = "not_started"
+license_provenance_status = "qetlab-bsd-2-clause-license-verified"
+proposed_julia_name = "is_totally_nonsingular"
+proposed_julia_signature = "is_totally_nonsingular(matrix; orders=nothing, atol=nothing, rtol=nothing, allow_densify=false, max_minors=100_000)"
+compatibility_alias = "IsTotallyNonsingular"
+review_status = "manually_reviewed_tier_e-mapping-with-exact-singularity-and-three-valued-boundaries"
+review_notes = [
+    "Exact inputs are decided exactly; represented floating singularity is distinguished from a nonzero tolerance-boundary determinant.",
+    "Exact rational reconstruction is used only to establish represented singularity at a numerical boundary, and combinatorial work is guarded.",
+    "The wrapper preserves positional SUB_SIZES/TOL and the pinned single default determinant tolerance; MATLAB was not run.",
+]

@@ -1,0 +1,3536 @@
+# Public-API provenance ledger. Keep this synchronized with exports and the
+# reviewed upstream inventory via `julia --project=. scripts/check_public_api.jl`.
+schema_version = 1
+audit_date = "2026-07-28"
+qetlab_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+verification_scope = "Local Julia tests and strict API docs are recorded per binding. Tiers B, C, D, and the Tier E coherence, product-analysis, and matrix-analysis slices have function-specific supplemental Octave/QETLAB fixtures. The Tier E matrix-predicate slice has analytic/property tests but no MATLAB-family oracle; MATLAB parity and supported-platform CI are not established."
+
+[[functions]]
+julia_name = "MATLABCompat"
+public_module = "QuantumEntanglementTools"
+public_kind = "module"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native compatibility namespace."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-module"
+status = "implemented"
+verification_status = "namespace_load_and_tier_a_tier_b_tier_c_tier_d_coherence_product_matrix-analysis_and-matrix-predicate_wrapper_tests_pass"
+tests = ["test/tier_a_subsystem_kernel.jl", "test/tier_b_states_operators_random.jl", "test/tier_c_channels_maps.jl", "test/tier_d_measures_criteria.jl", "test/tier_e_coherence.jl", "test/tier_e_product_compat.jl", "test/tier_e_matrix_analysis_compat.jl", "test/tier_e_matrix_predicates_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md", "docs/src/entanglement_backends.md", "docs/src/coherence.md", "docs/src/product_analysis.md", "docs/src/matrix_analysis.md", "docs/src/matrix_predicates.md"]
+
+[[functions]]
+julia_name = "SubsystemLayout"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/dimensions.jl"
+source_project = "QETLAB"
+upstream_function = "PermuteSystems"
+source_path = "PermuteSystems.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "b8e2b1f80964996a1a94c6cb34992691c8903c68085b9f7c3a39238e21914fdb"
+specification = "docs/src/conventions.md"
+implementation_kind = "project-native-support-type-informed-by-pinned-qetlab-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/conventions.md"]
+
+[[functions]]
+julia_name = "SubsystemPermutationPlan"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/subsystem/permutation.jl"
+source_project = "QETLAB"
+upstream_function = "PermuteSystems"
+source_path = "PermuteSystems.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "b8e2b1f80964996a1a94c6cb34992691c8903c68085b9f7c3a39238e21914fdb"
+specification = "http://www.qetlab.com/PermuteSystems"
+implementation_kind = "project-native-reusable-plan-informed-by-pinned-qetlab-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "l1_coherence"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/coherence/coherence.jl"
+source_project = "QETLAB"
+upstream_function = "L1NormCoherence"
+source_path = "L1NormCoherence.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "a1f4e4c61d4e5a4e58d0587ad9cad5a7ae645792735bec774cb8f4c21221c4f1"
+specification = "docs/src/coherence.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-strict-state-validation-and-explicit-sparse-densification-gate"
+status = "implemented"
+verification_status = "local_analytic_generic_sparse_invalid_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_e_coherence.jl", "test/oracle/compare_tier_e_coherence_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/coherence.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "relative_entropy_coherence"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/coherence/coherence.jl"
+source_project = "QETLAB"
+upstream_function = "RelEntCoherence"
+source_path = "RelEntCoherence.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "d449e4c206387b711ca7ea0e1427618e781dc22845649bb83bd3e49cb9a9f0b5"
+specification = "docs/src/coherence.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-explicit-logarithm-base-and-strict-state-validation"
+status = "implemented"
+verification_status = "local_analytic_base_generic_sparse_invalid_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_e_coherence.jl", "test/oracle/compare_tier_e_coherence_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/coherence.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "coherence_rank"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/coherence/coherence.jl"
+source_project = "QETLAB"
+upstream_function = "CoherenceRank"
+source_path = "CoherenceRank.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "aec14921ea91cdebd1c10d2b2f02f8fa21cb6ef1fe22dee36d527b911dd5b717"
+specification = "docs/src/coherence.md"
+implementation_kind = "independent-julia-reimplementation-of-documented-mathematical-definition-with-reviewed-upstream-zero-counting-bug-not-reproduced"
+status = "implemented"
+verification_status = "local_definition_basis_generic_sparse_invalid_wrapper_and_reviewed-upstream-discrepancy-octave-fixtures-pass_matlab_not_run"
+tests = ["test/tier_e_coherence.jl", "test/oracle/compare_tier_e_coherence_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/coherence.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "L1NormCoherence"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "L1NormCoherence"
+source_path = "L1NormCoherence.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "a1f4e4c61d4e5a4e58d0587ad9cad5a7ae645792735bec774cb8f4c21221c4f1"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-strict-native-api-with-row-vector-support"
+delegates_to = ["QuantumEntanglementTools.l1_coherence"]
+status = "compatibility_alias"
+verification_status = "local_row_column_matrix_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_e_coherence.jl", "test/oracle/compare_tier_e_coherence_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/coherence.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "RelEntCoherence"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "RelEntCoherence"
+source_path = "RelEntCoherence.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "d449e4c206387b711ca7ea0e1427618e781dc22845649bb83bd3e49cb9a9f0b5"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-strict-native-api-with-base-two-default-and-row-vector-support"
+delegates_to = ["QuantumEntanglementTools.relative_entropy_coherence"]
+status = "compatibility_alias"
+verification_status = "local_row_column_matrix_base_validation_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_e_coherence.jl", "test/oracle/compare_tier_e_coherence_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/coherence.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "CoherenceRank"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "CoherenceRank"
+source_path = "CoherenceRank.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "aec14921ea91cdebd1c10d2b2f02f8fa21cb6ef1fe22dee36d527b911dd5b717"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-documented-definition-with-reviewed-upstream-zero-counting-bug-not-reproduced"
+delegates_to = ["QuantumEntanglementTools.coherence_rank"]
+status = "compatibility_alias"
+verification_status = "local_row_column_tolerance_basis_and-reviewed-upstream-discrepancy-octave-fixtures-pass_matlab_not_run"
+tests = ["test/tier_e_coherence.jl", "test/oracle/compare_tier_e_coherence_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/coherence.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "SchmidtDecompositionResult"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native typed container for a thin bipartite Schmidt decomposition; QETLAB returns three positional outputs rather than this Julia result type."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-project-native-result-type"
+status = "implemented"
+verification_status = "local_reconstruction_shape_phase_independent_and_invalid_input_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "CriterionStatus"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/criteria.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native three-valued vocabulary that distinguishes a valid entanglement certificate, a satisfied necessary condition, and a numerical unknown."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-enum"
+status = "implemented"
+verification_status = "local_boundary_certificate_and_pipeline_semantics_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "CriterionResult"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/criteria.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native structured necessary-criterion result carrying status, value, boundary, tolerance, optional witness, and an explanatory message."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-structured-result"
+status = "implemented"
+verification_status = "local_boundary_witness_show_and_pipeline_semantics_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "CriterionEntanglementDetected"
+public_module = "QuantumEntanglementTools"
+public_kind = "constant"
+julia_file = "src/entanglement/criteria.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native CriterionStatus value for a robust necessary-condition violation that certifies entanglement."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-enum-value"
+status = "implemented"
+verification_status = "local_certificate_and_pipeline_semantics_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "CriterionSatisfied"
+public_module = "QuantumEntanglementTools"
+public_kind = "constant"
+julia_file = "src/entanglement/criteria.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native CriterionStatus value for a necessary condition that holds with numerical margin but is not generally a separability certificate."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-enum-value"
+status = "implemented"
+verification_status = "local_necessary_condition_and_pipeline_semantics_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "CriterionUnknown"
+public_module = "QuantumEntanglementTools"
+public_kind = "constant"
+julia_file = "src/entanglement/criteria.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native CriterionStatus value for tolerance-boundary or otherwise inconclusive numerical outcomes."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-enum-value"
+status = "implemented"
+verification_status = "local_boundary_and_pipeline_unknown_semantics_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "trace_norm"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "TraceNorm"
+source_path = "TraceNorm.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "104d02884d04885ac17b2bbe89cf82b43fc25c20e696bbc48a212a27ac8f2e0a"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-explicit-sparse-densification-gate"
+status = "implemented"
+verification_status = "local_analytic_invalid_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "schatten_norm"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "SchattenNorm"
+source_path = "SchattenNorm.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "cbb3fe3e899f4dfb241bacd2cee3e979f643a55e540d1bbeb600459a01c41566"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-validated-order-and-explicit-sparse-densification-gate"
+status = "implemented"
+verification_status = "local_analytic_invalid_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ky_fan_norm"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "KyFanNorm"
+source_path = "KyFanNorm.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "13514bc89df1a0b34a79f982f176159e5288096c1b4c3588e921685783854f8e"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-validated-rank-and-explicit-sparse-densification-gate"
+status = "implemented"
+verification_status = "local_analytic_invalid_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "purity"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "Purity"
+source_path = "Purity.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "3b2e94232e4064ffc1d3ae2219712f18a3839689507598a229120c114f2992d4"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-strict-density-matrix-validation"
+status = "implemented"
+verification_status = "local_analytic_validation_precision_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "von_neumann_entropy"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "Entropy"
+source_path = "Entropy.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "ecd8d8215cb3eb5deb302bd4171a40c749e4b24015b12b1581dee872f78fbaaa"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-partial-von-neumann-alpha-one-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "alpha_one_branch_local_analytic_base_validation_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "fidelity"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "Fidelity"
+source_path = "Fidelity.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "d8551d82fef36e01be13a0703abcf30f23009e8d56ebb025c857dfec2fa6f324"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-unsquared-root-default-and-optional-square"
+status = "implemented"
+verification_status = "local_pure_mixed_symmetry_validation_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "trace_distance"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native validated density-matrix trace-distance API; the pinned QETLAB public inventory has no direct TraceDistance entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-project-native-mathematical-implementation"
+status = "implemented"
+verification_status = "local_analytic_symmetry_validation_and_sparse_densification_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "negativity"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "Negativity"
+source_path = "Negativity.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "5b027ab35ea0ad0a74b4ca5daf2160e81a43e5f0a43e90e94090794423cd0535"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-explicit-bipartition-and-state-validation"
+status = "implemented"
+verification_status = "local_bell_product_mixed_validation_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "logarithmic_negativity"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native logarithmic-negativity API with an explicit logarithm base; the pinned QETLAB public inventory has no direct LogarithmicNegativity entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-project-native-mathematical-implementation"
+status = "implemented"
+verification_status = "local_bell_product_base_validation_sparse_and_benchmark_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "schmidt_coefficients"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native coefficient-only convenience API over the typed Schmidt decomposition; QETLAB has no separate public SchmidtCoefficients entry point at the pinned revision."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-project-native-convenience-function"
+delegates_to = ["QuantumEntanglementTools.schmidt_decomposition"]
+status = "implemented"
+verification_status = "local_coefficient_order_shape_sparse_and_reconstruction_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "schmidt_decomposition"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "SchmidtDecomposition"
+source_path = "SchmidtDecomposition.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "1204afc8cd42b431d24224193e8ace0efd854e5437cee6823272006e410f30dc"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-typed-result-and-explicit-sparse-densification-gate"
+status = "implemented"
+verification_status = "local_phase_independent_reconstruction_shape_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "schmidt_rank"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "SchmidtRank"
+source_path = "SchmidtRank.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "1a46606accc87a2060b9644a4fa334025618978f4a64ebb37784382868a8336d"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-explicit-numerical-rank-tolerances"
+status = "implemented"
+verification_status = "local_rank_threshold_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "concurrence"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QETLAB"
+upstream_function = "Concurrence"
+source_path = "Concurrence.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "436128a7383690e6bdbd717c9f801cbb5d87514a4006f706167578ce548d4e14"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-two-qubit-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_pure_mixed_bell_product_validation_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "ppt_criterion"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/criteria.jl"
+source_project = "QETLAB"
+upstream_function = "IsPPT"
+source_path = "IsPPT.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "679dde038dde5ff3a3799319568a50d89a01ec9c5d2d92a7c3423acf7773bec0"
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-structured-tri-state-result"
+status = "implemented"
+verification_status = "local_certificate_boundary_witness_sparse_pipeline_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "realignment_criterion"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/criteria.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native structured CCNR/realignment necessary-condition API built from the existing realignment primitive and trace norm; it is not a port or completion claim for QETLAB IsSeparable."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-necessary-criterion"
+status = "implemented"
+verification_status = "local_certificate_boundary_no_false_separability_sparse_pipeline_and_benchmark_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "reduction_criterion"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/criteria.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native structured reduction necessary-condition API built from partial traces and the reduction-map formula; it is not a port or completion claim for QETLAB IsSeparable."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-necessary-criterion"
+status = "implemented"
+verification_status = "local_two_side_certificate_boundary_no_false_separability_sparse_pipeline_and_benchmark_tests_pass"
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "AbstractEntanglementMethod"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native dispatch supertype for dependency-free and optional entanglement-analysis method configurations."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-extension-interface"
+status = "implemented"
+verification_status = "local_native_dispatch_and_result_contract_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "AbstractEntanglementBackend"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native backend-descriptor supertype for capability discovery without eager optional-dependency loading."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-extension-interface"
+status = "implemented"
+verification_status = "local_backend_discovery_capability_and_side_effect_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "NativeEntanglementBackend"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native descriptor for the package's dependency-free PPT, realignment, reduction, and pure-Schmidt methods."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-backend-descriptor"
+status = "implemented"
+verification_status = "local_backend_discovery_capability_and_side_effect_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "NativePPT"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native validated configuration object for invoking the native PPT criterion through the orchestration interface."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-method-configuration"
+status = "implemented"
+verification_status = "local_constructor_validation_dispatch_low_dimension_theorem_and_unknown_semantics_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "EntanglementAttempt"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native immutable record for one analysis method, including certification state, certificate kind, package-owned raw evidence, and message."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-structured-result"
+status = "implemented"
+verification_status = "local_constructor_invariant_show_attempt_order_and_certificate_semantics_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "EntanglementReport"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native high-level tri-state entanglement report that never converts missing or inconclusive evidence into a negative mathematical conclusion."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-structured-result"
+status = "implemented"
+verification_status = "local_constructor_invariant_show_certificate_unknown_and_attempt_history_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "detect_entanglement"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native dispatch entry point for an explicitly selected entanglement method; it has no direct QETLAB public entry point."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-dispatch-orchestration"
+status = "implemented"
+verification_status = "local_ppt_certificate_low_dimension_separability_unknown_sparse_and_invalid_configuration_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "analyze_entanglement"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native certificate-first orchestration for validated native criteria and the exact pure-state Schmidt theorem; it does not port or claim completion of QETLAB IsSeparable."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-certificate-orchestration"
+status = "implemented"
+verification_status = "local_ppt_realignment_reduction_pure_schmidt_attempt_order_certificate_unknown_and_invalid_strategy_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "backend_capabilities"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native stable package-owned capability metadata for entanglement backend descriptors."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-backend-introspection"
+status = "implemented"
+verification_status = "local_metadata_content_and_side_effect_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "available_entanglement_backends"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native side-effect-free discovery of dependency-free backend descriptors without implicit optional-package loading."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-backend-discovery"
+status = "implemented"
+verification_status = "local_discovery_idempotence_capability_and_no_eager_optional_loading_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "TraceNorm"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "TraceNorm"
+source_path = "TraceNorm.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "104d02884d04885ac17b2bbe89cf82b43fc25c20e696bbc48a212a27ac8f2e0a"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api-with-explicit-sparse-densification-gate"
+delegates_to = ["QuantumEntanglementTools.trace_norm"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_invalid_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "SchattenNorm"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "SchattenNorm"
+source_path = "SchattenNorm.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "cbb3fe3e899f4dfb241bacd2cee3e979f643a55e540d1bbeb600459a01c41566"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api-with-validated-order-and-explicit-sparse-densification-gate"
+delegates_to = ["QuantumEntanglementTools.schatten_norm"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_invalid_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "KyFanNorm"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "KyFanNorm"
+source_path = "KyFanNorm.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "13514bc89df1a0b34a79f982f176159e5288096c1b4c3588e921685783854f8e"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api-with-validated-rank-and-explicit-sparse-densification-gate"
+delegates_to = ["QuantumEntanglementTools.ky_fan_norm"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_invalid_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Purity"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "function"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Purity"
+source_path = "Purity.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "3b2e94232e4064ffc1d3ae2219712f18a3839689507598a229120c114f2992d4"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-direct-compatibility-entry-point-preserving-upstream-unchecked-trace-square-operation"
+status = "implemented"
+verification_status = "local_raw_algebraic_nonstate_invalid_shape_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Entropy"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Entropy"
+source_path = "Entropy.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "ecd8d8215cb3eb5deb302bd4171a40c749e4b24015b12b1581dee872f78fbaaa"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-von-neumann-alpha-one-only-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.von_neumann_entropy"]
+status = "compatibility_alias"
+verification_status = "alpha_one_branch_local_wrapper_base_rejection_and_octave_fixture_tests_pass_renyi_rejected_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Fidelity"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Fidelity"
+source_path = "Fidelity.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "d8551d82fef36e01be13a0703abcf30f23009e8d56ebb025c857dfec2fa6f324"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-unsquared-root-fidelity-compatibility-wrapper-over-strict-native-api"
+delegates_to = ["QuantumEntanglementTools.fidelity"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_pure_mixed_validation_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Negativity"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Negativity"
+source_path = "Negativity.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "5b027ab35ea0ad0a74b4ca5daf2160e81a43e5f0a43e90e94090794423cd0535"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-strict-native-api-with-explicit-sparse-densification-gate"
+delegates_to = ["QuantumEntanglementTools.negativity"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_dimension_validation_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "SchmidtDecomposition"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "SchmidtDecomposition"
+source_path = "SchmidtDecomposition.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "1204afc8cd42b431d24224193e8ace0efd854e5437cee6823272006e410f30dc"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api-with-named-tuple-output-and-explicit-sparse-densification-gate"
+delegates_to = ["QuantumEntanglementTools.schmidt_decomposition"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_k_selection_phase_independent_reconstruction_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "SchmidtRank"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "SchmidtRank"
+source_path = "SchmidtRank.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "1a46606accc87a2060b9644a4fa334025618978f4a64ebb37784382868a8336d"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api-with-upstream-default-and-explicit-tolerance-semantics"
+delegates_to = ["QuantumEntanglementTools.schmidt_rank"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_default_explicit_tolerance_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "Concurrence"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Concurrence"
+source_path = "Concurrence.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "436128a7383690e6bdbd717c9f801cbb5d87514a4006f706167578ce548d4e14"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-two-qubit-compatibility-wrapper-over-strict-native-api"
+delegates_to = ["QuantumEntanglementTools.concurrence"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_pure_mixed_validation_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "IsPPT"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "IsPPT"
+source_path = "IsPPT.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "679dde038dde5ff3a3799319568a50d89a01ec9c5d2d92a7c3423acf7773bec0"
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "tested-intentionally-tri-state-compatibility-wrapper-over-native-partial-transpose-without-boolean-collapse"
+delegates_to = ["QuantumEntanglementTools.partial_transpose"]
+status = "compatibility_alias"
+verification_status = "local_unnormalized_operator_boundary_witness_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "pauli"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/operators/operators.jl"
+source_project = "QETLAB"
+upstream_function = "Pauli"
+source_path = "Pauli.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "faf22380b89d0b653fe82d9c0b64e2db3c8d8d643e0203643b2aac7e1e88c5c8"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_analytic_property_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "generalized_pauli"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/operators/operators.jl"
+source_project = "QETLAB"
+upstream_function = "GenPauli"
+source_path = "GenPauli.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "d12052e1597f08f17a3bd43d1dc7687014d5fb54555a0a1c726f348ebcd2026d"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_unitarity_generic_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "gell_mann"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/operators/operators.jl"
+source_project = "QETLAB"
+upstream_function = "GellMann"
+source_path = "GellMann.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2282561c7e96c6c8bdbaa86a6d424196a21e172b3e6b0bbff5dc64fd2434a57c"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_basis_orthogonality_generic_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "generalized_gell_mann"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/operators/operators.jl"
+source_project = "QETLAB"
+upstream_function = "GenGellMann"
+source_path = "GenGellMann.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "c32f3251ae37595ba8999d6bbd1d85a20f083a1bca7404a06396aa5ab5daa959"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_basis_orthogonality_generic_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "fourier_matrix"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/operators/operators.jl"
+source_project = "QETLAB"
+upstream_function = "FourierMatrix"
+source_path = "FourierMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "66085e420c3a48c608acea2ca0735468a7da91e1edd60b8905bdd92fa03e5ee3"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_unitarity_bigfloat_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "maximally_entangled"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "MaxEntangled"
+source_path = "MaxEntangled.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "6444abe9e6289af29328c9eeea6d3cfde412395c680aabe994cd113273f8b410"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_normalization_sparse_generic_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "bell_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "Bell"
+source_path = "Bell.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "08018c2def832b76184177113091cf0eedd1019034490f0ffb1897fb70295f30"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_exact_orthogonality_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ghz_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "GHZState"
+source_path = "GHZState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "8e97a087fa7a7d35c61e84d97c4ffa3946e7c020fb91fc047d982dacbd8ba418"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_normalization_coefficients_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "w_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "WState"
+source_path = "WState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "081b93e687c596f3bc55142c5b670937ca3425b6a872f66d01a4df337a3e11e8"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_normalization_coefficients_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "dicke_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "DickeState"
+source_path = "DickeState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "6b4af46870c820b67c4be33f31acd49ea5ce2c5da4d039fec26cabc3e1326127"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_combinatorial_normalization_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "isotropic_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "IsotropicState"
+source_path = "IsotropicState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "3eb969e049f5c465af6ee2bbe09299055b806bb8d53c98760b72ef876cd8e4d4"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_psd_trace_exact_rational_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "werner_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "WernerState"
+source_path = "WernerState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "c8b73e04d34a8fe7693cab9cb1fc76081f9dbb89f3ee84f6e152e5401e59b829"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-bipartite-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "bipartite_scalar_only_local_psd_trace_exact_rational_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "horodecki_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "HorodeckiState"
+source_path = "HorodeckiState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "b5df94d4da048ab600c96083f47f3278cff83abed9e163e13f420b4ff6b40cf2"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_psd_ppt_trace_and_two_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "gisin_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "GisinState"
+source_path = "GisinState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "b63f125e4784317a9486b5e315b151598ddc4d611aa564755c9de8e136dd70e2"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_psd_trace_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "breuer_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "BreuerState"
+source_path = "BreuerState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "fb87a6ab722fd5a7974801721e78b3ad28652dad07d2510ed4f97605f7409cfb"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_psd_trace_sparse_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "brauer_states"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "BrauerStates"
+source_path = "BrauerStates.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "cdbd6acf49c39c296fe2f4523791e2f3f0d21d93ee741c4499a5fd0b898773b2"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_perfect_matching_sparse_and_exact_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "chessboard_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/states.jl"
+source_project = "QETLAB"
+upstream_function = "ChessboardState"
+source_path = "ChessboardState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "76f4edea990b0762a07e0ccba65dc7298a33d099293812e126709d30d60f487c"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_psd_trace_complex_parameter_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "random_probabilities"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/random/random_objects.jl"
+source_project = "QETLAB"
+upstream_function = "RandomProbabilities"
+source_path = "RandomProbabilities.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "0bdbd4f452d82c8ddd6af97352d2ded5c236957045632d0cef810a5ded37e911"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "explicit-rng-independent-julia-implementation-of-pinned-public-contract"
+status = "implemented"
+verification_status = "local_seeded_simplex_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "random_state_vector"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/random/random_objects.jl"
+source_project = "QETLAB"
+upstream_function = "RandomStateVector"
+source_path = "RandomStateVector.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "447705975fcaa9d7dcfe8ccd1b9389b51550071464e19a31f24404bbcb46eaae"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "explicit-rng-independent-julia-implementation-of-pinned-public-contract"
+status = "implemented"
+verification_status = "local_seeded_norm_schmidt_rank_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "random_density_matrix"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/random/random_objects.jl"
+source_project = "QETLAB"
+upstream_function = "RandomDensityMatrix"
+source_path = "RandomDensityMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "89ad841bbdab6dd3ada1ae0dc36ac0bdc7c202b3d35f7686ac7fef68c19e4d3e"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "explicit-rng-independent-julia-implementation-of-pinned-public-contract"
+status = "implemented"
+verification_status = "local_seeded_psd_trace_rank_bures_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "random_unitary"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/random/random_objects.jl"
+source_project = "QETLAB"
+upstream_function = "RandomUnitary"
+source_path = "RandomUnitary.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "4572f226a2a8bdaaa99129f6fb2745f9e243117764eb6087ed666b56ca54fb76"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "explicit-rng-independent-julia-implementation-of-pinned-public-contract"
+status = "implemented"
+verification_status = "local_seeded_unitary_orthogonal_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "random_graph"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/random/random_objects.jl"
+source_project = "QETLAB"
+upstream_function = "RandomGraph"
+source_path = "RandomGraph.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2091cf9d3967b59b77e49c2e24d558b7114e949d46d1cb2c63b29bed5acbc184"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "explicit-rng-independent-julia-implementation-of-pinned-public-contract"
+status = "implemented"
+verification_status = "local_seeded_graph_property_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "random_povm"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/random/random_objects.jl"
+source_project = "QETLAB"
+upstream_function = "RandomPOVM"
+source_path = "RandomPOVM.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "1de9a1688b9f57838a72ee868b758dbd06ee1f1243ccee4e687244cb2b590ae0"
+specification = "docs/src/states_operators_random.md"
+implementation_kind = "explicit-rng-project-native-haar-isometry-implementation-of-pinned-public-contract"
+status = "implemented"
+verification_status = "local_seeded_psd_completeness_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "PartialTracePlan"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/subsystem/partial_trace.jl"
+source_project = "QETLAB"
+upstream_function = "PartialTrace"
+source_path = "PartialTrace.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "458b8aca2aac9c10cc2cb8645c394bb67102e85bc930cc850e379b624e889f07"
+specification = "http://www.qetlab.com/PartialTrace"
+implementation_kind = "project-native-reusable-plan-informed-by-pinned-qetlab-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/conventions.md"]
+
+[[functions]]
+julia_name = "PartialTransposePlan"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/subsystem/partial_transpose.jl"
+source_project = "QETLAB"
+upstream_function = "PartialTranspose"
+source_path = "PartialTranspose.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "148d4374b0de55cee92f9df7c4b7bfef028f899d0555b34929fbd6c72950e054"
+specification = "http://www.qetlab.com/PartialTranspose"
+implementation_kind = "project-native-reusable-plan-informed-by-pinned-qetlab-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/conventions.md"]
+
+[[functions]]
+julia_name = "RealignmentPlan"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/subsystem/realignment.jl"
+source_project = "QETLAB"
+upstream_function = "Realignment"
+source_path = "Realignment.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "836fea61ec06a1e9e9f5c4591991d25af6c0aa41edd33c287bd680d72ece8ca3"
+specification = "http://www.qetlab.com/Realignment"
+implementation_kind = "project-native-reusable-plan-informed-by-pinned-qetlab-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/getting_started.md"]
+
+[[functions]]
+julia_name = "basis_to_linear"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/dimensions.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native one-based multipartite basis-index conversion."
+specification = "docs/src/conventions.md"
+implementation_kind = "independent-project-native-mathematical-implementation"
+status = "implemented"
+verification_status = "local_tests_pass"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/conventions.md"]
+
+[[functions]]
+julia_name = "linear_to_basis"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/dimensions.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native inverse multipartite basis-index conversion."
+specification = "docs/src/conventions.md"
+implementation_kind = "independent-project-native-mathematical-implementation"
+status = "implemented"
+verification_status = "local_tests_pass"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/conventions.md"]
+
+[[functions]]
+julia_name = "tensor_product"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/tensor_products.jl"
+source_project = "QETLAB"
+upstream_function = "Tensor"
+source_path = "Tensor.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e7d1ae2a86321630d83d48253dfd2757a487645ae7c981fbf5a4df674efc87c3"
+specification = "http://www.qetlab.com/Tensor"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/conventions.md"]
+
+[[functions]]
+julia_name = "tensor_power"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/tensor_products.jl"
+source_project = "QETLAB"
+upstream_function = "Tensor"
+source_path = "Tensor.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e7d1ae2a86321630d83d48253dfd2757a487645ae7c981fbf5a4df674efc87c3"
+specification = "http://www.qetlab.com/Tensor"
+implementation_kind = "idiomatic-julia-split-of-pinned-qetlab-entry-point"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "tensor_sum"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/tensor_products.jl"
+source_project = "QETLAB"
+upstream_function = "TensorSum"
+source_path = "TensorSum.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2e81894b4db56a239ea2ac6d6e37876e68e3a7a7eebae5725458ad8793328bad"
+specification = "http://www.qetlab.com/TensorSum"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "kronecker_sum"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/tensor_products.jl"
+source_project = "QETLAB"
+upstream_function = "KroneckerSum"
+source_path = "KroneckerSum.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "0100ecf92f203dc8c532c78c083cd8e2c2eacd9c3d83f73c24014dc40c203490"
+specification = "http://www.qetlab.com/KroneckerSum"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "permute_subsystems"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/permutation.jl"
+source_project = "QETLAB"
+upstream_function = "PermuteSystems"
+source_path = "PermuteSystems.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "b8e2b1f80964996a1a94c6cb34992691c8903c68085b9f7c3a39238e21914fdb"
+specification = "http://www.qetlab.com/PermuteSystems"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "swap_subsystems"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/permutation.jl"
+source_project = "QETLAB"
+upstream_function = "Swap"
+source_path = "Swap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "959321ab56ba5977cb99100872631a198c8734d836a402033efcb2374dd43d60"
+specification = "http://www.qetlab.com/Swap"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "permutation_operator"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/permutation.jl"
+source_project = "QETLAB"
+upstream_function = "PermutationOperator"
+source_path = "PermutationOperator.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e97fe54f808cf024bc7e3e3ba68ebdb93b7380a93039e63a4e00f5d1d0a2dec5"
+specification = "http://www.qetlab.com/PermutationOperator"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "swap_operator"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/permutation.jl"
+source_project = "QETLAB"
+upstream_function = "SwapOperator"
+source_path = "SwapOperator.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "eebcbfdd24675cfd0369a90b3d266ed6fa041e80574c31bd907f93a8d8acb6d2"
+specification = "http://www.qetlab.com/SwapOperator"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "partial_trace"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/partial_trace.jl"
+source_project = "QETLAB"
+upstream_function = "PartialTrace"
+source_path = "PartialTrace.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "458b8aca2aac9c10cc2cb8645c394bb67102e85bc930cc850e379b624e889f07"
+specification = "http://www.qetlab.com/PartialTrace"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_analytic_and_property_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/conventions.md"]
+
+[[functions]]
+julia_name = "partial_transpose"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/partial_transpose.jl"
+source_project = "QETLAB"
+upstream_function = "PartialTranspose"
+source_path = "PartialTranspose.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "148d4374b0de55cee92f9df7c4b7bfef028f899d0555b34929fbd6c72950e054"
+specification = "http://www.qetlab.com/PartialTranspose"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_analytic_and_property_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/conventions.md"]
+
+[[functions]]
+julia_name = "realign"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/realignment.jl"
+source_project = "QETLAB"
+upstream_function = "Realignment"
+source_path = "Realignment.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "836fea61ec06a1e9e9f5c4591991d25af6c0aa41edd33c287bd680d72ece8ca3"
+specification = "http://www.qetlab.com/Realignment"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_property_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "realignment"
+public_module = "QuantumEntanglementTools"
+public_kind = "alias"
+julia_file = "src/subsystem/realignment.jl"
+source_project = "QETLAB"
+upstream_function = "Realignment"
+source_path = "Realignment.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "836fea61ec06a1e9e9f5c4591991d25af6c0aa41edd33c287bd680d72ece8ca3"
+specification = "http://www.qetlab.com/Realignment"
+implementation_kind = "project-native-forwarding-alias-for-pinned-qetlab-mapping"
+delegates_to = ["QuantumEntanglementTools.realign"]
+status = "implemented"
+verification_status = "local_alias_and_delegate_tests_pass"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md"]
+
+[[functions]]
+julia_name = "reshuffle"
+public_module = "QuantumEntanglementTools"
+public_kind = "alias"
+julia_file = "src/subsystem/realignment.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native terminology alias for realign."
+specification = "src/subsystem/realignment.jl"
+implementation_kind = "project-native-forwarding-alias"
+delegates_to = ["QuantumEntanglementTools.realign"]
+status = "implemented"
+verification_status = "local_alias_round_trip_test_passes"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md"]
+
+[[functions]]
+julia_name = "inverse_realign"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/realignment.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native exact inverse of the pinned QETLAB Realignment basis map."
+specification = "src/subsystem/realignment.jl"
+implementation_kind = "independent-project-native-inverse-of-pinned-qetlab-mapping"
+status = "implemented"
+verification_status = "local_exact_round_trip_tests_pass"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/getting_started.md"]
+
+[[functions]]
+julia_name = "inverse_realignment"
+public_module = "QuantumEntanglementTools"
+public_kind = "alias"
+julia_file = "src/subsystem/realignment.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native forwarding alias for inverse_realign."
+specification = "src/subsystem/realignment.jl"
+implementation_kind = "project-native-forwarding-alias"
+delegates_to = ["QuantumEntanglementTools.inverse_realign"]
+status = "implemented"
+verification_status = "local_alias_round_trip_test_passes"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md"]
+
+[[functions]]
+julia_name = "inverse_reshuffle"
+public_module = "QuantumEntanglementTools"
+public_kind = "alias"
+julia_file = "src/subsystem/realignment.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native forwarding alias for inverse_realign."
+specification = "src/subsystem/realignment.jl"
+implementation_kind = "project-native-forwarding-alias"
+delegates_to = ["QuantumEntanglementTools.inverse_realign"]
+status = "implemented"
+verification_status = "local_alias_round_trip_test_passes"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md"]
+
+[[functions]]
+julia_name = "symmetric_projector"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/projectors.jl"
+source_project = "QETLAB"
+upstream_function = "SymmetricProjection"
+source_path = "SymmetricProjection.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2d64957fb604a5b1584b77154513129ca7ed3ae181a60f744577b273ed2434b9"
+specification = "http://www.qetlab.com/SymmetricProjection"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_projector_property_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "antisymmetric_projector"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/projectors.jl"
+source_project = "QETLAB"
+upstream_function = "AntisymmetricProjection"
+source_path = "AntisymmetricProjection.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e5166c041d899333a08e705eb97ec8fd14e6e2032b5282d89aa8a06632d614d0"
+specification = "http://www.qetlab.com/AntisymmetricProjection"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_projector_property_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "symmetric_projection"
+public_module = "QuantumEntanglementTools"
+public_kind = "alias"
+julia_file = "src/subsystem/projectors.jl"
+source_project = "QETLAB"
+upstream_function = "SymmetricProjection"
+source_path = "SymmetricProjection.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2d64957fb604a5b1584b77154513129ca7ed3ae181a60f744577b273ed2434b9"
+specification = "http://www.qetlab.com/SymmetricProjection"
+implementation_kind = "project-native-forwarding-alias-for-pinned-qetlab-mapping"
+delegates_to = ["QuantumEntanglementTools.symmetric_projector"]
+status = "implemented"
+verification_status = "local_alias_and_delegate_tests_pass"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md"]
+
+[[functions]]
+julia_name = "antisymmetric_projection"
+public_module = "QuantumEntanglementTools"
+public_kind = "alias"
+julia_file = "src/subsystem/projectors.jl"
+source_project = "QETLAB"
+upstream_function = "AntisymmetricProjection"
+source_path = "AntisymmetricProjection.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e5166c041d899333a08e705eb97ec8fd14e6e2032b5282d89aa8a06632d614d0"
+specification = "http://www.qetlab.com/AntisymmetricProjection"
+implementation_kind = "project-native-forwarding-alias-for-pinned-qetlab-mapping"
+delegates_to = ["QuantumEntanglementTools.antisymmetric_projector"]
+status = "implemented"
+verification_status = "local_alias_and_delegate_tests_pass"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md"]
+
+[[functions]]
+julia_name = "symmetric_subspace_basis"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/projectors.jl"
+source_project = "QETLAB"
+upstream_function = "SymmetricProjection"
+source_path = "SymmetricProjection.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2d64957fb604a5b1584b77154513129ca7ed3ae181a60f744577b273ed2434b9"
+specification = "http://www.qetlab.com/SymmetricProjection"
+implementation_kind = "idiomatic-julia-split-of-pinned-qetlab-partial-isometry-output"
+status = "implemented"
+verification_status = "local_orthonormal_basis_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "antisymmetric_subspace_basis"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/subsystem/projectors.jl"
+source_project = "QETLAB"
+upstream_function = "AntisymmetricProjection"
+source_path = "AntisymmetricProjection.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e5166c041d899333a08e705eb97ec8fd14e6e2032b5282d89aa8a06632d614d0"
+specification = "http://www.qetlab.com/AntisymmetricProjection"
+implementation_kind = "idiomatic-julia-split-of-pinned-qetlab-partial-isometry-output"
+status = "implemented"
+verification_status = "local_orthonormal_basis_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Tensor"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Tensor"
+source_path = "Tensor.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e7d1ae2a86321630d83d48253dfd2757a487645ae7c981fbf5a4df674efc87c3"
+specification = "http://www.qetlab.com/Tensor"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.tensor_product", "QuantumEntanglementTools.tensor_power"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "TensorSum"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "TensorSum"
+source_path = "TensorSum.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2e81894b4db56a239ea2ac6d6e37876e68e3a7a7eebae5725458ad8793328bad"
+specification = "http://www.qetlab.com/TensorSum"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.tensor_sum"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "KroneckerSum"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "KroneckerSum"
+source_path = "KroneckerSum.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "0100ecf92f203dc8c532c78c083cd8e2c2eacd9c3d83f73c24014dc40c203490"
+specification = "http://www.qetlab.com/KroneckerSum"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.kronecker_sum"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "PermuteSystems"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "PermuteSystems"
+source_path = "PermuteSystems.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "b8e2b1f80964996a1a94c6cb34992691c8903c68085b9f7c3a39238e21914fdb"
+specification = "http://www.qetlab.com/PermuteSystems"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.permute_subsystems"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "PermutationOperator"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "PermutationOperator"
+source_path = "PermutationOperator.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e97fe54f808cf024bc7e3e3ba68ebdb93b7380a93039e63a4e00f5d1d0a2dec5"
+specification = "http://www.qetlab.com/PermutationOperator"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.permutation_operator"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Swap"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Swap"
+source_path = "Swap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "959321ab56ba5977cb99100872631a198c8734d836a402033efcb2374dd43d60"
+specification = "http://www.qetlab.com/Swap"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.swap_subsystems"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "SwapOperator"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "SwapOperator"
+source_path = "SwapOperator.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "eebcbfdd24675cfd0369a90b3d266ed6fa041e80574c31bd907f93a8d8acb6d2"
+specification = "http://www.qetlab.com/SwapOperator"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.swap_operator"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "PartialTrace"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "PartialTrace"
+source_path = "PartialTrace.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "458b8aca2aac9c10cc2cb8645c394bb67102e85bc930cc850e379b624e889f07"
+specification = "http://www.qetlab.com/PartialTrace"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.partial_trace"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "PartialTranspose"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "PartialTranspose"
+source_path = "PartialTranspose.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "148d4374b0de55cee92f9df7c4b7bfef028f899d0555b34929fbd6c72950e054"
+specification = "http://www.qetlab.com/PartialTranspose"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.partial_transpose"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Realignment"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Realignment"
+source_path = "Realignment.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "836fea61ec06a1e9e9f5c4591991d25af6c0aa41edd33c287bd680d72ece8ca3"
+specification = "http://www.qetlab.com/Realignment"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.realign"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "InverseRealignment"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native migration convenience; QETLAB has Realignment but no inverse entry point at the pinned revision."
+specification = "src/compat/MATLABCompat.jl"
+implementation_kind = "tested-project-native-compatibility-convenience-wrapper"
+delegates_to = ["QuantumEntanglementTools.inverse_realign"]
+status = "implemented"
+verification_status = "local_wrapper_round_trip_test_passes"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "SymmetricProjection"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "SymmetricProjection"
+source_path = "SymmetricProjection.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2d64957fb604a5b1584b77154513129ca7ed3ae181a60f744577b273ed2434b9"
+specification = "http://www.qetlab.com/SymmetricProjection"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.symmetric_projector", "QuantumEntanglementTools.symmetric_subspace_basis"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "AntisymmetricProjection"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "AntisymmetricProjection"
+source_path = "AntisymmetricProjection.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "e5166c041d899333a08e705eb97ec8fd14e6e2032b5282d89aa8a06632d614d0"
+specification = "http://www.qetlab.com/AntisymmetricProjection"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.antisymmetric_projector", "QuantumEntanglementTools.antisymmetric_subspace_basis"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_tests_pass_matlab_parity_not_established"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "BasisToLinear"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native compatibility spelling; no QETLAB public entry point exists at the pinned revision."
+specification = "docs/src/conventions.md"
+implementation_kind = "tested-project-native-compatibility-convenience-wrapper"
+delegates_to = ["QuantumEntanglementTools.basis_to_linear"]
+status = "implemented"
+verification_status = "local_wrapper_test_passes"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "LinearToBasis"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native compatibility spelling; no QETLAB public entry point exists at the pinned revision."
+specification = "docs/src/conventions.md"
+implementation_kind = "tested-project-native-compatibility-convenience-wrapper"
+delegates_to = ["QuantumEntanglementTools.linear_to_basis"]
+status = "implemented"
+verification_status = "local_wrapper_test_passes"
+tests = ["test/tier_a_subsystem_kernel.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Pauli"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Pauli"
+source_path = "Pauli.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "faf22380b89d0b653fe82d9c0b64e2db3c8d8d643e0203643b2aac7e1e88c5c8"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.pauli"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "GenPauli"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "GenPauli"
+source_path = "GenPauli.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "d12052e1597f08f17a3bd43d1dc7687014d5fb54555a0a1c726f348ebcd2026d"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.generalized_pauli"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "GellMann"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "GellMann"
+source_path = "GellMann.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2282561c7e96c6c8bdbaa86a6d424196a21e172b3e6b0bbff5dc64fd2434a57c"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.gell_mann"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "GenGellMann"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "GenGellMann"
+source_path = "GenGellMann.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "c32f3251ae37595ba8999d6bbd1d85a20f083a1bca7404a06396aa5ab5daa959"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.generalized_gell_mann"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "FourierMatrix"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "FourierMatrix"
+source_path = "FourierMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "66085e420c3a48c608acea2ca0735468a7da91e1edd60b8905bdd92fa03e5ee3"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.fourier_matrix"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "MaxEntangled"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "MaxEntangled"
+source_path = "MaxEntangled.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "6444abe9e6289af29328c9eeea6d3cfde412395c680aabe994cd113273f8b410"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.maximally_entangled"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "Bell"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Bell"
+source_path = "Bell.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "08018c2def832b76184177113091cf0eedd1019034490f0ffb1897fb70295f30"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.bell_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "GHZState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "GHZState"
+source_path = "GHZState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "8e97a087fa7a7d35c61e84d97c4ffa3946e7c020fb91fc047d982dacbd8ba418"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.ghz_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "WState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "WState"
+source_path = "WState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "081b93e687c596f3bc55142c5b670937ca3425b6a872f66d01a4df337a3e11e8"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.w_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "DickeState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "DickeState"
+source_path = "DickeState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "6b4af46870c820b67c4be33f31acd49ea5ce2c5da4d039fec26cabc3e1326127"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.dicke_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "IsotropicState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "IsotropicState"
+source_path = "IsotropicState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "3eb969e049f5c465af6ee2bbe09299055b806bb8d53c98760b72ef876cd8e4d4"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api-with-physical-range-validation"
+delegates_to = ["QuantumEntanglementTools.isotropic_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "WernerState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "WernerState"
+source_path = "WernerState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "c8b73e04d34a8fe7693cab9cb1fc76081f9dbb89f3ee84f6e152e5401e59b829"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-bipartite-scalar-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.werner_state"]
+status = "compatibility_alias"
+verification_status = "bipartite_scalar_only_local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "HorodeckiState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "HorodeckiState"
+source_path = "HorodeckiState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "b5df94d4da048ab600c96083f47f3278cff83abed9e163e13f420b4ff6b40cf2"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.horodecki_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_two_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "GisinState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "GisinState"
+source_path = "GisinState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "b63f125e4784317a9486b5e315b151598ddc4d611aa564755c9de8e136dd70e2"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.gisin_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "BreuerState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "BreuerState"
+source_path = "BreuerState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "fb87a6ab722fd5a7974801721e78b3ad28652dad07d2510ed4f97605f7409cfb"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.breuer_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "BrauerStates"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "BrauerStates"
+source_path = "BrauerStates.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "cdbd6acf49c39c296fe2f4523791e2f3f0d21d93ee741c4499a5fd0b898773b2"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.brauer_states"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_exact_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "ChessboardState"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "ChessboardState"
+source_path = "ChessboardState.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "76f4edea990b0762a07e0ccba65dc7298a33d099293812e126709d30d60f487c"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.chessboard_state"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
+
+[[functions]]
+julia_name = "RandomProbabilities"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "RandomProbabilities"
+source_path = "RandomProbabilities.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "0bdbd4f452d82c8ddd6af97352d2ded5c236957045632d0cef810a5ded37e911"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-explicit-rng-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.random_probabilities"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "AbstractMapRepresentation"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native representation supertype for finite-dimensional linear maps; it has no direct QETLAB public entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-linear-map-representation-supertype"
+status = "implemented"
+verification_status = "local_representation_dispatch_and_validation_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "KrausRepresentation"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native validated representation for completely positive maps with copied Kraus operators and explicit input/output dimensions."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-validated-kraus-representation"
+status = "implemented"
+verification_status = "local_constructor_copy_shape_finite_sparse_and_rectangular_channel_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ChoiRepresentation"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native validated representation for general maps using an unnormalized input-first Choi convention."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-validated-choi-representation"
+status = "implemented"
+verification_status = "local_constructor_copy_shape_finite_dimension_and_general_map_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "SuperoperatorRepresentation"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native column-major transfer-matrix representation; QETLAB has no pinned public SuperoperatorMatrix entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-validated-superoperator-representation"
+status = "implemented"
+verification_status = "local_constructor_shape_dimension_rectangular_channel_and_round_trip_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "input_dimension"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native representation accessor with no direct QETLAB public entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-map-dimension-accessor"
+status = "implemented"
+verification_status = "local_equal_and_unequal_channel_dimension_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "output_dimension"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native representation accessor with no direct QETLAB public entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-map-dimension-accessor"
+status = "implemented"
+verification_status = "local_equal_and_unequal_channel_dimension_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "kraus_representation"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native conversion into the package representation model; only completely positive maps admit this representation."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-tolerance-controlled-choi-to-kraus-conversion"
+status = "implemented"
+verification_status = "local_cp_round_trip_zero_map_nonhermitian_noncp_tolerance_and_densification_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "choi_representation"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native conversion into the package's typed unnormalized input-first Choi representation."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-map-representation-conversion"
+status = "implemented"
+verification_status = "local_kraus_choi_superoperator_round_trip_sparse_and_rectangular_channel_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "superoperator_representation"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native conversion into a column-major transfer-matrix representation; QETLAB has no pinned public counterpart."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-map-representation-conversion"
+status = "implemented"
+verification_status = "local_kraus_choi_superoperator_round_trip_sparse_complex_precision_and_rectangular_channel_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "superoperator_matrix"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native copied-data accessor for column-major transfer matrices; QETLAB has no pinned public SuperoperatorMatrix entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-superoperator-data-accessor"
+status = "implemented"
+verification_status = "local_round_trip_sparse_rectangular_channel_and_application_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "is_completely_positive"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native numerical diagnostic over the package representation types; it is not recorded as a port of QETLAB IsCP."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-tolerance-controlled-map-diagnostic"
+status = "implemented"
+verification_status = "local_cp_noncp_nonhermitian_rectangular_channel_and_invalid_tolerance_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "is_trace_preserving"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native numerical diagnostic over the package representation types; it is not recorded as a port of a QETLAB public entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-tolerance-controlled-map-diagnostic"
+status = "implemented"
+verification_status = "local_trace_preserving_nonpreserving_rectangular_channel_and_invalid_tolerance_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "is_unital"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native numerical diagnostic over the package representation types; it is not recorded as a port of a QETLAB public entry point."
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "project-native-tolerance-controlled-map-diagnostic"
+status = "implemented"
+verification_status = "local_unital_nonunital_rectangular_channel_and_invalid_tolerance_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "RandomStateVector"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "RandomStateVector"
+source_path = "RandomStateVector.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "447705975fcaa9d7dcfe8ccd1b9389b51550071464e19a31f24404bbcb46eaae"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-explicit-rng-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.random_state_vector"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "RandomDensityMatrix"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "RandomDensityMatrix"
+source_path = "RandomDensityMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "89ad841bbdab6dd3ada1ae0dc36ac0bdc7c202b3d35f7686ac7fef68c19e4d3e"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-explicit-rng-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.random_density_matrix"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "RandomUnitary"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "RandomUnitary"
+source_path = "RandomUnitary.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "4572f226a2a8bdaaa99129f6fb2745f9e243117764eb6087ed666b56ca54fb76"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-explicit-rng-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.random_unitary"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "RandomGraph"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "RandomGraph"
+source_path = "RandomGraph.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "2091cf9d3967b59b77e49c2e24d558b7114e949d46d1cb2c63b29bed5acbc184"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-explicit-rng-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.random_graph"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "RandomPOVM"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "RandomPOVM"
+source_path = "RandomPOVM.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "1de9a1688b9f57838a72ee868b758dbd06ee1f1243ccee4e687244cb2b590ae0"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-explicit-rng-compatibility-wrapper-over-native-haar-isometry-api"
+delegates_to = ["QuantumEntanglementTools.random_povm"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_reproducibility_and_global_rng_isolation_tests_pass"
+tests = ["test/tier_b_states_operators_random.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "apply_channel"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QETLAB"
+upstream_function = "ApplyMap"
+source_path = "ApplyMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "555a1d21c7853d1939161e245d269d4caa151d580011ee2c248bc3b59145ef94"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-partial-julia-reimplementation-from-pinned-spec-and-source-over-typed-map-representations"
+status = "implemented"
+verification_status = "square_operator_spaces_and_one_sided_cp_kraus_local_representation_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "choi_matrix"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QETLAB"
+upstream_function = "ChoiMatrix"
+source_path = "ChoiMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "5f5be4284995768aafe7b9adc256996ccac7253b93f7bfb88e471badf7634ce9"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-partial-julia-reimplementation-from-pinned-spec-and-source-as-a-typed-representation-accessor"
+status = "implemented"
+verification_status = "square_operator_spaces_and_cp_kraus_input_local_copy_round_trip_sparse_and_convention_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "kraus_operators"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/channels.jl"
+source_project = "QETLAB"
+upstream_function = "KrausOperators"
+source_path = "KrausOperators.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "c38d77324f6d5383bf5bc82692b0a85731ba5b687035e6c3d028613d8800be2c"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-partial-cp-only-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "cp_only_local_canonical_round_trip_zero_map_rectangular_channel_and_noncp_rejection_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "dual_channel"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/representations.jl"
+source_project = "QETLAB"
+upstream_function = "DualMap"
+source_path = "DualMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "7a70a619093fca1b5342d5ab1fa8da2125e18a0f115cb03559a92e6de41f2da1"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-partial-julia-reimplementation-from-pinned-spec-and-source-over-square-operator-spaces"
+status = "implemented"
+verification_status = "local_hilbert_schmidt_identity_and_all_representation_kind_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "complementary_channel"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/representations.jl"
+source_project = "QETLAB"
+upstream_function = "ComplementaryMap"
+source_path = "ComplementaryMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "a33de2ef96ed27994a0496e3de0464ce0f579710672d608210f34332aa944a75"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-partial-cp-only-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_fixed_dilation_canonical_conversion_representation_kind_cp_and_tp_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "partial_map"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/representations.jl"
+source_project = "QETLAB"
+upstream_function = "PartialMap"
+source_path = "PartialMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "ad6fd9ac7fad96494b83ca18a2fafe347238ffaa2460542d160030a71359578d"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-partial-julia-reimplementation-from-pinned-spec-and-source-over-square-operator-spaces"
+status = "implemented"
+verification_status = "square_operator_spaces_and_one_sided_map_local_dense_sparse_rectangular_channel_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "depolarizing_channel"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/representations.jl"
+source_project = "QETLAB"
+upstream_function = "DepolarizingChannel"
+source_path = "DepolarizingChannel.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "7d722e2aaea4f1e9c459e5407b1303618d9b1f78d9ec0cda8ee3e25560fb9618"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-physical-channel-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_cptp_boundary_sparse_application_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "dephasing_channel"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/representations.jl"
+source_project = "QETLAB"
+upstream_function = "DephasingChannel"
+source_path = "DephasingChannel.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "5eb7c1787cbfdb8047aa178e933c347c14341043022ab8f1d34503fb92a82708"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-physical-channel-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_cp_boundary_sparse_application_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "pauli_channel"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/representations.jl"
+source_project = "QETLAB"
+upstream_function = "PauliChannel"
+source_path = "PauliChannel.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "1d2a04d222391eb67a9c8add9d6877cecae4925c8d438bc2fcaef20c5a83aa88"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-deterministic-probability-form-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_probability_validation_multiqubit_sparse_physicality_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "choi_map"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/representations.jl"
+source_project = "QETLAB"
+upstream_function = "ChoiMap"
+source_path = "ChoiMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "994ca66b38b0518a902f657539603bfebb0c4398ae8219805c726f8ad18804b9"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-general-map-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_formula_application_noncp_invalid_parameter_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "reduction_map"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/channels/representations.jl"
+source_project = "QETLAB"
+upstream_function = "ReductionMap"
+source_path = "ReductionMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "35a60888bd3d331fcd9f6d25ad9b37d394bf8a02627202fb93892f98ec3a6af0"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "independent-general-map-julia-reimplementation-from-pinned-spec-and-source"
+status = "implemented"
+verification_status = "local_formula_application_noncp_invalid_dimension_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ApplyMap"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "ApplyMap"
+source_path = "ApplyMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "555a1d21c7853d1939161e245d269d4caa151d580011ee2c248bc3b59145ef94"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-compatibility-wrapper-over-native-api-without-two-sided-kraus-or-rectangular-operator-spaces"
+delegates_to = ["QuantumEntanglementTools.apply_channel"]
+status = "compatibility_alias"
+verification_status = "supported_square_cp_slice_local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ChoiMatrix"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "ChoiMatrix"
+source_path = "ChoiMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "5f5be4284995768aafe7b9adc256996ccac7253b93f7bfb88e471badf7634ce9"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-compatibility-wrapper-over-native-api-without-two-sided-kraus-or-rectangular-operator-spaces"
+delegates_to = ["QuantumEntanglementTools.choi_matrix"]
+status = "compatibility_alias"
+verification_status = "supported_square_cp_slice_local_wrapper_raw_copy_system_convention_and_rectangular_channel_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "KrausOperators"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "KrausOperators"
+source_path = "KrausOperators.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "c38d77324f6d5383bf5bc82692b0a85731ba5b687035e6c3d028613d8800be2c"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-cp-only-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.kraus_operators"]
+status = "compatibility_alias"
+verification_status = "cp_only_local_wrapper_canonical_round_trip_rectangular_channel_dimension_and_noncp_rejection_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ComplementaryMap"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "ComplementaryMap"
+source_path = "ComplementaryMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "a33de2ef96ed27994a0496e3de0464ce0f579710672d608210f34332aa944a75"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-cp-only-compatibility-wrapper-over-native-api-without-rectangular-operator-spaces"
+delegates_to = ["QuantumEntanglementTools.complementary_channel", "QuantumEntanglementTools.kraus_operators", "QuantumEntanglementTools.choi_matrix"]
+status = "compatibility_alias"
+verification_status = "cp_square_operator_space_local_wrapper_raw_representation_kind_and_tp_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "DualMap"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "DualMap"
+source_path = "DualMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "7a70a619093fca1b5342d5ab1fa8da2125e18a0f115cb03559a92e6de41f2da1"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-compatibility-wrapper-over-native-api-without-two-sided-kraus-or-rectangular-operator-spaces"
+delegates_to = ["QuantumEntanglementTools.dual_channel", "QuantumEntanglementTools.kraus_operators", "QuantumEntanglementTools.choi_matrix"]
+status = "compatibility_alias"
+verification_status = "supported_square_operator_space_local_wrapper_raw_representation_kind_and_duality_tests_pass"
+tests = ["test/tier_c_channels_maps.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "PartialMap"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "PartialMap"
+source_path = "PartialMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "ad6fd9ac7fad96494b83ca18a2fafe347238ffaa2460542d160030a71359578d"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-compatibility-wrapper-over-native-api-without-two-sided-kraus-or-rectangular-row-column-operator-spaces"
+delegates_to = ["QuantumEntanglementTools.partial_map"]
+status = "compatibility_alias"
+verification_status = "square_operator_space_single_subsystem_local_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "DepolarizingChannel"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "DepolarizingChannel"
+source_path = "DepolarizingChannel.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "7d722e2aaea4f1e9c459e5407b1303618d9b1f78d9ec0cda8ee3e25560fb9618"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-raw-parameter-compatibility-wrapper-over-native-formula"
+delegates_to = ["QuantumEntanglementTools.depolarizing_channel", "QuantumEntanglementTools.choi_matrix"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_raw_finite_parameter_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "DephasingChannel"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "DephasingChannel"
+source_path = "DephasingChannel.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "5eb7c1787cbfdb8047aa178e933c347c14341043022ab8f1d34503fb92a82708"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-raw-parameter-compatibility-wrapper-over-native-formula"
+delegates_to = ["QuantumEntanglementTools.dephasing_channel", "QuantumEntanglementTools.choi_matrix"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_raw_finite_parameter_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "PauliChannel"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "PauliChannel"
+source_path = "PauliChannel.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "1d2a04d222391eb67a9c8add9d6877cecae4925c8d438bc2fcaef20c5a83aa88"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-explicit-rng-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.pauli_channel", "QuantumEntanglementTools.random_probabilities", "QuantumEntanglementTools.choi_matrix"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_probability_octave_fixture_explicit_rng_reproducibility_and_global_rng_isolation_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md"]
+
+[[functions]]
+julia_name = "ChoiMap"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "ChoiMap"
+source_path = "ChoiMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "994ca66b38b0518a902f657539603bfebb0c4398ae8219805c726f8ad18804b9"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.choi_map", "QuantumEntanglementTools.choi_matrix"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_formula_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ReductionMap"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "ReductionMap"
+source_path = "ReductionMap.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "35a60888bd3d331fcd9f6d25ad9b37d394bf8a02627202fb93892f98ec3a6af0"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-over-native-api"
+delegates_to = ["QuantumEntanglementTools.reduction_map", "QuantumEntanglementTools.choi_matrix"]
+status = "compatibility_alias"
+verification_status = "local_wrapper_formula_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_c_channels_maps.jl", "test/oracle/compare_tier_c_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "OperatorSchmidtDecompositionResult"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native typed full operator-Schmidt decomposition result; QETLAB returns positional outputs rather than this Julia container."
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-project-native-result-type"
+status = "implemented"
+verification_status = "local_rectangular_reconstruction_orthonormal_factor_show_and_oracle_coefficient_tests_pass"
+tests = ["test/tier_e_product_analysis.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "MatrixPredicateStatus"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native three-valued vocabulary preventing floating-point matrix-predicate boundaries from being collapsed to Booleans."
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-project-native-enum"
+status = "implemented"
+verification_status = "local_status_show_boundary_and-wrapper_tests_pass"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl", "scripts/validate_matrix_predicates.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "MatrixPredicateResult"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native structured result carrying status, value, tolerance, witness, checked/planned counts, and an explanation."
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-project-native-structured-result"
+status = "implemented"
+verification_status = "local_field_show_witness_count_boundary_and-wrapper_tests_pass"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl", "scripts/validate_matrix_predicates.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "MatrixPredicateSatisfied"
+public_module = "QuantumEntanglementTools"
+public_kind = "constant"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native MatrixPredicateStatus value for an exact proof or numerical margin outside tolerance."
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-project-native-enum-value"
+status = "implemented"
+verification_status = "local_exact_and-margin_tests_pass"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl", "scripts/validate_matrix_predicates.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md"]
+
+[[functions]]
+julia_name = "MatrixPredicateViolated"
+public_module = "QuantumEntanglementTools"
+public_kind = "constant"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native MatrixPredicateStatus value for an established predicate violation."
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-project-native-enum-value"
+status = "implemented"
+verification_status = "local_exact_floating_witness_and-wrapper_tests_pass"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl", "scripts/validate_matrix_predicates.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md"]
+
+[[functions]]
+julia_name = "MatrixPredicateUnknown"
+public_module = "QuantumEntanglementTools"
+public_kind = "constant"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native MatrixPredicateStatus value for a floating-point tolerance boundary."
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-project-native-enum-value"
+status = "implemented"
+verification_status = "local_psd_hermiticity_minor_and-wrapper_boundary_tests_pass"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md"]
+
+[[functions]]
+julia_name = "is_positive_semidefinite"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QETLAB"
+upstream_function = "IsPSD"
+source_path = "IsPSD.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "6a466d8151ae64b54c8bbaf04bfe09ab94534f900337a0198fc443a8592e4f04"
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-julia-reimplementation-with-exact-arithmetic_three-valued-boundaries_no-silent-symmetrization_and-explicit-sparse-densification"
+status = "implemented"
+verification_status = "local_exact_float32_float64_bigfloat_complex_structured_sparse_boundary_witness_invalid_and-randomized-spectrum-tests-pass_matlab-not-run"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl", "scripts/validate_matrix_predicates.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "is_locally_positive_semidefinite"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QETLAB"
+upstream_function = "IsLocallyPSD"
+source_path = "IsLocallyPSD.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "22f549f2753cbe3e6ee0bdd58fe9d0e0eeb96af577d4c004eb909d76af38affc"
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-julia-principal-submatrix-reimplementation-with-structured-results_exact-arithmetic_and-combinatorial-guard"
+status = "implemented"
+verification_status = "local_exact_boundary_violation-precedence_witness_sparse_invalid_and-guard-tests-pass_matlab-not-run"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "is_totally_positive"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QETLAB"
+upstream_function = "IsTotallyPositive"
+source_path = "IsTotallyPositive.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "a25410634958d99c30a174ef5fae8f438e06577e6d43cd7cc682b8579732d82b"
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-julia-strict-all-minor-reimplementation-with-exact-arithmetic_three-valued-boundaries_and-combinatorial-guard"
+status = "implemented"
+verification_status = "local_exact_float32_float64_bigfloat_rectangular_property_sparse_boundary_overflow_invalid_and-guard-tests-pass_matlab-not-run"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl", "scripts/validate_matrix_predicates.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "is_totally_nonsingular"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/linear_algebra/matrix_predicates.jl"
+source_project = "QETLAB"
+upstream_function = "IsTotallyNonsingular"
+source_path = "IsTotallyNonsingular.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "49e4315f63e5eb4e64687a4930bad05fe72768bc073b28dd23f957d6c561b848"
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "independent-julia-all-minor-reimplementation-with-exact-arithmetic_represented-singularity-proof_three-valued-boundaries_and-combinatorial-guard"
+status = "implemented"
+verification_status = "local_exact_float32_float64_bigfloat_complex_rectangular_property_sparse_boundary_overflow_invalid_and-guard-tests-pass_matlab-not-run"
+tests = ["test/tier_e_matrix_predicates.jl", "test/tier_e_matrix_predicates_compat.jl", "scripts/validate_matrix_predicates.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "IsPSD"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "IsPSD"
+source_path = "IsPSD.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "6a466d8151ae64b54c8bbaf04bfe09ab94534f900337a0198fc443a8592e4f04"
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "tested-compatibility-wrapper-preserving-spelling-and-default-tolerance_with-structured-boundary_no-silent-symmetrization_and-explicit-CVX-omission"
+delegates_to = ["QuantumEntanglementTools.is_positive_semidefinite"]
+status = "compatibility_alias"
+verification_status = "local_exact_boundary_nonhermitian_sparse_invalid-and-delegation-tests-pass_matlab-not-run"
+tests = ["test/tier_e_matrix_predicates_compat.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "IsLocallyPSD"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "IsLocallyPSD"
+source_path = "IsLocallyPSD.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "22f549f2753cbe3e6ee0bdd58fe9d0e0eeb96af577d4c004eb909d76af38affc"
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "tested-compatibility-wrapper-preserving-spelling-and-QETLAB-IsPSD-default_with-structured-boundary-and-combinatorial-guard"
+delegates_to = ["QuantumEntanglementTools.is_locally_positive_semidefinite"]
+status = "compatibility_alias"
+verification_status = "local_exact_boundary_witness_sparse_guard-and-delegation-tests-pass_matlab-not-run"
+tests = ["test/tier_e_matrix_predicates_compat.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "IsTotallyPositive"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "IsTotallyPositive"
+source_path = "IsTotallyPositive.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "a25410634958d99c30a174ef5fae8f438e06577e6d43cd7cc682b8579732d82b"
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "tested-compatibility-wrapper-preserving-spelling_positional-orders-and-single-default-tolerance_with-strict-singularity-and-structured-boundary-semantics"
+delegates_to = ["QuantumEntanglementTools.is_totally_positive"]
+status = "compatibility_alias"
+verification_status = "local_exact_positional_boundary_sparse_guard-and-delegation-tests-pass_matlab-not-run"
+tests = ["test/tier_e_matrix_predicates_compat.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "IsTotallyNonsingular"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "IsTotallyNonsingular"
+source_path = "IsTotallyNonsingular.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "49e4315f63e5eb4e64687a4930bad05fe72768bc073b28dd23f957d6c561b848"
+specification = "docs/src/matrix_predicates.md"
+implementation_kind = "tested-compatibility-wrapper-preserving-spelling_positional-orders-and-single-default-tolerance_with-structured-boundary-and-combinatorial-guard"
+delegates_to = ["QuantumEntanglementTools.is_totally_nonsingular"]
+status = "compatibility_alias"
+verification_status = "local_exact_positional_boundary_sparse_guard-and-delegation-tests-pass_matlab-not-run"
+tests = ["test/tier_e_matrix_predicates_compat.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_predicates.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "majorizes"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/linear_algebra/matrix_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "Majorizes"
+source_path = "Majorizes.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "08b2e08c9fabb7221c69a205a39e591843d5ae899c889bde80368b419b41e92b"
+specification = "docs/src/matrix_analysis.md"
+implementation_kind = "independent-julia-standard-strong-majorization-with-symmetric-tolerances-explicit-sparse-rejection-and-reviewed-pinned-qetlab-semantic-divergences"
+status = "implemented"
+verification_status = "local_exact_floating_matrix_sparse_invalid-and-reviewed-discrepancy-octave-tests-pass_matlab_not_run"
+tests = ["test/tier_e_matrix_analysis.jl", "test/tier_e_matrix_analysis_compat.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "elementary_symmetric_polynomial"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/linear_algebra/matrix_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "ElemSymPoly"
+source_path = "ElemSymPoly.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "f962fb9a37d38ab23516ce4448faf074af382a25dc691c0471c48825d792ffd4"
+specification = "docs/src/matrix_analysis.md"
+implementation_kind = "independent-julia-dynamic-programming-reimplementation-with-sparse-vector-support-widened-exact-arithmetic-and-checked-narrowing"
+status = "implemented"
+verification_status = "local_exact_rational_complex_sparse_property_overflow-invalid-and-octave-fixture-tests-pass_matlab_not_run"
+tests = ["test/tier_e_matrix_analysis.jl", "test/tier_e_matrix_analysis_compat.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "compound_matrix"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/linear_algebra/matrix_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "CompoundMatrix"
+source_path = "CompoundMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "83099626aa7e5d8ba64c782604864c8ab335335a0e717b624e5de546b05d6da8"
+specification = "docs/src/matrix_analysis.md"
+implementation_kind = "independent-julia-minor-definition-reimplementation-with-mathematical-rectangular-shapes-explicit-sparse-output-and-checked-exact-arithmetic"
+status = "implemented"
+verification_status = "local_exact_cauchy-binet_rectangular_sparse_overflow-invalid-and-reviewed-shape-discrepancy-octave-tests-pass_matlab_not_run"
+tests = ["test/tier_e_matrix_analysis.jl", "test/tier_e_matrix_analysis_compat.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "additive_compound_matrix"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/linear_algebra/matrix_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "AdditiveCompoundMatrix"
+source_path = "AdditiveCompoundMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "f6572fa5d25ff7817ff8774b3879dab9a3a5ecb91509377455f207a9bb209dfb"
+specification = "docs/src/matrix_analysis.md"
+implementation_kind = "independent-julia-exterior-action-reimplementation-with-defined-order-zero-explicit-sparse-output-and-checked-exact-arithmetic"
+status = "implemented"
+verification_status = "local_derivative_eigenvalue-sum_exact_sparse_overflow-invalid-jet-and-reviewed-order-zero-discrepancy-octave-tests-pass_matlab_not_run"
+tests = ["test/tier_e_matrix_analysis.jl", "test/tier_e_matrix_analysis_compat.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "Majorizes"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "function"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "Majorizes"
+source_path = "Majorizes.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "08b2e08c9fabb7221c69a205a39e591843d5ae899c889bde80368b419b41e92b"
+specification = "docs/src/matrix_analysis.md"
+implementation_kind = "tested-direct-compatibility-entry-point-preserving-pinned-qetlab-weak-total_row-column-vector_sort-before-padding-and-one-sided-tolerance-semantics-with-explicit-sparse-densification-gate"
+status = "implemented"
+verification_status = "local_weak-total_one-sided-tolerance_sort-before-padding_row-column-vector_sparse-opt-in-and-reviewed-discrepancy-tests-pass_matlab_not_run"
+tests = ["test/tier_e_matrix_analysis_compat.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ElemSymPoly"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "ElemSymPoly"
+source_path = "ElemSymPoly.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "f962fb9a37d38ab23516ce4448faf074af382a25dc691c0471c48825d792ffd4"
+specification = "docs/src/matrix_analysis.md"
+implementation_kind = "tested-compatibility-wrapper-with-pinned-qetlab-spelling_matlab-row-column-input-support-and-native-exact-arithmetic"
+delegates_to = ["QuantumEntanglementTools.elementary_symmetric_polynomial"]
+status = "compatibility_alias"
+verification_status = "local_vector_row_column_exact_sparse_invalid-and-octave-evidence-tests-pass_matlab_not_run"
+tests = ["test/tier_e_matrix_analysis_compat.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "CompoundMatrix"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "CompoundMatrix"
+source_path = "CompoundMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "83099626aa7e5d8ba64c782604864c8ab335335a0e717b624e5de546b05d6da8"
+specification = "docs/src/matrix_analysis.md"
+implementation_kind = "tested-compatibility-wrapper-preserving-pinned-qetlab-zero-by-zero-high-order-shape_with-explicit-sparse-selection-and-checked-exact-arithmetic-where-values-agree"
+delegates_to = ["QuantumEntanglementTools.compound_matrix"]
+status = "compatibility_alias"
+verification_status = "local_exact_order-zero_rectangular-shape_sparse-and-reviewed-discrepancy-tests-pass_matlab_not_run"
+tests = ["test/tier_e_matrix_analysis_compat.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "AdditiveCompoundMatrix"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "AdditiveCompoundMatrix"
+source_path = "AdditiveCompoundMatrix.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "f6572fa5d25ff7817ff8774b3879dab9a3a5ecb91509377455f207a9bb209dfb"
+specification = "docs/src/matrix_analysis.md"
+implementation_kind = "tested-compatibility-wrapper-preserving-reviewed-pinned-qetlab-order-zero-error_with-explicit-sparse-selection-and-checked-exact-arithmetic-for-positive-orders"
+delegates_to = ["QuantumEntanglementTools.additive_compound_matrix"]
+status = "compatibility_alias"
+verification_status = "local_exact_order-zero_high-order_sparse_invalid-and-reviewed-discrepancy-tests-pass_matlab_not_run"
+tests = ["test/tier_e_matrix_analysis_compat.jl", "test/oracle/compare_tier_e_matrix_analysis_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/matrix_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "ProductAnalysisResult"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native structured tolerance result preserving factors, scaled cut residuals, a global reconstruction residual, thresholds, and boundary status instead of a Boolean."
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-project-native-structured-numerical-result"
+status = "implemented"
+verification_status = "local_factor_reconstruction_scaled_residual_boundary_show_and_wrapper_tests_pass"
+tests = ["test/tier_e_product_analysis.jl", "test/tier_e_product_compat.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "SeparableBallResult"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native sufficient-certificate result that distinguishes separability certified, outside the ball, and numerical unknown."
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-project-native-structured-certificate-result"
+status = "implemented"
+verification_status = "local_certificate_outside_boundary_unknown_show_and_wrapper_tests_pass"
+tests = ["test/tier_e_product_analysis.jl", "test/tier_e_product_compat.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "operator_schmidt_decomposition"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "OperatorSchmidtDecomposition"
+source_path = "OperatorSchmidtDecomposition.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "056b372d44d2f6b84d923adefa954ed84797835ff2e5bf956514a6d821cef2d4"
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-typed-result-rectangular-layouts-and-no-hermitian-factor-repair"
+status = "implemented"
+verification_status = "local_square_rectangular_complex_reconstruction_sparse_gate_and_octave_coefficient_discrepancy_fixtures_pass_matlab_not_run"
+tests = ["test/tier_e_product_analysis.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "operator_schmidt_coefficients"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "OperatorSchmidtDecomposition"
+source_path = "OperatorSchmidtDecomposition.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "056b372d44d2f6b84d923adefa954ed84797835ff2e5bf956514a6d821cef2d4"
+specification = "docs/src/product_analysis.md"
+implementation_kind = "project-native-coefficient-only-convenience-over-the-independent-pinned-operator-schmidt-reimplementation"
+status = "implemented"
+verification_status = "local_full_spectrum_rectangular_sparse_gate_and_octave_coefficient_fixtures_pass_matlab_not_run"
+tests = ["test/tier_e_product_analysis.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md"]
+
+[[functions]]
+julia_name = "operator_schmidt_rank"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "OperatorSchmidtRank"
+source_path = "OperatorSchmidtRank.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "40a4e0a770a60ed3abe467bc3d97194bb311f7ca2ffd792216b26380366e26bc"
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-explicit-absolute-relative-tolerances"
+status = "implemented"
+verification_status = "local_rank_threshold_rectangular_sparse_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_e_product_analysis.jl", "test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "is_product_vector"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "IsProductVector"
+source_path = "IsProductVector.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "edebc38eaba0daef5bd18eeae7f432cf889cc18d05da452e0f6179432b0cba33"
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-full-tail-residuals-global-reconstruction-and-three-way-boundary-status"
+status = "implemented"
+verification_status = "local_multipartite_factor_scaled_residual_boundary_sparse_invalid_wrapper_and_away-from-boundary-octave_tests_pass_matlab_not_run"
+tests = ["test/tier_e_product_analysis.jl", "test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "is_product_operator"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "IsProductOperator"
+source_path = "IsProductOperator.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "9136077f1c19a3bd6062165509362d1e4eaaf7560dcb5f280b4661187e7d63e8"
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-rectangular-layouts-full-tail-residuals-and-three-way-boundary-status"
+status = "implemented"
+verification_status = "local_multipartite_rectangular_factor_scaled_residual_boundary_sparse_invalid_wrapper_and_away-from-boundary-octave_tests_pass_matlab_not_run"
+tests = ["test/tier_e_product_analysis.jl", "test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "entanglement_of_formation"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "EntFormation"
+source_path = "EntFormation.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "020b4a4baa2c66a6831d02849ad1d7686fe39b62a1c7681ad7fe5ecb33d221c2"
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-julia-reimplementation-of-exact-pure-bipartite-and-mixed-two-qubit-formulas-with-explicit-base-and-bounded-boundary-projection-policies"
+status = "implemented"
+verification_status = "local_pure_mixed_base_validation_sparse_boundary_wrapper_benchmark_and_zero-concurrence-discrepancy-octave_tests_pass_matlab_not_run"
+tests = ["test/tier_e_product_analysis.jl", "test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "in_separable_ball"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/product_analysis.jl"
+source_project = "QETLAB"
+upstream_function = "InSeparableBall"
+source_path = "InSeparableBall.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "eb12586a5795ec2a9cf9e3674aa4b677ebc444bb07cf3b39b09ed5d29e2f01ae"
+specification = "docs/src/product_analysis.md"
+implementation_kind = "independent-julia-reimplementation-of-the-gurvits-barnum-sufficient-condition-with-strict-normalization-structured-status-and-diagonal-eigenvalue-fast-paths"
+status = "implemented"
+verification_status = "local_certificate_outside_boundary_unknown_diagonal_eigenvalue_sparse_invalid_wrapper_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_e_product_analysis.jl", "test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "OperatorSchmidtDecomposition"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "OperatorSchmidtDecomposition"
+source_path = "OperatorSchmidtDecomposition.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "056b372d44d2f6b84d923adefa954ed84797835ff2e5bf956514a6d821cef2d4"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-compatibility-wrapper-preserving-reviewed-k-selection-with-named-output-and-without-hermitian-factor-repair-or-pinned-rectangular-failures"
+delegates_to = ["QuantumEntanglementTools.operator_schmidt_decomposition"]
+status = "compatibility_alias"
+verification_status = "supported_square_rectangular_coefficient_reconstruction_and-octave-discrepancy-fixture-tests-pass_matlab_not_run"
+tests = ["test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "OperatorSchmidtRank"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "OperatorSchmidtRank"
+source_path = "OperatorSchmidtRank.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "40a4e0a770a60ed3abe467bc3d97194bb311f7ca2ffd792216b26380366e26bc"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-preserving-reviewed-default-and-explicit-absolute-rank-thresholds"
+delegates_to = ["QuantumEntanglementTools.operator_schmidt_rank"]
+status = "compatibility_alias"
+verification_status = "local_square_rectangular_threshold_and_octave_fixture_tests_pass_matlab_not_run"
+tests = ["test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "IsProductVector"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "IsProductVector"
+source_path = "IsProductVector.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "edebc38eaba0daef5bd18eeae7f432cf889cc18d05da452e0f6179432b0cba33"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-intentionally-structured-compatibility-wrapper-with-row-vector-support-and-uncollapsed-tolerance-boundary"
+delegates_to = ["QuantumEntanglementTools.is_product_vector"]
+status = "compatibility_alias"
+verification_status = "local_row_column_multipartite_factor_boundary_and-away-from-boundary-octave-tests-pass_matlab_not_run"
+tests = ["test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "IsProductOperator"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "IsProductOperator"
+source_path = "IsProductOperator.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "9136077f1c19a3bd6062165509362d1e4eaaf7560dcb5f280b4661187e7d63e8"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-intentionally-structured-compatibility-wrapper-with-rectangular-layout-support-and-uncollapsed-tolerance-boundary"
+delegates_to = ["QuantumEntanglementTools.is_product_operator"]
+status = "compatibility_alias"
+verification_status = "local_multipartite_rectangular_factor_boundary_and-away-from-boundary-octave-tests-pass_matlab_not_run"
+tests = ["test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "EntFormation"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "EntFormation"
+source_path = "EntFormation.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "020b4a4baa2c66a6831d02849ad1d7686fe39b62a1c7681ad7fe5ecb33d221c2"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-partial-compatibility-wrapper-for-pure-bipartite-and-mixed-two-qubit-exact-formulas-with-base-two-default-row-vector-support-and-correct-zero-concurrence-limit"
+delegates_to = ["QuantumEntanglementTools.entanglement_of_formation"]
+status = "compatibility_alias"
+verification_status = "local_pure_row_column_mixed_invalid_domain_and-zero-concurrence-discrepancy-octave-tests-pass_matlab_not_run"
+tests = ["test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+
+[[functions]]
+julia_name = "InSeparableBall"
+public_module = "QuantumEntanglementTools.MATLABCompat"
+public_kind = "compatibility_wrapper"
+julia_file = "src/compat/MATLABCompat.jl"
+source_project = "QETLAB"
+upstream_function = "InSeparableBall"
+source_path = "InSeparableBall.m"
+source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_sha256 = "eb12586a5795ec2a9cf9e3674aa4b677ebc444bb07cf3b39b09ed5d29e2f01ae"
+specification = "docs/src/migration_from_qetlab.md"
+implementation_kind = "tested-compatibility-wrapper-preserving-positive-trace-normalization-with-strict-physical-input-validation-and-structured-sufficient-certificate-status"
+delegates_to = ["QuantumEntanglementTools.in_separable_ball"]
+status = "compatibility_alias"
+verification_status = "local_normalized_unnormalized_certificate_outside_boundary_invalid_and_octave-fixture-tests-pass_matlab_not_run"
+tests = ["test/tier_e_product_compat.jl", "test/oracle/compare_tier_e_product_oracle.jl"]
+docs = ["docs/src/api/index.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]

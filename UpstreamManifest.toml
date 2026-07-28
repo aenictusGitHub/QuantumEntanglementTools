@@ -1,0 +1,168 @@
+# Reproducible upstream audit pins. Development checkouts and downloads live
+# under ignored dev/ paths and are not part of the distributable package.
+schema_version = 1
+audit_date = "2026-07-28"
+audit_scope = "QETLAB current master; EntanglementDetection.jl current main/release; QUBIT4MATLAB 6.5 pre-source license gate"
+development_checkout_policy = "ignored-dev-directories-not-vendored"
+
+[[sources]]
+id = "qetlab"
+name = "QETLAB"
+source_kind = "git"
+canonical_url = "https://github.com/nathanieljohnston/QETLAB"
+clone_url = "https://github.com/nathanieljohnston/QETLAB.git"
+default_branch = "master"
+version_or_tag = "master (git describe: v1.0-10-gd858961)"
+latest_release_tag = "v1.0"
+latest_release_revision = "949dab0460937ba4409331f9814d00bf78674ec3"
+commits_after_latest_release = 10
+exact_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+source_tree_sha = "9e2fcff3e7f45ee8f478893539e86fad517a1bf6"
+initial_reference_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
+current_default_branch_matches_initial_reference = true
+retrieval_date = "2026-07-28"
+local_audit_path = "dev/upstream/QETLAB"
+checkout_clean_at_audit = true
+license_classification = "BSD-2-Clause"
+license_file_path = "license.txt"
+license_sha256 = "f861a171af77f8377e973b22ed08361b0069e90b846e4b4f49be58217a08792f"
+additional_license_file_paths = ["helpers/license_spnull.txt", "helpers/license_sporth.txt"]
+additional_license_sha256 = ["ff2b568397db2682226129f05a9425c07afca47e0d22d302fc5577fa49373993", "ff2b568397db2682226129f05a9425c07afca47e0d22d302fc5577fa49373993"]
+additional_license_holders = ["Bruno Luong (spnull)", "Bruno Luong (sporth)"]
+documentation_url = "https://www.qetlab.com/"
+source_code_read = true
+implementation_relationship = "source-informed-julia-reimplementation"
+inventory_toml = "porting/qetlab_inventory.toml"
+inventory_csv = "porting/qetlab_inventory.csv"
+dependency_graph = "porting/qetlab_dependency_graph.dot"
+inventory_file_count = 163
+inventory_public_function_count = 127
+inventory_internal_helper_count = 36
+inventory_dependency_edge_count = 503
+inventory_dependency_cycle_count = 0
+inventory_review_status = "automated_parse_with_targeted_manual_spot-checks; full per-function semantic review pending"
+license_audit_findings = [
+    "Project license is Nathaniel Johnston BSD-2-Clause.",
+    "spnull.m and sporth.m have separate Bruno Luong BSD-2-Clause license files with identical SHA-256 values.",
+    "Contributor annotations in MATLAB headers are retained in the generated inventory for provenance review.",
+]
+source_audit_findings = [
+    "BCSGameValue.m calls and declares NonlocalGameValue.m, but that file is absent at the pinned revision.",
+    "GenRobustnesskCoherence.m calls and declares IskCoherent.m, but that file is absent at the pinned revision.",
+    "Inventory random-behavior fields propagate implicit global-RNG use through QETLAB-to-QETLAB call edges.",
+]
+blockers = [
+    "BCSGameValue requires a compatibility decision or upstream clarification for missing NonlocalGameValue.",
+    "GenRobustnesskCoherence requires a compatibility decision or upstream clarification for missing IskCoherent.",
+]
+
+[[sources]]
+id = "entanglement_detection"
+name = "EntanglementDetection.jl"
+source_kind = "git"
+canonical_url = "https://github.com/ZIB-IOL/EntanglementDetection.jl"
+clone_url = "https://github.com/ZIB-IOL/EntanglementDetection.jl.git"
+default_branch = "main"
+version_or_tag = "0.2.2"
+latest_release_tag = "v0.2.2"
+latest_release_revision = "5f60da1ceef6442acb669e10acc2fa47670bab06"
+exact_revision = "5f60da1ceef6442acb669e10acc2fa47670bab06"
+source_tree_sha = "51a6dc884b3d61808bef04881ff40640d6940b9a"
+initial_reference_revision = "5f60da1ceef6442acb669e10acc2fa47670bab06"
+current_default_branch_matches_initial_reference = true
+current_default_branch_matches_latest_release = true
+retrieval_date = "2026-07-28"
+local_audit_path = "dev/upstream/EntanglementDetection.jl"
+checkout_clean_at_audit = true
+package_uuid = "5e5e84d8-5f53-4fe3-9037-c06c4de5d74e"
+license_classification = "MIT"
+license_file_path = "LICENSE"
+license_sha256 = "8d7174972190a50508c86dcc936c31d23cccea7ab4b381aa49ab8735ae326824"
+documentation_url = "https://zib-iol.github.io/EntanglementDetection.jl/dev/"
+source_code_read = true
+implementation_relationship = "optional-external-dependency-no-vendoring"
+compatibility_bounds = [
+    "julia = 1.9",
+    "FrankWolfe = 0.6",
+    "Ket = 0.9",
+    "Roots = 3",
+    "Tullio = 0.3.8 (weak dependency/extension)",
+]
+exported_api = [
+    "CrossPolytopeSubdivision",
+    "PolytopePhasedComplexSphere",
+    "PolytopeReducedComplexSphere",
+    "correlation_tensor",
+    "density_matrix",
+    "entanglement_detection",
+    "entanglement_robustness",
+    "entanglement_witness",
+    "linear_noise_robustness",
+    "separability_certification",
+    "separable_ball_criterion",
+    "separable_ball_radius",
+    "separable_distance",
+    "white_noise_robustness",
+]
+return_value_findings = [
+    "entanglement_detection returns a named tuple with ent = true, false, or nothing plus witness and decomposition fields.",
+    "separable_distance returns a named tuple containing sigma, a boundary pure state, primal value, noise level, active set, and LMO.",
+    "entanglement_witness returns a named tuple containing W, alpha, epsilon, sigma, phi, distance, and eta.",
+    "separability_certification returns a named tuple headed by sep::Bool and nested optimization data.",
+]
+global_state_and_side_effects = [
+    "separable_distance calls Random.seed!(0), mutating Julia's global default RNG.",
+    "separable_distance redirects global stdout when logfile is supplied and does not visibly restore it in that function.",
+    "AlternatingSeparableLMO construction calls BLAS.set_num_threads(1) when parallelism is enabled.",
+    "Public workflows print progress, emit logging messages/warnings, and flush their selected log stream.",
+]
+extension_constraints = [
+    "Use only exported documented API; do not rely on private functions or undocumented fields.",
+    "Protect the host package's RNG, stdout, and BLAS-thread state rather than forwarding these side effects silently.",
+    "Treat heuristic distance results separately from witness/separability certificates and preserve tri-state outcomes.",
+]
+blockers = []
+
+[[sources]]
+id = "qubit4matlab"
+name = "QUBIT4MATLAB"
+source_kind = "archive"
+canonical_url = "https://www.gtoth.eu/qubit4matlab.html"
+archive_url = "https://www.gtoth.eu/Publications/QUBIT4MATLAB6.5.zip"
+version_or_tag = "6.5"
+exact_revision = "282628dad2b8e134c7d88834770c1293abde3baa05664b161ce698ae30375547"
+archive_sha256 = "282628dad2b8e134c7d88834770c1293abde3baa05664b161ce698ae30375547"
+archive_size_bytes = 212776
+archive_entry_count = 384
+archive_primary_matlab_entry_count = 188
+retrieval_date = "2026-07-28"
+local_audit_path = "dev/downloads/QUBIT4MATLAB6.5.zip"
+license_classification = "bundled two-condition BSD-style text; supplied three-condition BSD-style text; material mismatch"
+license_file_path = "QUBIT4MATLAB/bsd.txt"
+license_sha256 = "b0bd73519dd6d16963c8aeb21ef9659e09dd3beb2536d9f736ec1d151f51ca81"
+license_lf_normalized_sha256 = "48e59ffcbec730c79fd04d27e6e2141b2f7a17a6be76c0b8a5dc45aac9817ef8"
+readme_file_path = "QUBIT4MATLAB/README.txt"
+readme_sha256 = "0fecb2c1ea22f352efd59c586a3a09f22c96a5f5dfc8525b8bec80c017b788e2"
+supplied_license_file_path = "licenses/QUBIT4MATLAB-LICENSE.txt"
+supplied_license_sha256 = "6cb11144f3aa7168ce1a8eed5ff9a6d7bcc7cae428ead6333d7f4ebf4bf2b995"
+documentation_url = "https://www.gtoth.eu/qubit4matlab.html"
+source_code_read = false
+implementation_relationship = "none-license-gate-blocked"
+archive_entry_names_read = true
+readme_content_read = true
+bundled_license_content_read = true
+matlab_implementation_content_read = false
+license_verification_status = "MATERIAL_CONFLICT_BLOCKS_IMPLEMENTATION_SOURCE_INSPECTION"
+license_byte_identical_to_supplied = false
+license_lf_normalized_identical_to_supplied = false
+license_difference_summary = [
+    "Bundled copyright is 2005-2015; supplied copyright is 2005-2024.",
+    "Bundled text has two redistribution conditions; supplied text has three.",
+    "Bundled text omits the supplied non-endorsement condition.",
+    "Bundled text ends with an extra double-quote after the disclaimer.",
+    "Whitespace and line wrapping also differ, so neither byte nor LF-only line normalization matches.",
+]
+blockers = [
+    "Per the supplied workflow, no QUBIT4MATLAB .m implementation file may be read or ported until a human resolves the material bundled-versus-supplied license mismatch.",
+]
+required_human_action = "Obtain written clarification from the copyright holder or otherwise establish which terms govern the author-hosted v6.5 archive, then record the decision before implementation-file inspection."

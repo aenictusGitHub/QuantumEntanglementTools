@@ -1,0 +1,14 @@
+.DS_Store
+Manifest.toml
+docs/Manifest.toml
+docs/build/
+benchmark/Manifest.toml
+dev/upstream/
+dev/downloads/
+coverage/
+*.cov
+*.jl.cov
+benchmark/results/local/
+test/oracle/Manifest.toml
+test/oracle/generated/
+quality/Manifest.toml

@@ -1,0 +1,41 @@
+name: Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coverage-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: Linux stable coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+      - name: Cache Julia artifacts
+        uses: julia-actions/cache@v2
+      - name: Run tests with coverage
+        run: >-
+          julia --startup-file=no --project=. --code-coverage=user
+          -e 'using Pkg; Pkg.instantiate(); Pkg.test(coverage=true)'
+      - name: Process coverage
+        uses: julia-actions/julia-processcoverage@v1
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        with:
+          files: lcov.info
+          fail_ci_if_error: false
