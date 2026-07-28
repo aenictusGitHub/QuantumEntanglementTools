@@ -49,7 +49,8 @@ cross-platform CI has not yet produced cited evidence. MATLAB is absent.
 
 ## Commands and results
 
-Run from an uncommitted pre-alpha worktree on the environment recorded in
+Run on the exact staged source tree committed as implementation milestone
+`9b0d0d3b8177eded5b8743d250044d5428625b1b`, on the environment recorded in
 `BUILD_ENVIRONMENT.md`:
 
 ```sh

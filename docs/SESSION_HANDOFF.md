@@ -7,13 +7,17 @@ work continues.
 ## Repository state
 
 - Branch: `main`.
-- Base commit: none; the branch was unborn when this scaffold was created.
-- Remote: none configured at that snapshot.
+- Implementation milestone: `9b0d0d3b8177eded5b8743d250044d5428625b1b`
+  (`feat: establish audited quantum entanglement core`).
+- This handoff is committed in the documentation-only successor to that
+  milestone; use `git rev-parse HEAD` for the exact handoff commit.
+- Remote: none configured.
 - Package: `QuantumEntanglementTools`, UUID
   `45675e5b-5c8b-4983-b92d-4c3725d56c4e`, version `0.1.0`.
 - Package author metadata: `John MARTIN <jmartin@uliege.be>`.
-- Worktree: intentionally uncommitted initial project work was present; inspect
-  `git status` before proceeding and do not discard it.
+- Worktree: clean after the handoff commit, apart from ignored local manifests,
+  generated documentation, benchmark output, oracle output, and upstream
+  development checkouts.
 
 ## Evidence secured
 
@@ -95,7 +99,8 @@ supplied license governs the archive, and do not create a derived port.
 4. Add authoritative MATLAB differential checks when MATLAB is available.
 5. Design the optional EntanglementDetection adapter around observed global
    side effects; do not expose it as safe before fresh-process regression tests.
-6. Refresh this handoff with resulting commits, failures, and uncommitted files.
+6. Keep this handoff current with subsequent commits, failures, and
+   uncommitted files.
 
 ## Commands to rerun
 
