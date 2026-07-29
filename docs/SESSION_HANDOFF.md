@@ -7,13 +7,15 @@ work continues.
 ## Repository state
 
 - Branch: `main`.
-- Milestone: `docs: use GitHub-compatible math macros`. This handoff is part of
-  that milestone commit; use `git rev-parse HEAD` for its exact revision.
+- Milestone: `docs: add entanglement example code generator`. This handoff is
+  part of that milestone commit; use `git rev-parse HEAD` for its exact
+  revision.
 - Remote: private `origin` at
   `https://github.com/aenictusGitHub/QuantumEntanglementTools.git`; `main`
   tracks `origin/main`. The separability documentation commits are present on
-  the remote. After this milestone, local `main` is one commit ahead of
-  `origin/main`; the GitHub-math compatibility commit has not been pushed.
+  the remote. After this milestone, local `main` is two commits ahead of
+  `origin/main`; neither the GitHub-math compatibility commit nor the browser
+  code-generator commit has been pushed.
 - Package: `QuantumEntanglementTools`, UUID
   `45675e5b-5c8b-4983-b92d-4c3725d56c4e`, version `0.1.0`.
 - Package author metadata: `John MARTIN <jmartin@uliege.be>`.
@@ -36,6 +38,14 @@ work continues.
   executable tutorial records the GHZ phase mismatch explicitly, gives an
   exact Bernstein-basis block-positivity proof for the printed five-qubit
   witness, and does not claim to rerun the source paper's SDP.
+- The documentation includes an original browser-local code generator for nine
+  curated state families, six analysis/measure routes, decomposable PPT
+  witnesses, and the five-qubit published symmetric witness. Its DOM-free core
+  passes 71 deterministic validation assertions, and all nine generated Julia
+  branches pass on Julia 1.12.6 and 1.10.11. The strict documentation build
+  copies all three local assets. The GPL-3.0-only reference generator was used
+  only for interaction-pattern inspiration; no source, styling, prose, or
+  templates were reused, as recorded in `docs/LEGAL.md`.
 - Markdown and matching API-docstring equations avoid GitHub's unsupported
   operator-name macro; the replacement roman-text forms pass the strict local
   Documenter build.
@@ -87,6 +97,15 @@ finite five-qubit separable decomposition, same-spectrum SAPPT representatives,
 and published plus decomposable witness constructions while keeping the
 paper's numerical boundary distinct from package-owned certificates.
 
+The browser-local entanglement example generator complements those fixed
+tutorials. Its bounded form emits dense, executable Julia scripts for product,
+Bell, diagonal-mixture, GHZ, Dicke, isotropic, Werner, Horodecki, and symmetric
+SAPPT states. It rejects arbitrary code and non-finite inputs, preserves
+certificate versus necessary-test semantics, never executes or persists user
+parameters, and offers copy/download controls. Documentation CI syntax-checks
+the JavaScript, runs the deterministic core cases, executes the generated smoke
+bundle on both documentation Julia versions, and checks the rendered assets.
+
 The optional EntanglementDetection.jl 0.2.2 integration is implemented as a
 weak-dependency Julia extension. Every heuristic search runs in a fresh child
 process so upstream RNG, stdout/logging, and BLAS-thread mutations do not alter
@@ -132,6 +151,8 @@ documentation, quality, and optional-extension CI evidence remains pending.
    future pinned-upstream changes.
 6. Keep this handoff current with subsequent commits, failures, and
    uncommitted files.
+7. Push the two local documentation commits only when explicitly authorized,
+   then inspect the remote documentation matrix and generated-site artifact.
 
 ## Commands to rerun
 
@@ -145,6 +166,11 @@ julia --startup-file=no --project=. tutorials/entanglement_certificates.jl
 julia --startup-file=no --project=. tutorials/separability_examples.jl
 julia --startup-file=no --project=. tutorials/symmetric_sappt_witnesses.jl
 julia --startup-file=no --project=. tutorials/runtests.jl
+/usr/bin/osascript -l JavaScript docs/test/code_generator_jxa.js \
+  /tmp/qet-generator-smoke
+julia --startup-file=no --project=docs /tmp/qet-generator-smoke/generated_smoke.jl
+julia +1.10 --startup-file=no --project=docs \
+  /tmp/qet-generator-smoke/generated_smoke.jl
 julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 julia --startup-file=no --project=docs docs/make.jl
 julia --project=test/extensions/entanglement_detection -e '

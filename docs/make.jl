@@ -30,10 +30,26 @@ makedocs(;
         collapselevel=1,
         edit_link=nothing,
         repolink=nothing,
+        assets=[
+            Documenter.asset("assets/qet_code_generator.css"; class=:css, islocal=true),
+            Documenter.asset(
+                "assets/qet_code_generator_core.js";
+                class=:js,
+                islocal=true,
+                attributes=Dict(:defer => ""),
+            ),
+            Documenter.asset(
+                "assets/qet_code_generator_ui.js";
+                class=:js,
+                islocal=true,
+                attributes=Dict(:defer => ""),
+            ),
+        ],
     ),
     pages=[
         "Home" => "index.md",
         "Getting started" => "getting_started.md",
+        "Code generator" => "code_generator.md",
         "Separability by example" => "separability_examples.md",
         "Symmetric SAPPT states and witnesses" => "paper_symmetric_separability.md",
         "Architecture" => "architecture.md",

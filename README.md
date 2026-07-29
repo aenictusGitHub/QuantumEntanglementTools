@@ -116,6 +116,11 @@ every status and certificate. The
 [symmetric SAPPT example](docs/src/paper_symmetric_separability.md) adds an
 explicit five-qubit separable decomposition and constructive entanglement
 witnesses for the state family in Phys. Rev. A 111, 042418 (2025).
+The browser-local
+[entanglement example code generator](docs/src/code_generator.md) turns
+curated state families, criteria, measures, and witness choices into complete
+downloadable Julia scripts without executing or uploading the selected
+parameters.
 
 Randomized APIs never choose an implicit process-global stream:
 
@@ -154,6 +159,7 @@ Heavy solvers and third-party detection packages will remain optional.
 Start with:
 
 - [Getting started](docs/src/getting_started.md)
+- [Entanglement example code generator](docs/src/code_generator.md)
 - [Separability by example](docs/src/separability_examples.md)
 - [Symmetric SAPPT states and witnesses](docs/src/paper_symmetric_separability.md)
 - [Mathematical conventions](docs/src/conventions.md)

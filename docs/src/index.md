@@ -16,6 +16,9 @@ diagnostic and certification results, and optional package extensions.
 
 - [Getting started](getting_started.md) explains the current local-development
   workflow.
+- [Entanglement example code generator](code_generator.md) builds bounded,
+  certificate-aware Julia scripts locally in the browser from curated state
+  families and analysis routes.
 - [Conventions](conventions.md) separates accepted Tier A choices from future
   choices that still need tests.
 - [Separability by example](separability_examples.md) constructs pure and mixed

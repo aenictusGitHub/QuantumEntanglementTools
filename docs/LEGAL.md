@@ -21,6 +21,22 @@ Contributors must have the right to submit their changes. Files adapted from
 other projects may carry additional compatible notices that the root license
 does not replace.
 
+## Browser code generator
+
+The interaction pattern of the documentation's browser code generator was
+inspired by the public
+[PermutationalInvariantDynamics.jl model code generator](https://aenictusgithub.github.io/PermutationalInvariantDynamics.jl/dev/model_code_generator/),
+inspected on 2026-07-29. That reference project and its generated templates are
+GPL-3.0-only, with no output exception identified during inspection.
+
+No reference HTML, CSS, JavaScript, prose, identifiers, or Julia templates were
+copied or adapted. The QuantumEntanglementTools generator is an independently
+written implementation based only on this package's public API contracts and
+the general idea of a deterministic browser form with copy/download controls.
+Its original source assets and generated template text are covered by this
+repository's BSD 3-Clause License. Redistribution of substantial generated
+template text must retain the applicable BSD notice and conditions.
+
 ## QETLAB
 
 The inspected upstream source is:

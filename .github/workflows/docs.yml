@@ -52,8 +52,28 @@ jobs:
         run: >-
           julia --startup-file=no --project=docs -e
           'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - name: Validate code generator and emit Julia smoke program
+        env:
+          QET_GENERATOR_SMOKE: ${{ runner.temp }}/qet-generator-smoke
+        run: |
+          node --check docs/src/assets/qet_code_generator_core.js
+          node --check docs/src/assets/qet_code_generator_ui.js
+          node --check docs/test/code_generator_cases.js
+          node docs/test/code_generator_node.js "$QET_GENERATOR_SMOKE"
+      - name: Execute generated Julia examples
+        env:
+          QET_GENERATOR_SMOKE: ${{ runner.temp }}/qet-generator-smoke
+        run: >-
+          julia --startup-file=no --project=docs
+          "$QET_GENERATOR_SMOKE/generated_smoke.jl"
       - name: Build docs and run doctests
         run: julia --startup-file=no --project=docs docs/make.jl
+      - name: Check rendered generator assets
+        run: |
+          test -f docs/build/code_generator/index.html
+          test -f docs/build/assets/qet_code_generator.css
+          test -f docs/build/assets/qet_code_generator_core.js
+          test -f docs/build/assets/qet_code_generator_ui.js
       - name: Upload rendered site
         if: matrix.julia-version == '1'
         uses: actions/upload-artifact@v4
