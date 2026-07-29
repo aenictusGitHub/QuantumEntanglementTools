@@ -3,6 +3,7 @@ using Test
 include("subsystem_reductions.jl")
 include("local_channel_noise.jl")
 include("entanglement_certificates.jl")
+include("separability_examples.jl")
 
 @testset "Executable tutorials" begin
     @testset "subsystem reductions" begin
@@ -49,5 +50,23 @@ include("entanglement_certificates.jl")
         @test !result.mixed_certified
         @test result.mixed_attempts ==
             (:ppt => :unknown, :realignment => :unknown, :reduction => :unknown)
+    end
+
+    @testset "separability examples" begin
+        output = IOBuffer()
+        result = TutorialSeparabilityExamples.run(; io=output)
+
+        @test result.pure_status === :separable
+        @test result.pure_certified
+        @test result.pure_certificate === :pure_product_decomposition
+        @test result.mixed_status === :separable
+        @test result.mixed_certificate === :ppt_low_dimension_theorem
+        @test result.mixed_ball_status === :separable_certified
+        @test result.higher_pipeline_status === :unknown
+        @test !result.higher_pipeline_certified
+        @test result.higher_attempts ==
+            (:ppt => :unknown, :realignment => :unknown, :reduction => :unknown)
+        @test result.higher_ball_status === :separable_certified
+        @test result.product_ball_status === :outside_ball
     end
 end

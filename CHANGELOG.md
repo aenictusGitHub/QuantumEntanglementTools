@@ -44,13 +44,14 @@ a stable public API exists.
   Their focused suites pass 166 native and 37 compatibility assertions; no
   MATLAB-family predicate oracle has been run. The `IsPSD` mapping remains
   partial because the pinned CVX symbolic branch is omitted.
-- A 2,295-assertion full package suite passing locally on Julia 1.12.6 and
-  Julia 1.10.11, comprising 2,270 core assertions and 25 executable-tutorial
+- A 2,306-assertion full package suite passing locally on Julia 1.12.6 and
+  Julia 1.10.11, comprising 2,270 core assertions and 36 executable-tutorial
   assertions, plus consistency checks over 214 public bindings and 76 manually
   reviewed inventory rows.
-- Three deterministic executable tutorials for subsystem reductions, local
-  channel noise, and certificate-aware entanglement analysis. The exact scripts
-  run standalone, in `Pkg.test()`, and during the strict documentation build.
+- Four deterministic executable tutorials for subsystem reductions, local
+  channel noise, separability certificates, and certificate-aware entanglement
+  analysis. The exact scripts run standalone, in `Pkg.test()`, and during the
+  strict documentation build.
 - A 42-case quick benchmark smoke suite and quality checks in which Aqua passes
   11 assertions and 25 representative JET probes pass. The JET set does not
   cover the matrix predicates.

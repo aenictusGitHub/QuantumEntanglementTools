@@ -3,7 +3,7 @@
 The mappings below are covered by focused local suites: 304 Tier A assertions,
 941 Tier B assertions, 154 Tier C assertions, 162 Tier D measures/criteria
 assertions, and 68 project-native entanglement-pipeline assertions. The
-integrated corpus passes 2,295 assertions (2,270 core plus 25 executable
+integrated corpus passes 2,306 assertions (2,270 core plus 36 executable
 tutorials) on Julia 1.12.6 and 1.10.11. Reviewed
 inventory/provenance rows exist for these slices, including
 explicit partial statuses where the Tier C compatibility surface does not yet

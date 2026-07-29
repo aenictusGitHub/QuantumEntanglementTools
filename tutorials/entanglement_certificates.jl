@@ -15,7 +15,10 @@ The higher-dimensional examples retain their ordered attempt histories.
 """
 function run(; io::IO=stdout)
     bell_report = analyze_entanglement(bell_state(), (2, 2); atol=0, rtol=1e-12)
-    product_report = analyze_entanglement([1.0, 0.0, 0.0, 0.0], (2, 2))
+    ket0 = ComplexF64[1, 0]
+    ket1 = ComplexF64[0, 1]
+    product_state = tensor_product(ket0, ket1)
+    product_report = analyze_entanglement(product_state, (2, 2))
 
     horodecki = horodecki_state(0.3; dims=(3, 3))
     horodecki_report = analyze_entanglement(horodecki, (3, 3); atol=1e-12, rtol=1e-10)

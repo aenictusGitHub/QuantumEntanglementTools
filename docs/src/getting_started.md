@@ -11,7 +11,7 @@ From the repository root:
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 ```
 
-The package test entry point executes the three published tutorials. They can
+The package test entry point executes the four published tutorials. They can
 also be run directly:
 
 ```sh
@@ -54,6 +54,29 @@ F = fourier_matrix(4)
 ghz = ghz_state(2, 3)
 ρ = horodecki_state(0.3; dims = (3, 3))
 ```
+
+## A first separability certificate
+
+For a pure bipartite state, construct the tensor factors explicitly and inspect
+the structured report:
+
+```julia
+using QuantumEntanglementTools
+
+ket0 = ComplexF64[1, 0]
+ket1 = ComplexF64[0, 1]
+ψ01 = tensor_product(ket0, ket1)
+
+report = analyze_entanglement(ψ01, (2, 2))
+
+@assert report.status === :separable
+@assert report.certified
+@assert report.certificate_kind === :pure_product_decomposition
+```
+
+For explicit mixed separable states, low-dimensional PPT certificates,
+higher-dimensional `:unknown` outcomes, and the sufficient separable-ball
+test, continue with [Separability by example](separability_examples.md).
 
 ## Randomized operations require an RNG
 

@@ -11,6 +11,7 @@ Run any tutorial from the repository root:
 julia --startup-file=no --project=. tutorials/subsystem_reductions.jl
 julia --startup-file=no --project=. tutorials/local_channel_noise.jl
 julia --startup-file=no --project=. tutorials/entanglement_certificates.jl
+julia --startup-file=no --project=. tutorials/separability_examples.jl
 ```
 
 Run the complete tutorial gate with:
@@ -62,9 +63,31 @@ initial negative-partial-transpose witness certifies entanglement; after local
 depolarization, the PPT theorem in the exact ``2\times2`` domain certifies
 separability.
 
+## Separability certificates by example
+
+This workflow starts with a visibly factorized pure state, builds full-rank
+``2\times2`` and ``3\times3`` density matrices from product-basis projectors,
+and compares the native criterion pipeline with the sufficient separable-ball
+test. It also shows why `:outside_ball` is not an entanglement verdict.
+
+```@example tutorial-separability
+using QuantumEntanglementTools
+
+path = joinpath(
+    pkgdir(QuantumEntanglementTools), "tutorials", "separability_examples.jl"
+)
+include(path);
+TutorialSeparabilityExamples.run()
+```
+
+The examples deliberately include one state for which
+`analyze_entanglement` returns `:unknown` while `in_separable_ball` returns
+`:separable_certified`. See [Separability by example](separability_examples.md)
+for the construction line by line and a guide to the two result vocabularies.
+
 ## Certificates, necessary tests, and `unknown`
 
-The final workflow contrasts four outcomes:
+The certificate workflow contrasts four outcomes:
 
 - Schmidt rank certifies that a pure Bell state is entangled.
 - An explicit product decomposition certifies a pure product state as

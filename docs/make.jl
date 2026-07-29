@@ -24,6 +24,7 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "Getting started" => "getting_started.md",
+        "Separability by example" => "separability_examples.md",
         "Architecture" => "architecture.md",
         "Conventions" => "conventions.md",
         "States, operators, and random objects" => "states_operators_random.md",

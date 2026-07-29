@@ -14,7 +14,7 @@ High-level analysis uses package-owned `EntanglementReport` values, with one
 - `separable`: backed by a valid sufficient criterion or decomposition;
 - `unknown`: no requested certificate was obtained.
 
-A failed necessary test is generally not a separability certificate. An
+Passing a necessary condition is generally not a separability certificate. An
 exception, time limit, numerical failure, or undocumented backend boolean must
 not be translated into `separable`.
 
@@ -25,6 +25,11 @@ whose `CriterionStatus` is `CriterionEntanglementDetected`,
 `CriterionSatisfied`, or `CriterionUnknown`, with the measured value, exact
 boundary, numerical tolerance, and optional witness. A satisfied necessary
 condition is not silently relabeled `separable`.
+
+For practical constructions and complete output examples, start with
+[Separability by example](separability_examples.md). There is intentionally no
+general Boolean `is_separable`; use the structured status and certification
+fields instead.
 
 ## Native pipeline
 
@@ -52,6 +57,11 @@ trailing Schmidt coefficient above the configured threshold certifies
 entanglement. Separability is certified only when the computed trailing
 coefficients are exactly zero; a tolerance-defined rank-one result with
 nonzero trailing coefficients remains `unknown`.
+
+The pipeline does not call `in_separable_ball`. That function is a separate
+sufficient test with its own `SeparableBallResult` statuses; invoke it
+explicitly when a density matrix may be close enough to the maximally mixed
+state.
 
 These APIs are intentionally narrower than a general separability solver. They
 do not export or claim a complete replacement for QETLAB `IsSeparable`.

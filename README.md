@@ -14,8 +14,8 @@ backend integrations.
 
 ## Current status
 
-- Full local package suite: 2,295/2,295 assertions pass on Julia 1.12.6 and
-  Julia 1.10.11: 2,270 core assertions plus 25 assertions that execute the
+- Full local package suite: 2,306/2,306 assertions pass on Julia 1.12.6 and
+  Julia 1.10.11: 2,270 core assertions plus 36 assertions that execute the
   published tutorials. This is a development baseline, not supported-platform
   or MATLAB validation.
 - Inventory: 76 of 163 QETLAB rows have been manually reviewed: 63 are marked
@@ -90,6 +90,30 @@ Pure-vector reduction returns an operator matrix. Subsystem labels are one-based
 the first tensor factor is most significant, and tracing every subsystem returns
 a `1 × 1` matrix. See [`docs/src/conventions.md`](docs/src/conventions.md).
 
+### Separability quick start
+
+Construct product states explicitly so the subsystem order remains visible:
+
+```julia
+using QuantumEntanglementTools
+
+ket0 = ComplexF64[1, 0]
+ket1 = ComplexF64[0, 1]
+ψ01 = tensor_product(ket0, ket1)
+
+report = analyze_entanglement(ψ01, (2, 2))
+
+@assert report.status === :separable
+@assert report.certified
+@assert report.certificate_kind === :pure_product_decomposition
+```
+
+There is intentionally no general Boolean `is_separable`: mixed-state
+separability is hard, and `:unknown` must not be confused with entanglement.
+The [separability examples](docs/src/separability_examples.md) build explicit
+mixed states, compare the native pipeline with `in_separable_ball`, and explain
+every status and certificate.
+
 Randomized APIs never choose an implicit process-global stream:
 
 ```julia
@@ -103,7 +127,7 @@ The `MATLABCompat` randomized spellings also require a leading RNG. See
 [states, operators, and random objects](docs/src/states_operators_random.md)
 for examples and current limitations.
 
-Three deterministic tutorials run as ordinary scripts and as part of
+Four deterministic tutorials run as ordinary scripts and as part of
 `Pkg.test()`:
 
 ```sh
@@ -111,7 +135,7 @@ julia --startup-file=no --project=. tutorials/runtests.jl
 ```
 
 See [Executable tutorials](docs/src/tutorials.md) for the standalone subsystem,
-channel, and entanglement-certificate workflows.
+channel, separability, and entanglement-certificate workflows.
 
 ## Design commitments
 
@@ -126,6 +150,7 @@ Heavy solvers and third-party detection packages will remain optional.
 Start with:
 
 - [Getting started](docs/src/getting_started.md)
+- [Separability by example](docs/src/separability_examples.md)
 - [Mathematical conventions](docs/src/conventions.md)
 - [States, operators, and random objects](docs/src/states_operators_random.md)
 - [Product structure and separable-ball certificates](docs/src/product_analysis.md)
