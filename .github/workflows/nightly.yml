@@ -22,13 +22,13 @@ jobs:
       JULIA_NUM_THREADS: "2"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Julia nightly
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         with:
           version: nightly
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@v2
+        uses: julia-actions/cache@v3
       - name: Show dependency and runtime status
         run: >-
           julia --startup-file=no --project=. -e

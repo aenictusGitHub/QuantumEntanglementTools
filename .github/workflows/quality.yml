@@ -21,13 +21,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@v2
+        uses: julia-actions/cache@v3
       - name: Instantiate core environment
         run: julia --startup-file=no --project=. -e 'using Pkg; Pkg.instantiate()'
       - name: Check generated upstream inventory
@@ -43,13 +43,13 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@v2
+        uses: julia-actions/cache@v3
       - name: Instantiate quality environment with local package
         run: >-
           julia --startup-file=no --project=quality -e
@@ -65,13 +65,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@v2
+        uses: julia-actions/cache@v3
       - name: Instantiate oracle environment with local package
         run: >-
           julia --startup-file=no --project=test/oracle -e
@@ -120,13 +120,13 @@ jobs:
       JULIA_NUM_THREADS: "1"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@v2
+        uses: julia-actions/cache@v3
       - name: Instantiate benchmark environment
         run: julia --startup-file=no --project=benchmark -e 'using Pkg; Pkg.instantiate()'
       - name: Run non-recording smoke suite

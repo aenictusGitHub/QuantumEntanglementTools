@@ -41,13 +41,13 @@ jobs:
           - "1"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         with:
           version: ${{ matrix.julia-version }}
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@v2
+        uses: julia-actions/cache@v3
       - name: Instantiate docs environment with local package
         run: >-
           julia --startup-file=no --project=docs -e
@@ -76,7 +76,7 @@ jobs:
           test -f docs/build/assets/qet_code_generator_ui.js
       - name: Upload rendered site
         if: matrix.julia-version == '1'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: documentation
           path: docs/build
