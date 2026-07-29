@@ -7,12 +7,12 @@ work continues.
 ## Repository state
 
 - Branch: `main`.
-- Milestone: `docs: add explicit separability examples`. This
-  handoff is part of that milestone commit; use `git rev-parse HEAD` for its
-  exact revision.
+- Milestone: `docs: add symmetric SAPPT witness tutorial`. This handoff is part
+  of that milestone commit; use `git rev-parse HEAD` for its exact revision.
 - Remote: private `origin` at
   `https://github.com/aenictusGitHub/QuantumEntanglementTools.git`; `main`
-  tracks `origin/main`.
+  tracks `origin/main`. After this milestone, local `main` is two commits ahead
+  of `origin/main`; neither local documentation commit has been pushed.
 - Package: `QuantumEntanglementTools`, UUID
   `45675e5b-5c8b-4983-b92d-4c3725d56c4e`, version `0.1.0`.
 - Package author metadata: `John MARTIN <jmartin@uliege.be>`.
@@ -30,6 +30,11 @@ work continues.
   Its observed global RNG, stdout/logging, and BLAS-thread side effects are
   contained by the completed fresh-child-process adapter and covered by the
   dedicated extension suite.
+- The state family and rounded witness matrices in Phys. Rev. A 111, 042418
+  (2025) were independently audited against the supplied journal PDF. The
+  executable tutorial records the GHZ phase mismatch explicitly, gives an
+  exact Bernstein-basis block-positivity proof for the printed five-qubit
+  witness, and does not claim to rerun the source paper's SDP.
 - Local Julia/OS/BLAS/tool evidence is in `docs/BUILD_ENVIRONMENT.md`.
 
 ## Current status
@@ -63,16 +68,20 @@ three-valued boundary outcomes, witnesses, explicit sparse-densification gates,
 and combinatorial limits. `IsPSD` remains partial because the pinned CVX
 symbolic branch is omitted.
 
-Four deterministic executable tutorials cover subsystem reductions and
+Five deterministic executable tutorials cover subsystem reductions and
 ordering, local channel action and representation conversion, separability
-certificates, and certificate-aware entanglement analysis. Each script runs
-independently from `tutorials/`; `tutorials/runtests.jl` supplies a 36/36
+certificates, symmetric SAPPT states and witnesses, and certificate-aware
+entanglement analysis. Each script runs independently from `tutorials/`;
+`tutorials/runtests.jl` supplies a 48/48
 automated gate included by `Pkg.test()`. `docs/src/tutorials.md` executes those
 same scripts as live Documenter examples instead of publishing copied output.
 `docs/src/separability_examples.md` also provides direct, copyable examples for
 pure products, mixed product-state decompositions, low-dimensional PPT
 certification, higher-dimensional inconclusive pipelines, and the separate
-separable-ball result vocabulary.
+separable-ball result vocabulary. The paper-specific page and tutorial add a
+finite five-qubit separable decomposition, same-spectrum SAPPT representatives,
+and published plus decomposable witness constructions while keeping the
+paper's numerical boundary distinct from package-owned certificates.
 
 The optional EntanglementDetection.jl 0.2.2 integration is implemented as a
 weak-dependency Julia extension. Every heuristic search runs in a fresh child
@@ -99,7 +108,7 @@ eigenspectrum/minor cross-checks, but no MATLAB-family oracle.
 All 42 quick benchmark cases completed, including exactly three product and
 three matrix cases. Aqua passes 11/11 and all 25 representative JET probes
 pass; those probes do not cover matrix predicates. The integrated package
-corpus contains 2,306 assertions—2,270 core plus 36 executable-tutorial
+corpus contains 2,318 assertions—2,270 core plus 48 executable-tutorial
 assertions—and passes on Julia 1.12.6 and Julia 1.10.11. Strict Documenter,
 formatter, inventory (163 files/503 edges/zero cycles), and
 public-API/provenance (214 bindings) gates pass. Every committed oracle
@@ -130,6 +139,7 @@ julia --startup-file=no --project=. tutorials/subsystem_reductions.jl
 julia --startup-file=no --project=. tutorials/local_channel_noise.jl
 julia --startup-file=no --project=. tutorials/entanglement_certificates.jl
 julia --startup-file=no --project=. tutorials/separability_examples.jl
+julia --startup-file=no --project=. tutorials/symmetric_sappt_witnesses.jl
 julia --startup-file=no --project=. tutorials/runtests.jl
 julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 julia --startup-file=no --project=docs docs/make.jl

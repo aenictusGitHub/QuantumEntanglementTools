@@ -12,6 +12,7 @@ julia --startup-file=no --project=. tutorials/subsystem_reductions.jl
 julia --startup-file=no --project=. tutorials/local_channel_noise.jl
 julia --startup-file=no --project=. tutorials/entanglement_certificates.jl
 julia --startup-file=no --project=. tutorials/separability_examples.jl
+julia --startup-file=no --project=. tutorials/symmetric_sappt_witnesses.jl
 ```
 
 Run the complete tutorial gate with:
@@ -84,6 +85,30 @@ The examples deliberately include one state for which
 `analyze_entanglement` returns `:unknown` while `in_separable_ball` returns
 `:separable_certified`. See [Separability by example](separability_examples.md)
 for the construction line by line and a guide to the two result vocabularies.
+
+## Symmetric SAPPT states and witnesses
+
+This workflow reproduces the five-qubit family studied by Louvet *et al.* It
+constructs a 19-term separable decomposition, compares it with a same-spectrum
+GHZ representative, reconstructs the published symmetric witness, and builds a
+decomposable NPT witness below the SAPPT threshold. The code also treats the
+GHZ phase convention explicitly.
+
+```@example tutorial-symmetric-sappt
+using QuantumEntanglementTools
+
+path = joinpath(
+    pkgdir(QuantumEntanglementTools), "tutorials", "symmetric_sappt_witnesses.jl"
+)
+include(path);
+TutorialSymmetricSAPPTWitnesses.run()
+```
+
+The rounded witness coefficients reproduce the paper's reported values; the
+optimization that originally produced them is not rerun. See
+[Symmetric SAPPT states and witnesses](paper_symmetric_separability.md) for the
+state family, finite separable decomposition, block-positivity calculation,
+phase convention, and certification boundaries.
 
 ## Certificates, necessary tests, and `unknown`
 

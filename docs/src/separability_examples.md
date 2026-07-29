@@ -196,3 +196,7 @@ For the complete criterion ordering, tolerance behavior, and witness semantics,
 see [Entanglement backends](entanglement_backends.md). For the separable-ball
 formula and structured input paths, see
 [Product structure and separable-ball certificates](product_analysis.md).
+For a many-qubit example from a recent research family, including an explicit
+finite product-state decomposition and two different witness constructions,
+continue with
+[Symmetric SAPPT states and witnesses](paper_symmetric_separability.md).

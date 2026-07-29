@@ -25,6 +25,7 @@ makedocs(;
         "Home" => "index.md",
         "Getting started" => "getting_started.md",
         "Separability by example" => "separability_examples.md",
+        "Symmetric SAPPT states and witnesses" => "paper_symmetric_separability.md",
         "Architecture" => "architecture.md",
         "Conventions" => "conventions.md",
         "States, operators, and random objects" => "states_operators_random.md",

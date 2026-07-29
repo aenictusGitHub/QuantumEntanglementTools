@@ -25,7 +25,7 @@ that every tool below has successfully built, tested, or validated the package.
 | Julia threads | 1 default, 1 interactive, 1 GC |
 | BLAS configuration | `LBTConfig([ILP64] libopenblas64_.dylib)` |
 
-The core project policy minimum is Julia 1.10. The full 2,306-assertion local
+The core project policy minimum is Julia 1.10. The full 2,318-assertion local
 package corpus passes on Julia 1.12.6 and Julia 1.10.11, but these two local
 versions do not substitute for remote CI on supported platforms or multiple
 thread counts.
@@ -60,10 +60,10 @@ test environment.
 
 ## Local checks recorded
 
-- Package: the integrated 2,306-assertion corpus, comprising 2,270 core
-  assertions plus 36 executable-tutorial assertions, passed under Julia 1.12.6
+- Package: the integrated 2,318-assertion corpus, comprising 2,270 core
+  assertions plus 48 executable-tutorial assertions, passed under Julia 1.12.6
   and Julia 1.10.11.
-- Executable tutorials: the standalone 36-assertion runner passed under Julia
+- Executable tutorials: the standalone 48-assertion runner passed under Julia
   1.12.6 and Julia 1.10.11; the same scripts run from `Pkg.test()` and as live
   documentation examples.
 - Optional integration: the exact EntanglementDetection.jl 0.2.2 focused suite

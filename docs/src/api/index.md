@@ -8,8 +8,8 @@ measures/criteria assertions across 22 native bindings and 11 wrappers. The
 native entanglement pipeline passes 68 assertions across 10 project-native
 orchestration exports, and the optional backend boundary adds two public
 descriptor/configuration types with 125 focused extension assertions. Tier E
-coherence passes 52. The integrated package corpus passes 2,306 assertions
-(2,270 core plus 36 executable tutorials) on Julia 1.12.6 and 1.10.11. Tier E
+coherence passes 52. The integrated package corpus passes 2,318 assertions
+(2,270 core plus 48 executable tutorials) on Julia 1.12.6 and 1.10.11. Tier E
 product analysis passes 175 native and 52 compatibility assertions across 10
 native bindings and six wrappers. Tier E
 matrix analysis passes 127 native and 32 compatibility assertions across four

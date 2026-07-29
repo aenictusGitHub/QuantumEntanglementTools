@@ -17,9 +17,9 @@ entanglement pipeline passes 68/68. Tier E coherence passes 52/52, product
 analysis passes 175/175 native plus 52/52 compatibility assertions, matrix
 analysis passes 127/127 native plus 32/32 compatibility assertions, and matrix
 predicates pass 166/166 native plus 37/37 compatibility assertions. The
-integrated 2,306-assertion package corpus, comprising 2,270 core assertions
-plus 36 executable-tutorial assertions, passes on Julia 1.12.6 and the minimum
-supported Julia 1.10.11. The standalone tutorial runner also passes 36/36 on
+integrated 2,318-assertion package corpus, comprising 2,270 core assertions
+plus 48 executable-tutorial assertions, passes on Julia 1.12.6 and the minimum
+supported Julia 1.10.11. The standalone tutorial runner also passes 48/48 on
 both Julia versions, and the public-API/provenance gate passes over 214 public
 bindings.
 
@@ -35,8 +35,8 @@ produced cited evidence. MATLAB is absent.
 | Validation class | Current evidence |
 |---|---|
 | Package load | Passed as part of `Pkg.test()` |
-| Core unit tests | Tier A 304/304, Tier B 941/941, Tier C 154/154, Tier D measures/criteria 162/162, native pipeline 68/68, Tier E coherence 52/52, product analysis 175/175 native plus 52/52 compatibility, matrix analysis 127/127 native plus 32/32 compatibility, and matrix predicates 166/166 native plus 37/37 compatibility pass locally; these 2,270 core assertions plus 36 tutorial assertions give an integrated total of 2,306/2,306 on Julia 1.12.6 and 1.10.11 |
-| Executable tutorials | Four repository-native scripts run standalone, through a 36-assertion tutorial gate, from `Pkg.test()`, and as live Documenter examples; the standalone gate passes 36/36 on Julia 1.12.6 and 1.10.11 |
+| Core unit tests | Tier A 304/304, Tier B 941/941, Tier C 154/154, Tier D measures/criteria 162/162, native pipeline 68/68, Tier E coherence 52/52, product analysis 175/175 native plus 52/52 compatibility, matrix analysis 127/127 native plus 32/32 compatibility, and matrix predicates 166/166 native plus 37/37 compatibility pass locally; these 2,270 core assertions plus 48 tutorial assertions give an integrated total of 2,318/2,318 on Julia 1.12.6 and 1.10.11 |
+| Executable tutorials | Five repository-native scripts run standalone, through a 48-assertion tutorial gate, from `Pkg.test()`, and as live Documenter examples; the standalone gate passes 48/48 on Julia 1.12.6 and 1.10.11 |
 | Tier A analytic tests | Bell reduction/PT spectrum, exact bases/projectors, tensor identities |
 | Tier B analytic tests | Operator-basis identities, named-state support/normalization, mixed-state PSD/trace/PPT properties |
 | Tier C analytic tests | Kraus/Choi/superoperator round trips, channel application, CP/TP/unital diagnostics, Hilbert--Schmidt duality, complementary/partial maps, and analytic channel/positive-map formulas |
@@ -65,10 +65,10 @@ produced cited evidence. MATLAB is absent.
 
 The historical 2,270-assertion core baseline was run on the exact staged source
 tree committed as implementation milestone
-`9b0d0d3b8177eded5b8743d250044d5428625b1b`. The 2026-07-29 separability
+`9b0d0d3b8177eded5b8743d250044d5428625b1b`. The 2026-07-29 symmetric-SAPPT
 example evidence was recorded on the integration worktree based on
-`6bf8d614099a3e60163c3ceaa1713fc1cfca592e`; the current corpus adds a fourth
-executable tutorial and 11 independently reported tutorial assertions without
+`3774e3db477352419b3bc0198047fc0834e51ccc`; the current corpus adds a fifth
+executable tutorial and 12 independently reported tutorial assertions without
 changing the historical core or oracle artifacts.
 The environment is recorded in `BUILD_ENVIRONMENT.md`:
 
@@ -82,7 +82,7 @@ Tier C `154`, Tier D measures/criteria
 `25 + 30 + 11 + 15 + 11 + 38 + 32 = 162`, the native pipeline `68`,
 coherence `52`, product `175 + 52`, matrix analysis `127 + 32`, and matrix
 predicates `166 + 37`, for `2,270 / 2,270`. The executable tutorial gate adds
-`36 / 36`, giving the integrated package result `2,306 / 2,306`.
+`48 / 48`, giving the integrated package result `2,318 / 2,318`.
 The Julia 1.10 invocation warned that the ignored development
 `Manifest.toml` had been resolved by Julia 1.12 and that project compatibility
 had changed; `Pkg.test()` still resolved its temporary test environment and
@@ -95,13 +95,14 @@ The exact tutorial scripts were also run through their standalone gate:
 julia --startup-file=no --project=. tutorials/runtests.jl
 ```
 
-Result: `36 passed / 36 total` on Julia 1.12.6 and Julia 1.10.11. The runner
+Result: `48 passed / 48 total` on Julia 1.12.6 and Julia 1.10.11. The runner
 executes `tutorials/subsystem_reductions.jl`,
 `tutorials/local_channel_noise.jl`, and
 `tutorials/entanglement_certificates.jl`, plus
-`tutorials/separability_examples.jl`; `Pkg.test()` includes the same runner,
-and the strict documentation build evaluates the same calculations as live
-examples.
+`tutorials/separability_examples.jl` and
+`tutorials/symmetric_sappt_witnesses.jl`; `Pkg.test()` includes the same
+runner, and the strict documentation build evaluates the same calculations as
+live examples.
 
 The optional EntanglementDetection.jl environment and focused suite were run
 with:

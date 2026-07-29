@@ -20,6 +20,9 @@ diagnostic and certification results, and optional package extensions.
   choices that still need tests.
 - [Separability by example](separability_examples.md) constructs pure and mixed
   product-state examples and explains certified versus inconclusive outcomes.
+- [Symmetric SAPPT states and witnesses](paper_symmetric_separability.md)
+  reproduces a research family with an explicit separable decomposition and
+  constructive entanglement witnesses.
 - [Product structure and separable-ball certificates](product_analysis.md)
   documents tolerance-aware product classifications and sufficient
   certificate semantics.
@@ -34,8 +37,8 @@ diagnostic and certification results, and optional package extensions.
 - [Entanglement backends](entanglement_backends.md) explains certificate and
   optional-backend boundaries.
 - [Executable tutorials](tutorials.md) runs the exact subsystem, channel,
-  separability, and entanglement-analysis scripts exercised by the package
-  tests.
+  separability, symmetric-witness, and entanglement-analysis scripts exercised
+  by the package tests.
 - [EntanglementDetection.jl extension](entanglement_detection_extension.md)
   documents the optional child-process adapter and its uncertified-result
   boundary.

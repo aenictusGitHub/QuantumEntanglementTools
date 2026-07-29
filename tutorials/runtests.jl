@@ -4,6 +4,7 @@ include("subsystem_reductions.jl")
 include("local_channel_noise.jl")
 include("entanglement_certificates.jl")
 include("separability_examples.jl")
+include("symmetric_sappt_witnesses.jl")
 
 @testset "Executable tutorials" begin
     @testset "subsystem reductions" begin
@@ -68,5 +69,32 @@ include("separability_examples.jl")
             (:ppt => :unknown, :realignment => :unknown, :reduction => :unknown)
         @test result.higher_ball_status === :separable_certified
         @test result.product_ball_status === :outside_ball
+    end
+
+    @testset "symmetric SAPPT witnesses" begin
+        output = IOBuffer()
+        result = TutorialSymmetricSAPPTWitnesses.run(; io=output)
+
+        @test result.p_sappt_min == 30 // 31
+        @test result.same_spectrum_error <= 1e-14
+        @test result.separable_decomposition_terms == 19
+        @test isapprox(result.separable_decomposition_weight_sum, 1; atol=1e-14, rtol=0)
+        @test result.separable_decomposition_error <= 1e-14
+        @test result.p_sappt_min < result.p_demo < result.witness_detection_limit
+        @test min(result.restricted_pt_minimum_1_4, result.restricted_pt_minimum_2_3) > 0
+        @test result.witness_expectation_demo < 0
+        @test isapprox(
+            result.witness_detection_limit, 0.9686241592915386; atol=1e-14, rtol=0
+        )
+        @test isapprox(result.product_witness_minimum, 0.0027637875; atol=1e-13, rtol=0)
+        @test result.npt_minimum < 0 && isapprox(
+            result.npt_witness_expectation, result.npt_minimum; atol=1e-14, rtol=0
+        )
+        @test result.unmatched_minus_witness_expectation > 0 && isapprox(
+            result.minus_phase_witness_expectation,
+            result.witness_expectation_at_pmin;
+            atol=1e-13,
+            rtol=0,
+        )
     end
 end

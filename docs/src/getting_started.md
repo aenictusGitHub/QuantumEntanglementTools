@@ -11,7 +11,7 @@ From the repository root:
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 ```
 
-The package test entry point executes the four published tutorials. They can
+The package test entry point executes the five published tutorials. They can
 also be run directly:
 
 ```sh
@@ -77,6 +77,9 @@ report = analyze_entanglement(ψ01, (2, 2))
 For explicit mixed separable states, low-dimensional PPT certificates,
 higher-dimensional `:unknown` outcomes, and the sufficient separable-ball
 test, continue with [Separability by example](separability_examples.md).
+For a five-qubit example with an explicit finite decomposition and witness
+construction, continue with
+[Symmetric SAPPT states and witnesses](paper_symmetric_separability.md).
 
 ## Randomized operations require an RNG
 

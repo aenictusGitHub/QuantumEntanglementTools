@@ -14,8 +14,8 @@ backend integrations.
 
 ## Current status
 
-- Full local package suite: 2,306/2,306 assertions pass on Julia 1.12.6 and
-  Julia 1.10.11: 2,270 core assertions plus 36 assertions that execute the
+- Full local package suite: 2,318/2,318 assertions pass on Julia 1.12.6 and
+  Julia 1.10.11: 2,270 core assertions plus 48 assertions that execute the
   published tutorials. This is a development baseline, not supported-platform
   or MATLAB validation.
 - Inventory: 76 of 163 QETLAB rows have been manually reviewed: 63 are marked
@@ -112,7 +112,10 @@ There is intentionally no general Boolean `is_separable`: mixed-state
 separability is hard, and `:unknown` must not be confused with entanglement.
 The [separability examples](docs/src/separability_examples.md) build explicit
 mixed states, compare the native pipeline with `in_separable_ball`, and explain
-every status and certificate.
+every status and certificate. The
+[symmetric SAPPT example](docs/src/paper_symmetric_separability.md) adds an
+explicit five-qubit separable decomposition and constructive entanglement
+witnesses for the state family in Phys. Rev. A 111, 042418 (2025).
 
 Randomized APIs never choose an implicit process-global stream:
 
@@ -127,7 +130,7 @@ The `MATLABCompat` randomized spellings also require a leading RNG. See
 [states, operators, and random objects](docs/src/states_operators_random.md)
 for examples and current limitations.
 
-Four deterministic tutorials run as ordinary scripts and as part of
+Five deterministic tutorials run as ordinary scripts and as part of
 `Pkg.test()`:
 
 ```sh
@@ -135,7 +138,8 @@ julia --startup-file=no --project=. tutorials/runtests.jl
 ```
 
 See [Executable tutorials](docs/src/tutorials.md) for the standalone subsystem,
-channel, separability, and entanglement-certificate workflows.
+channel, separability, symmetric-witness, and entanglement-certificate
+workflows.
 
 ## Design commitments
 
@@ -151,6 +155,7 @@ Start with:
 
 - [Getting started](docs/src/getting_started.md)
 - [Separability by example](docs/src/separability_examples.md)
+- [Symmetric SAPPT states and witnesses](docs/src/paper_symmetric_separability.md)
 - [Mathematical conventions](docs/src/conventions.md)
 - [States, operators, and random objects](docs/src/states_operators_random.md)
 - [Product structure and separable-ball certificates](docs/src/product_analysis.md)
