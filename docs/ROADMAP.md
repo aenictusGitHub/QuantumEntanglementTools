@@ -38,9 +38,12 @@ solver extensions.
 
 ## M6 — EntanglementDetection integration
 
-Build an optional load-order-safe adapter. Resolve or isolate the pinned
-version's global RNG, stdout/logging, and BLAS-thread side effects before calling
-the integration safe.
+Maintain the exact-version, load-order-safe adapter through a fresh child
+process. The local 0.2.2 gate now covers caller RNG, stdout/logger, BLAS state,
+timeouts, forced termination, interrupts, malformed responses, and conservative
+candidate translation. Completion still requires the configured Julia
+1.11/1.12 Linux/macOS/Windows workflow to pass remotely; every future backend
+version must be re-audited before widening compatibility.
 
 ## M7 — QETLAB completeness sweep
 
@@ -53,11 +56,3 @@ blocker. Complete provenance and validation matrices.
 Review API stability, cross-platform/minimum-version CI, documentation, legal
 notices, registry readiness, allocation/performance evidence, and SemVer policy.
 Do not tag 1.0 solely because the function count is high.
-
-## Separate QUBIT4MATLAB stage
-
-This stage is blocked before source inspection by a material license conflict.
-If authoritative clarification resolves it, work starts from a tested main commit
-on an isolated branch, performs a per-file audit, reuses overlapping core
-operations, and ends in human technical/legal review rather than an automatic
-merge.

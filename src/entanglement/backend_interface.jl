@@ -27,6 +27,106 @@ Descriptor for the dependency-free criteria implemented by this package.
 struct NativeEntanglementBackend <: AbstractEntanglementBackend end
 
 """
+    EntanglementDetectionBackend
+
+Descriptor for the optional EntanglementDetection.jl adapter. The descriptor
+is returned by [`available_entanglement_backends`](@ref) only after
+EntanglementDetection.jl has loaded and activated the package extension.
+"""
+struct EntanglementDetectionBackend <: AbstractEntanglementBackend end
+
+abstract type AbstractEntanglementDetectionMethod <: AbstractEntanglementMethod end
+
+"""
+    EntanglementDetectionSearch(;
+        timeout_seconds=120,
+        max_iteration=10_000,
+        epsilon=1e-6,
+        callback_iter=10_000,
+        atol=0,
+        rtol=sqrt(eps(Float64)),
+        allow_densify=false,
+    )
+
+Configure the optional EntanglementDetection.jl 0.2.2 heuristic search.
+Execution always occurs in a fresh child Julia process because that backend
+version seeds its default RNG and has options that can redirect stdout or
+change the process-wide BLAS thread count. `timeout_seconds` is a finite,
+strictly positive wall-clock limit; a timeout, child-process failure, or
+backend exception is returned as an uncertified `:unknown`
+[`EntanglementReport`](@ref).
+
+`max_iteration`, `epsilon`, and `callback_iter` are passed to the documented
+public `EntanglementDetection.entanglement_detection` entry point. The adapter
+fixes backend verbosity to zero and does not accept a logfile. Input density
+matrices use the package's normal finite/Hermitian/trace/positivity validation.
+Sparse input requires the explicit `allow_densify=true` opt-in.
+
+EntanglementDetection.jl's Boolean-or-`nothing` conclusion is retained only as
+package-owned candidate evidence. It is never upgraded by this adapter to a
+certified entanglement or separability conclusion.
+"""
+struct EntanglementDetectionSearch{T<:Real} <: AbstractEntanglementDetectionMethod
+    timeout_seconds::Float64
+    max_iteration::Int
+    epsilon::T
+    callback_iter::Int
+    atol::T
+    rtol::T
+    allow_densify::Bool
+end
+
+function EntanglementDetectionSearch(;
+    timeout_seconds=120,
+    max_iteration=10_000,
+    epsilon=1e-6,
+    callback_iter=10_000,
+    atol=0,
+    rtol=sqrt(eps(Float64)),
+    allow_densify::Bool=false,
+)
+    timeout_seconds isa Real && !(timeout_seconds isa Bool) ||
+        throw(ArgumentError("timeout_seconds must be a finite positive real number"))
+    isfinite(timeout_seconds) && timeout_seconds > zero(timeout_seconds) ||
+        throw(ArgumentError("timeout_seconds must be a finite positive real number"))
+    timeout = try
+        Float64(timeout_seconds)
+    catch error
+        error isa InexactError || rethrow()
+        throw(ArgumentError("timeout_seconds cannot be represented as Float64"))
+    end
+    isfinite(timeout) && timeout > 0 || throw(
+        ArgumentError(
+            "timeout_seconds must remain finite and positive when represented as Float64",
+        ),
+    )
+
+    iterations = _positive_int(max_iteration, "max_iteration")
+    callback = _positive_int(callback_iter, "callback_iter")
+    checked_epsilon = _tierd_validate_tolerance(epsilon, "epsilon")
+    checked_epsilon === nothing &&
+        throw(ArgumentError("epsilon must be a finite nonnegative real number"))
+    absolute = _tierd_validate_tolerance(atol, "atol")
+    absolute === nothing &&
+        throw(ArgumentError("atol must be a finite nonnegative real number"))
+    relative = _tierd_validate_tolerance(rtol, "rtol")
+    relative === nothing &&
+        throw(ArgumentError("rtol must be a finite nonnegative real number"))
+    promoted_epsilon, promoted_absolute, promoted_relative = promote(
+        checked_epsilon, absolute, relative
+    )
+    return EntanglementDetectionSearch(
+        timeout,
+        iterations,
+        promoted_epsilon,
+        callback,
+        promoted_absolute,
+        promoted_relative,
+        allow_densify,
+    )
+end
+
+"""
     NativePPT(; systems=(2,), atol=0.0, rtol=sqrt(eps(Float64)),
                 allow_densify=false)
 
@@ -195,6 +295,33 @@ function backend_capabilities(::NativeEntanglementBackend)
     )
 end
 
+function _entanglement_detection_extension()
+    return Base.get_extension(
+        @__MODULE__, :QuantumEntanglementToolsEntanglementDetectionExt
+    )
+end
+
+function backend_capabilities(::EntanglementDetectionBackend)
+    extension = _entanglement_detection_extension()
+    return (
+        name=:entanglement_detection,
+        version=isnothing(extension) ? nothing : extension.backend_version(),
+        methods=(:heuristic_search,),
+        conclusions=(:unknown,),
+        backend_candidates=(:entangled, :separable, :inconclusive),
+        side_effect_free=false,
+        caller_state_isolated=true,
+        isolation=:child_process,
+        optional_dependency=true,
+        minimum_resolvable_julia=v"1.11.0",
+        loaded=(!isnothing(extension)),
+        certifies_conclusions=false,
+        source_integrity_enforced=false,
+        transport_trust=:same_version_local_worker,
+        resource_sandboxed=false,
+    )
+end
+
 """
     available_entanglement_backends()
 
@@ -202,7 +329,11 @@ Return the backends currently registered in the dependency-free core. Optional
 extensions may add explicit backend descriptors but are never loaded merely by
 calling this function.
 """
-available_entanglement_backends() = (NativeEntanglementBackend(),)
+function available_entanglement_backends()
+    native = NativeEntanglementBackend()
+    isnothing(_entanglement_detection_extension()) && return (native,)
+    return (native, EntanglementDetectionBackend())
+end
 
 """
     detect_entanglement(state, dims, method)
@@ -213,6 +344,18 @@ dispatch; absence or failure of a backend must not be mapped to a mathematical
 negative result.
 """
 function detect_entanglement end
+
+function detect_entanglement(
+    ::AbstractMatrix{<:Number}, dims, ::AbstractEntanglementDetectionMethod
+)
+    _as_layout(dims)
+    return throw(
+        ArgumentError(
+            "EntanglementDetection.jl is not loaded; load it explicitly with " *
+            "`using EntanglementDetection` before using EntanglementDetectionSearch",
+        ),
+    )
+end
 
 function _ppt_low_dimension_separability_domain(layout::SubsystemLayout)
     length(layout) == 2 || return false

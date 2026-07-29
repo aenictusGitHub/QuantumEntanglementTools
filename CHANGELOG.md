@@ -13,8 +13,6 @@ a stable public API exists.
 - Initial Julia package shell.
 - Documentation, governance, legal, citation, and CI scaffolding.
 - Explicit pre-alpha status and milestone ledgers.
-- Preserved copy of the separately supplied QUBIT4MATLAB license text and
-  documentation of its material conflict with the v6.5 archive license.
 - Tier A subsystem/indexing, tensor, permutation, partial trace/transpose,
   realignment, projector/basis, reusable-plan, and MATLAB-compatibility APIs.
 - Tier B Pauli, generalized Pauli, Gell-Mann, generalized Gell-Mann, Fourier,
@@ -46,12 +44,21 @@ a stable public API exists.
   Their focused suites pass 166 native and 37 compatibility assertions; no
   MATLAB-family predicate oracle has been run. The `IsPSD` mapping remains
   partial because the pinned CVX symbolic branch is omitted.
-- A 2,270-assertion full package suite passing locally on Julia 1.12.6 and
-  Julia 1.10.11, plus consistency checks over 212 public bindings and 76
-  manually reviewed inventory rows.
+- A 2,295-assertion full package suite passing locally on Julia 1.12.6 and
+  Julia 1.10.11, comprising 2,270 core assertions and 25 executable-tutorial
+  assertions, plus consistency checks over 214 public bindings and 76 manually
+  reviewed inventory rows.
+- Three deterministic executable tutorials for subsystem reductions, local
+  channel noise, and certificate-aware entanglement analysis. The exact scripts
+  run standalone, in `Pkg.test()`, and during the strict documentation build.
 - A 42-case quick benchmark smoke suite and quality checks in which Aqua passes
-  11 assertions and 24 representative JET probes pass. The JET set does not
+  11 assertions and 25 representative JET probes pass. The JET set does not
   cover the matrix predicates.
+- An optional EntanglementDetection.jl 0.2.2 extension that runs heuristic
+  searches only in an isolated child Julia process, preserves candidate results
+  as uncertified evidence, and contains backend failures as `:unknown` reports.
+  Its 125 focused assertions cover load order, caller-state isolation, bounded
+  termination, malformed IPC, and post-launch output-capture failure cleanup.
 
 ### Changed
 

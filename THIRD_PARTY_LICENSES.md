@@ -99,36 +99,16 @@ POSSIBILITY OF SUCH DAMAGE.
   `5f60da1ceef6442acb669e10acc2fa47670bab06`
 - License: MIT; inspected SHA-256:
   `8d7174972190a50508c86dcc936c31d23cccea7ab4b381aa49ab8735ae326824`
-- Intended use: optional package dependency through a Julia extension; no
-  vendored implementation.
+- Intended use: exact-version optional dependency through a Julia extension and
+  a package-owned child-process adapter; no upstream implementation is
+  vendored.
 
-The version and its caller-visible global-state hazards must be reassessed before
-the extension is declared supported. Its package manager installation supplies
-the applicable MIT text; no implementation is vendored here.
-
-## QUBIT4MATLAB v6.5
-
-- Project: QUBIT4MATLAB
-- Copyright supplied separately:
-  `Copyright (c) 2005-2024, Geza Toth`
-- Supplied license copy:
-  [`licenses/QUBIT4MATLAB-LICENSE.txt`](licenses/QUBIT4MATLAB-LICENSE.txt)
-- Author-hosted v6.5 archive SHA-256:
-  `282628dad2b8e134c7d88834770c1293abde3baa05664b161ce698ae30375547`
-- Bundled `QUBIT4MATLAB/bsd.txt` SHA-256:
-  `b0bd73519dd6d16963c8aeb21ef9659e09dd3beb2536d9f736ec1d151f51ca81`
-- Verification status: **material conflict; human clarification required**
-
-The archive's bundled text says 2005–2015, contains two redistribution
-conditions, omits the supplied non-endorsement condition, and has a trailing
-quote. It is therefore not byte-identical or materially identical to the
-separately supplied text. The supplied text is preserved verbatim as evidence,
-but this repository does not claim that it governs the archive.
-
-No QUBIT4MATLAB `.m` implementation files were inspected during this audit.
-Source-informed porting remains blocked, and every archive file will still need
-a per-file authorship and license audit if the conflict is resolved. See
-[`docs/QUBIT4MATLAB_LICENSE_AND_PROVENANCE.md`](docs/QUBIT4MATLAB_LICENSE_AND_PROVENANCE.md).
+The audited version mutates its process-local RNG and has stdout/logging and
+BLAS-thread options with global effects. The adapter therefore invokes its
+public API only in a fresh child process and treats every backend conclusion as
+uncertified candidate evidence. Its package-manager installation supplies the
+applicable MIT text. The exact version and isolation assumptions must be
+reassessed before widening compatibility.
 
 ## System and development tools
 

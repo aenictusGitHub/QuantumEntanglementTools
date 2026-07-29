@@ -14,8 +14,6 @@ function usage(io::IO=stdout)
 Usage: julia scripts/check_upstream_updates.jl [options]
 
 Compare UpstreamManifest.toml pins with current upstream refs/archives.
-QUBIT4MATLAB checks read only the ZIP checksum, README, and bundled license;
-this script never reads MATLAB implementation content from that archive.
 
 Options:
   --manifest PATH       manifest to check (default: UpstreamManifest.toml)

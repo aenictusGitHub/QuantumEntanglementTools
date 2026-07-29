@@ -1,0 +1,91 @@
+# Executable tutorials
+
+These tutorials are ordinary Julia scripts from the repository's `tutorials/`
+directory. Each script performs live calculations, checks its mathematical
+invariants, prints values derived from that run, and returns a small summary for
+the automated tutorial gate.
+
+Run any tutorial from the repository root:
+
+```sh
+julia --startup-file=no --project=. tutorials/subsystem_reductions.jl
+julia --startup-file=no --project=. tutorials/local_channel_noise.jl
+julia --startup-file=no --project=. tutorials/entanglement_certificates.jl
+```
+
+Run the complete tutorial gate with:
+
+```sh
+julia --startup-file=no --project=. tutorials/runtests.jl
+```
+
+The package test entry point includes that same runner, so `Pkg.test()` also
+executes every tutorial. None of these workflows needs an optional backend.
+
+## Subsystem reductions and ordering
+
+The first workflow constructs ``|0\rangle_A \otimes |\Phi^+\rangle_{BC}``.
+It traces out selected systems, moves the product qubit from the first position
+to the last, and checks the Bell pair's partial-transpose spectrum. This makes
+the package's left-to-right subsystem order observable rather than implicit.
+
+```@example tutorial-subsystems
+using QuantumEntanglementTools
+
+path = joinpath(pkgdir(QuantumEntanglementTools), "tutorials", "subsystem_reductions.jl")
+include(path);
+TutorialSubsystemReductions.run()
+```
+
+The vector overload of `partial_trace` forms the mathematical pure-state
+reduction without requiring the tutorial to materialize the full three-qubit
+density matrix. See [Mathematical conventions](conventions.md) for subsystem
+and basis ordering.
+
+## A local channel acting on an entangled state
+
+The second workflow creates a completely depolarizing qubit channel, verifies
+that it is completely positive, trace preserving, and unital, and compares its
+Choi and superoperator representations. Applying it to one half of a Bell state
+produces the maximally mixed two-qubit state.
+
+```@example tutorial-channel
+using QuantumEntanglementTools
+
+path = joinpath(pkgdir(QuantumEntanglementTools), "tutorials", "local_channel_noise.jl")
+include(path);
+TutorialLocalChannelNoise.run()
+```
+
+Both entanglement conclusions in this workflow name their certificates. The
+initial negative-partial-transpose witness certifies entanglement; after local
+depolarization, the PPT theorem in the exact ``2\times2`` domain certifies
+separability.
+
+## Certificates, necessary tests, and `unknown`
+
+The final workflow contrasts four outcomes:
+
+- Schmidt rank certifies that a pure Bell state is entangled.
+- An explicit product decomposition certifies a pure product state as
+  separable.
+- The ``3\times3`` Horodecki example passes the PPT attempt without obtaining a
+  separability certificate, then violates the realignment criterion.
+- The maximally mixed ``3\times3`` state passes all requested necessary tests,
+  but the native pipeline conservatively reports `unknown` because those passes
+  do not constitute a separability certificate in that dimension.
+
+```@example tutorial-certificates
+using QuantumEntanglementTools
+
+path = joinpath(
+    pkgdir(QuantumEntanglementTools), "tutorials", "entanglement_certificates.jl"
+)
+include(path);
+TutorialEntanglementCertificates.run()
+```
+
+Inspect `report.attempts` whenever the route to a conclusion matters. An
+`unknown` result is a deliberate statement about available certification, not
+a synonym for separable or entangled. See [Entanglement
+backends](entanglement_backends.md) for the complete result semantics.

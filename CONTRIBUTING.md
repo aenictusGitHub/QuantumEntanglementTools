@@ -11,9 +11,6 @@ Read `AGENTS.md`, `docs/PORTING_STATUS.md`, `docs/SESSION_HANDOFF.md`, and
 before selecting a function. Open an issue before making a broad convention,
 dependency, or public-API change when an issue tracker is available.
 
-Do not inspect or port QUBIT4MATLAB implementation files while the material
-archive-license conflict in `docs/LEGAL.md` is unresolved.
-
 ## Development setup
 
 Install Julia 1.10 or later, then instantiate and test from the repository root:
@@ -22,9 +19,16 @@ Install Julia 1.10 or later, then instantiate and test from the repository root:
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 ```
 
-The current full corpus contains 2,270 assertions and has passed locally on
-Julia 1.12.6 and Julia 1.10.11. Those runs are development evidence, not a
-substitute for supported-platform CI or MATLAB validation.
+The current full corpus contains 2,295 assertions—2,270 core plus 25
+executable-tutorial assertions—and has passed locally on Julia 1.12.6 and Julia
+1.10.11. Those runs are development evidence, not a substitute for
+supported-platform CI or MATLAB validation.
+
+Run the tutorials independently with:
+
+```sh
+julia --startup-file=no --project=. tutorials/runtests.jl
+```
 
 Build the documentation with:
 
@@ -40,10 +44,32 @@ julia --project=benchmark benchmark/benchmarks.jl --quick --no-save
 ```
 
 Omit `--no-save` only when you intend to keep a local raw artifact under the
-ignored `benchmark/results/local/` directory. Dedicated extension and solver
-commands will be documented here when those environments exist. Do not present
-planned commands as passing checks or the smoke suite as a performance
-comparison.
+ignored `benchmark/results/local/` directory. Do not present planned commands
+as passing checks or the smoke suite as a performance comparison.
+
+Set up and run the optional EntanglementDetection.jl 0.2.2 extension tests from
+the repository root with:
+
+```sh
+julia --project=test/extensions/entanglement_detection -e '
+    using Pkg
+    Pkg.develop(PackageSpec(path=pwd()))
+    Pkg.instantiate()
+'
+julia --startup-file=no --project=test/extensions/entanglement_detection \
+  test/extensions/entanglement_detection/runtests.jl
+```
+
+This fresh-clone path resolves the registered release under the exact `0.2.2`
+compatibility bound. Maintainers may instead develop the ignored audited
+checkout at `dev/upstream/EntanglementDetection.jl` after verifying its commit
+against `UpstreamManifest.toml`. The runtime adapter enforces the package
+version, not a source-tree hash, so controlled validation environments are
+responsible for source integrity. Run this optional environment on Julia 1.11
+or later; its Ket 0.9 dependency does not currently resolve on the core
+package's Julia 1.10 minimum. The dedicated extension suite passes 125/125
+locally on Julia 1.12.6; the configured Julia 1.11/1.12 platform workflow has
+not yet run remotely.
 
 Run the package-quality and ledger checks with:
 
@@ -55,7 +81,7 @@ julia --project=. scripts/check_public_api.jl
 julia --project=. scripts/validate_matrix_predicates.jl
 ```
 
-The current quality run reports Aqua 11/11 and 24 representative JET probes.
+The current quality run reports Aqua 11/11 and 25 representative JET probes.
 Those JET probes do not cover the matrix-predicate functions. The inventory
 currently has 76 manually reviewed rows: 63 implemented, 11 partial, two
 deferred, and 87 pending.

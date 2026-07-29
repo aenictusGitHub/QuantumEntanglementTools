@@ -1,6 +1,6 @@
 # Porting status
 
-Last updated: 2026-07-28.
+Last updated: 2026-07-29.
 
 This is the human-readable status summary. The generated upstream inventory is
 the authoritative function ledger once reviewed. A function is not complete
@@ -30,13 +30,12 @@ merely because a similarly named Julia method exists.
 | Tier E matrix analysis | Four native bindings and four `MATLABCompat` entry points are recorded; 127/127 native and 32/32 compatibility assertions pass |
 | Tier E matrix mappings | Four mappings are implemented with native/compatibility distinctions for strong versus weak majorization and compound boundary shapes/errors; the supplemental artifact passes 59/59 assertions over 22 fixtures |
 | Tier E matrix predicates | Nine native bindings and four structured-result compatibility entry points pass 166/166 native and 37/37 compatibility assertions; `IsPSD` is partial because the pinned CVX symbolic branch is omitted; no MATLAB-family predicate oracle has been run |
-| Recorded full local package run | The integrated 2,270-assertion package corpus passes on Julia 1.12.6 and the minimum supported Julia 1.10.11 |
+| Recorded full local package run | The integrated 2,295-assertion package corpus (2,270 core plus 25 executable tutorials) passes on Julia 1.12.6 and the minimum supported Julia 1.10.11 |
 | Reviewed status totals | 63 implemented, 11 partial, 2 deferred, and 87 pending inventory rows |
 | Upstream differential validation | Tier A: 13 Octave/QETLAB fixtures and 52 assertions pass; Tier B: 18 deterministic fixtures and 72 assertions pass; Tier C: 7 fixtures and 28 assertions pass; Tier D: 13 fixtures and 34 assertions pass; Tier E coherence: 6 fixtures and 25 assertions pass; Tier E product: 14 fixtures and 68 assertions pass; Tier E matrix: 22 fixtures and 59 assertions pass. MATLAB not run; Octave evidence is function-specific and supplemental |
 | Benchmark smoke | 42 quick cases ran locally, including three product-analysis and three matrix-analysis cases; not a regression baseline or comparative performance claim |
 | Native entanglement orchestration | Dependency-free certificate-first pipeline implemented; a satisfied necessary criterion remains `unknown` except for the exact `2×2`/`2×3` PPT theorem, and no full `IsSeparable` mapping is claimed |
-| EntanglementDetection extension | Not implemented/safe; global RNG, stdout, logging, and BLAS-thread hazards require isolation tests |
-| QUBIT4MATLAB v6.5 | **Blocked** by material archive-license conflict; no implementation `.m` files inspected |
+| EntanglementDetection extension | Exact 0.2.2 weak-dependency adapter implemented with bounded child-process isolation and conservative `unknown` reports; 125/125 focused assertions pass on Julia 1.12.6; optional dependency resolves on Julia 1.11+; remote platform workflow pending |
 
 ## Milestones
 
@@ -48,10 +47,9 @@ merely because a similarly named Julia method exists.
 | M3 — channels/maps | In progress; representation, physicality, constructor, wrapper, and focused oracle tests pass locally | Add two-sided Kraus and rectangular row/column operator-space support or retain explicit partial statuses; add supported-platform CI, MATLAB evidence, and reviewed benchmarks |
 | M4 — measures/criteria | In progress; reviewed scalar measures, tri-state necessary criteria, native orchestration, focused tests, supplemental oracle fixtures, and benchmark smoke pass locally | Implement Rényi entropy or retain the explicit partial status; add supported-platform CI and MATLAB evidence; do not claim a general `IsSeparable` implementation |
 | M5 — optimization | Not started | Documented formulations, optional solvers, status-aware tests |
-| M6 — EntanglementDetection | Native backend interface implemented; optional adapter blocked on safe design | Optional load-order tests and containment of observed global side effects |
+| M6 — EntanglementDetection | Local adapter, load-order checks, lifecycle hardening, caller-state isolation, and tri-state translation pass for exact 0.2.2 | Run the configured Julia 1.11/1.12 Linux/macOS/Windows matrix remotely; reassess every widened backend version and retain the trusted-worker/non-certificate limitations |
 | M7 — QETLAB parity sweep | Not started | Every reviewed inventory row implemented, mapped, superseded, or explicitly blocked |
 | M8 — release candidate | Not started | Full CI, docs, legal review, benchmarks, API and registry review |
-| QUBIT4MATLAB branch | Blocked | Human license clarification before source inspection, then isolated audited branch |
 
 ## Completion vocabulary
 
@@ -78,7 +76,6 @@ acceptable final status.
    analytic/property/independent formulations as primary checks.
 5. Turn the current reviewed benchmark smoke cases into a regression baseline
    without claiming comparative speedups.
-6. Keep optional integrations optional and preserve tri-state certification
-   semantics.
-7. Resolve the QUBIT4MATLAB license conflict before any implementation source
-   inspection.
+6. Run the EntanglementDetection Julia 1.11/1.12 platform matrix remotely and
+   keep its exact-version, child-process, trusted-worker, and uncertified-result
+   boundaries explicit.

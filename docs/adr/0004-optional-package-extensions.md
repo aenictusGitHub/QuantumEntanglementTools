@@ -31,7 +31,10 @@ Extensions:
 - Dedicated environments and fresh-process load-order tests are required.
 - A backend's raw result may be carried explicitly, but ordinary core results
   must not leak private backend types.
-- Version-specific global-state hazards are release gates. In particular,
-  EntanglementDetection.jl 0.2.2 is not considered safely integrated until its
-  observed RNG, stdout/logging, and BLAS-thread mutations are isolated and
-  regression-tested.
+- Version-specific global-state hazards are release gates. For
+  EntanglementDetection.jl 0.2.2, the accepted boundary is a bounded fresh
+  child process: the extension neither patches the backend nor offers an
+  in-process escape hatch. Package-owned validation, load-order, caller-state,
+  timeout/interrupt, and response-schema regressions must continue to pass.
+- Child-process isolation does not turn heuristic output into a certificate or
+  turn trusted Julia `Serialization` traffic into a security sandbox.

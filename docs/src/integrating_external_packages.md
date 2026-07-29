@@ -32,3 +32,12 @@ The extension module imports both packages and adds narrowly scoped methods to
 existing core generic functions. It must not re-export the backend namespace or
 install methods dynamically. The contributor-facing placeholder is in
 `dev/extension_template/README.md`.
+
+The concrete
+[EntanglementDetection.jl extension](entanglement_detection_extension.md)
+demonstrates the stricter case in which a documented public backend API still
+has process-global side effects. Its adapter uses an exact weak-dependency pin,
+a bounded fresh child process, package-owned validation and evidence, tests for
+both load orders, and conservative `unknown` translation. That process
+boundary is an engineering containment mechanism, not a certificate upgrade or
+a security sandbox.

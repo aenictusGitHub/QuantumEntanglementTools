@@ -1,8 +1,8 @@
 # Reproducible upstream audit pins. Development checkouts and downloads live
 # under ignored dev/ paths and are not part of the distributable package.
 schema_version = 1
-audit_date = "2026-07-28"
-audit_scope = "QETLAB current master; EntanglementDetection.jl current main/release; QUBIT4MATLAB 6.5 pre-source license gate"
+audit_date = "2026-07-29"
+audit_scope = "QETLAB current master; EntanglementDetection.jl current main/release"
 development_checkout_policy = "ignored-dev-directories-not-vendored"
 
 [[sources]]
@@ -80,9 +80,10 @@ license_file_path = "LICENSE"
 license_sha256 = "8d7174972190a50508c86dcc936c31d23cccea7ab4b381aa49ab8735ae326824"
 documentation_url = "https://zib-iol.github.io/EntanglementDetection.jl/dev/"
 source_code_read = true
-implementation_relationship = "optional-external-dependency-no-vendoring"
+implementation_relationship = "optional-external-dependency-through-child-process-isolated-julia-extension-no-vendoring"
 compatibility_bounds = [
     "julia = 1.9",
+    "effective resolver floor = Julia 1.11 because registered Ket 0.9 releases require Julia 1.11",
     "FrankWolfe = 0.6",
     "Ket = 0.9",
     "Roots = 3",
@@ -120,49 +121,8 @@ extension_constraints = [
     "Use only exported documented API; do not rely on private functions or undocumented fields.",
     "Protect the host package's RNG, stdout, and BLAS-thread state rather than forwarding these side effects silently.",
     "Treat heuristic distance results separately from witness/separability certificates and preserve tri-state outcomes.",
+    "Restrict the adapter to exact EntanglementDetection.jl 0.2.2 and execute searches only in a fresh child process.",
+    "The runtime checks package version, not source-tree identity; controlled validation lanes must select the registered release or this recorded revision.",
+    "Treat Julia Serialization as trusted same-version worker transport, not a security sandbox.",
 ]
 blockers = []
-
-[[sources]]
-id = "qubit4matlab"
-name = "QUBIT4MATLAB"
-source_kind = "archive"
-canonical_url = "https://www.gtoth.eu/qubit4matlab.html"
-archive_url = "https://www.gtoth.eu/Publications/QUBIT4MATLAB6.5.zip"
-version_or_tag = "6.5"
-exact_revision = "282628dad2b8e134c7d88834770c1293abde3baa05664b161ce698ae30375547"
-archive_sha256 = "282628dad2b8e134c7d88834770c1293abde3baa05664b161ce698ae30375547"
-archive_size_bytes = 212776
-archive_entry_count = 384
-archive_primary_matlab_entry_count = 188
-retrieval_date = "2026-07-28"
-local_audit_path = "dev/downloads/QUBIT4MATLAB6.5.zip"
-license_classification = "bundled two-condition BSD-style text; supplied three-condition BSD-style text; material mismatch"
-license_file_path = "QUBIT4MATLAB/bsd.txt"
-license_sha256 = "b0bd73519dd6d16963c8aeb21ef9659e09dd3beb2536d9f736ec1d151f51ca81"
-license_lf_normalized_sha256 = "48e59ffcbec730c79fd04d27e6e2141b2f7a17a6be76c0b8a5dc45aac9817ef8"
-readme_file_path = "QUBIT4MATLAB/README.txt"
-readme_sha256 = "0fecb2c1ea22f352efd59c586a3a09f22c96a5f5dfc8525b8bec80c017b788e2"
-supplied_license_file_path = "licenses/QUBIT4MATLAB-LICENSE.txt"
-supplied_license_sha256 = "6cb11144f3aa7168ce1a8eed5ff9a6d7bcc7cae428ead6333d7f4ebf4bf2b995"
-documentation_url = "https://www.gtoth.eu/qubit4matlab.html"
-source_code_read = false
-implementation_relationship = "none-license-gate-blocked"
-archive_entry_names_read = true
-readme_content_read = true
-bundled_license_content_read = true
-matlab_implementation_content_read = false
-license_verification_status = "MATERIAL_CONFLICT_BLOCKS_IMPLEMENTATION_SOURCE_INSPECTION"
-license_byte_identical_to_supplied = false
-license_lf_normalized_identical_to_supplied = false
-license_difference_summary = [
-    "Bundled copyright is 2005-2015; supplied copyright is 2005-2024.",
-    "Bundled text has two redistribution conditions; supplied text has three.",
-    "Bundled text omits the supplied non-endorsement condition.",
-    "Bundled text ends with an extra double-quote after the disclaimer.",
-    "Whitespace and line wrapping also differ, so neither byte nor LF-only line normalization matches.",
-]
-blockers = [
-    "Per the supplied workflow, no QUBIT4MATLAB .m implementation file may be read or ported until a human resolves the material bundled-versus-supplied license mismatch.",
-]
-required_human_action = "Obtain written clarification from the copyright holder or otherwise establish which terms govern the author-hosted v6.5 archive, then record the decision before implementation-file inspection."

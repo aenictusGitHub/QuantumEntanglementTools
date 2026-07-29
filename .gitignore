@@ -10,5 +10,6 @@ coverage/
 *.jl.cov
 benchmark/results/local/
 test/oracle/Manifest.toml
+test/extensions/*/Manifest.toml
 test/oracle/generated/
 quality/Manifest.toml

@@ -13,7 +13,7 @@ The public API, upstream inventory, and validation baseline are not complete.
 Never infer completeness from a file existing or a symbol being exported.
 
 The package name is provisional. It is intentionally neutral and must not be
-described as an official QETLAB or QUBIT4MATLAB project.
+described as an official QETLAB project.
 
 ## Sources of truth
 
@@ -48,12 +48,12 @@ evidence, and update all affected records.
 8. Do not claim parity or performance without recorded validation or benchmark
    evidence.
 9. Keep source-derived licensing and attribution at file/function granularity.
-   Do not inspect QUBIT4MATLAB implementation files while the archive-license
-   conflict documented in `docs/LEGAL.md` remains unresolved.
 
 ## Julia conventions
 
-- Minimum supported Julia version: 1.10.
+- Minimum supported Julia version: 1.10. The optional
+  EntanglementDetection.jl environment has an effective Julia 1.11 resolver
+  floor because of its Ket 0.9 dependency.
 - Prefer one top-level module and standard `AbstractVector`/`AbstractMatrix`
   inputs.
 - Use lowercase `snake_case` for the Julia-native API. MATLAB-compatible names
@@ -71,13 +71,16 @@ Run the smallest relevant test while iterating, then the full applicable checks:
 
 ```sh
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
+julia --startup-file=no --project=. tutorials/runtests.jl
 julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 julia --project=docs docs/make.jl
 julia --project=benchmark benchmark/benchmarks.jl --quick --no-save
+julia --startup-file=no --project=test/extensions/entanglement_detection \
+  test/extensions/entanglement_detection/runtests.jl
 ```
 
-Optional-extension commands may be added only when their dedicated environments
-exist; record the exact commands in `CONTRIBUTING.md`.
+Instantiate dedicated optional-extension environments as documented in
+`CONTRIBUTING.md`; do not add an optional backend to the core test target.
 
 Before handing work off, update the status and handoff documents with commands
 actually run, failures, uncommitted files, and external blockers. Do not leave

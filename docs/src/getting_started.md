@@ -11,6 +11,13 @@ From the repository root:
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 ```
 
+The package test entry point executes the three published tutorials. They can
+also be run directly:
+
+```sh
+julia --startup-file=no --project=. tutorials/runtests.jl
+```
+
 To use the checkout from another Julia environment:
 
 ```julia
@@ -77,6 +84,11 @@ rng = Xoshiro(2026)
 Read [States, operators, and random objects](states_operators_random.md) before
 using the Tier B slice; it records physical parameter ranges, sparse behavior,
 oracle evidence, and deliberately deferred functions.
+
+The core supports Julia 1.10. The optional exact-version
+[EntanglementDetection.jl extension](entanglement_detection_extension.md)
+currently resolves on Julia 1.11 or later because of its backend dependency
+graph; it is not installed by the core workflow above.
 
 ## Build these docs
 

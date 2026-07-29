@@ -1,6 +1,9 @@
 # Entanglement backends
 
-No optional entanglement backend is currently declared production-ready.
+The native certificate pipeline is dependency-free. The optional
+EntanglementDetection.jl adapter is available for exact version 0.2.2 as a
+locally validated heuristic candidate generator; it is not a source of
+package-certified conclusions.
 
 ## Result semantics
 
@@ -67,8 +70,11 @@ coverage.
 ## EntanglementDetection.jl 0.2.2
 
 The pinned audit target is version 0.2.2 at
-`5f60da1ceef6442acb669e10acc2fa47670bab06`. It must remain a weak dependency
-loaded through a Julia extension.
+`5f60da1ceef6442acb669e10acc2fa47670bab06`. It is an exact-version weak
+dependency loaded through a Julia extension; core loading and `Pkg.test()` do
+not install it. The runtime checks the package version but not the source-tree
+hash, so controlled test and release environments must resolve the registered
+release or the recorded checkout.
 
 The upstream audit found integration hazards:
 
@@ -77,10 +83,23 @@ The upstream audit found integration hazards:
 - `AlternatingSeparableLMO(..., parallelism=true)` globally sets BLAS threads to
   one.
 
-Until these are isolated without monkey-patching private APIs, and regression
-tests prove the caller's RNG stream, stdout, logging, and BLAS configuration are
-unchanged, the extension must not be described as safe or complete.
+`EntanglementDetectionSearch` contains those effects by launching the documented
+public backend call in a bounded child Julia process. It exposes neither logfile
+nor parallelism controls, preserves the caller's RNG/stdout/logger/BLAS state,
+and converts every backend `true`, `false`, or `nothing` value into package-owned
+candidate evidence inside an uncertified `unknown` report. Timeouts, backend
+exceptions, process failures, and invalid structured responses are also
+`unknown`, never mathematical negatives.
 
-Required fresh-process tests cover: core package alone, both load orders,
-precompilation/repeated loading, absence of method ambiguities or type piracy,
-backend exceptions, and global-state preservation.
+The dedicated suite passes 125/125 assertions locally on Julia 1.12.6,
+including both load orders, method ambiguities, a live search, explicit
+real-to-complex representation conversion, caller-state preservation, bounded
+TERM-to-KILL escalation, interrupt cleanup, response validation, and
+output/read limits. The core pipeline suite separately checks dependency
+absence. EntanglementDetection 0.2.2 currently resolves only on Julia 1.11 or
+later because of Ket 0.9 registry compatibility. The configured Julia
+1.11/1.12 Linux/macOS/Windows workflow has not run remotely.
+
+See [EntanglementDetection.jl extension](entanglement_detection_extension.md)
+for installation, execution, failure semantics, IPC trust boundaries, and
+remaining limitations.

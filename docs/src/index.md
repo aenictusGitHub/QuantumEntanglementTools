@@ -31,6 +31,11 @@ diagnostic and certification results, and optional package extensions.
   ledger will be generated.
 - [Entanglement backends](entanglement_backends.md) explains certificate and
   optional-backend boundaries.
+- [Executable tutorials](tutorials.md) runs the exact subsystem, channel, and
+  entanglement-analysis scripts exercised by the package tests.
+- [EntanglementDetection.jl extension](entanglement_detection_extension.md)
+  documents the optional child-process adapter and its uncertified-result
+  boundary.
 - [Reproducibility](reproducibility.md) lists the evidence expected with results.
 
 Project-wide legal, milestone, build-environment, and session-handoff records
@@ -40,4 +45,4 @@ README.
 ## Non-affiliation
 
 This project is not affiliated with, endorsed by, or officially supported by
-QETLAB, its maintainers, QUBIT4MATLAB, Geza Toth, or their contributors.
+QETLAB, its maintainers, or their contributors.

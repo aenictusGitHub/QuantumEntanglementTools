@@ -7,7 +7,19 @@ const QETPipeline = QuantumEntanglementTools
     @testset "backend metadata and method configuration" begin
         backends = QETPipeline.available_entanglement_backends()
         @test length(backends) == 1
-        @test only(backends) isa QETPipeline.NativeEntanglementBackend
+        absent_backend_error = try
+            QETPipeline.detect_entanglement(
+                Matrix{Float64}(I, 4, 4) / 4,
+                (2, 2),
+                QETPipeline.EntanglementDetectionSearch(; max_iteration=1),
+            )
+            nothing
+        catch error
+            error
+        end
+        @test only(backends) isa QETPipeline.NativeEntanglementBackend &&
+            absent_backend_error isa ArgumentError &&
+            occursin("is not loaded", sprint(showerror, absent_backend_error))
 
         capabilities = QETPipeline.backend_capabilities(only(backends))
         @test capabilities.name === :native

@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "docs/**"
+      - "tutorials/**"
       - "src/**"
       - "Project.toml"
       - "README.md"
@@ -13,6 +14,7 @@ on:
   pull_request:
     paths:
       - "docs/**"
+      - "tutorials/**"
       - "src/**"
       - "Project.toml"
       - "README.md"

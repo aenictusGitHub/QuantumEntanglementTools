@@ -1,9 +1,9 @@
 # Public-API provenance ledger. Keep this synchronized with exports and the
 # reviewed upstream inventory via `julia --project=. scripts/check_public_api.jl`.
 schema_version = 1
-audit_date = "2026-07-28"
+audit_date = "2026-07-29"
 qetlab_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
-verification_scope = "Local Julia tests and strict API docs are recorded per binding. Tiers B, C, D, and the Tier E coherence, product-analysis, and matrix-analysis slices have function-specific supplemental Octave/QETLAB fixtures. The Tier E matrix-predicate slice has analytic/property tests but no MATLAB-family oracle; MATLAB parity and supported-platform CI are not established."
+verification_scope = "Local Julia tests and strict API docs are recorded per binding. Tiers B, C, D, and the Tier E coherence, product-analysis, and matrix-analysis slices have function-specific supplemental Octave/QETLAB fixtures. The Tier E matrix-predicate slice has analytic/property tests but no MATLAB-family oracle. Executable tutorials run in the core test corpus. The optional EntanglementDetection.jl 0.2.2 adapter has dedicated child-process, load-order, lifecycle, and caller-state isolation tests on Julia 1.12.6; its remote platform matrix is configured but has not run. MATLAB parity and supported-platform CI are not established."
 
 [[functions]]
 julia_name = "MATLABCompat"
@@ -543,6 +543,35 @@ tests = ["test/tier_d_entanglement_pipeline.jl"]
 docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
 
 [[functions]]
+julia_name = "EntanglementDetectionBackend"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native descriptor for the optional, child-process-isolated EntanglementDetection.jl integration."
+specification = "docs/src/entanglement_detection_extension.md"
+implementation_kind = "independent-project-native-optional-backend-descriptor"
+status = "implemented"
+verification_status = "local_core_absence_and_dedicated_optional_load_order_capability_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl", "test/extensions/entanglement_detection/runtests.jl", "test/extensions/entanglement_detection/load_order_probe.jl"]
+docs = ["docs/src/entanglement_detection_extension.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
+julia_name = "EntanglementDetectionSearch"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/entanglement/backend_interface.jl"
+implementation_files = ["src/entanglement/backend_interface.jl", "ext/QuantumEntanglementToolsEntanglementDetectionExt.jl", "ext/entanglement_detection_worker.jl"]
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native validated configuration for invoking the audited EntanglementDetection.jl 0.2.2 heuristic only across a fresh child-process boundary."
+specification = "docs/src/entanglement_detection_extension.md"
+implementation_kind = "independent-project-native-optional-method-configuration"
+status = "implemented"
+verification_status = "dedicated_optional_extension_validation_timeout_uncertified-result_and_parent-state-preservation_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl", "test/extensions/entanglement_detection/runtests.jl"]
+docs = ["docs/src/entanglement_detection_extension.md", "docs/src/entanglement_backends.md"]
+
+[[functions]]
 julia_name = "NativePPT"
 public_module = "QuantumEntanglementTools"
 public_kind = "type"
@@ -589,14 +618,15 @@ julia_name = "detect_entanglement"
 public_module = "QuantumEntanglementTools"
 public_kind = "function"
 julia_file = "src/entanglement/backend_interface.jl"
+implementation_files = ["src/entanglement/backend_interface.jl", "ext/QuantumEntanglementToolsEntanglementDetectionExt.jl", "ext/entanglement_detection_worker.jl"]
 source_project = "QuantumEntanglementTools"
 project_origin = "Project-native dispatch entry point for an explicitly selected entanglement method; it has no direct QETLAB public entry point."
 specification = "docs/src/entanglement_backends.md"
 implementation_kind = "independent-project-native-dispatch-orchestration"
 status = "implemented"
 verification_status = "local_ppt_certificate_low_dimension_separability_unknown_sparse_and_invalid_configuration_tests_pass"
-tests = ["test/tier_d_entanglement_pipeline.jl"]
-docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+tests = ["test/tier_d_entanglement_pipeline.jl", "test/extensions/entanglement_detection/runtests.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/entanglement_detection_extension.md"]
 
 [[functions]]
 julia_name = "analyze_entanglement"
@@ -622,9 +652,9 @@ project_origin = "Project-native stable package-owned capability metadata for en
 specification = "docs/src/entanglement_backends.md"
 implementation_kind = "independent-project-native-backend-introspection"
 status = "implemented"
-verification_status = "local_metadata_content_and_side_effect_tests_pass"
-tests = ["test/tier_d_entanglement_pipeline.jl"]
-docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+verification_status = "local_native_and_optional_metadata_content_isolation_and_side_effect_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl", "test/extensions/entanglement_detection/runtests.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/entanglement_detection_extension.md"]
 
 [[functions]]
 julia_name = "available_entanglement_backends"
@@ -636,9 +666,9 @@ project_origin = "Project-native side-effect-free discovery of dependency-free b
 specification = "docs/src/entanglement_backends.md"
 implementation_kind = "independent-project-native-backend-discovery"
 status = "implemented"
-verification_status = "local_discovery_idempotence_capability_and_no_eager_optional_loading_tests_pass"
-tests = ["test/tier_d_entanglement_pipeline.jl"]
-docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md"]
+verification_status = "local_discovery_idempotence_both_load_orders_capability_and_no_eager_optional_loading_tests_pass"
+tests = ["test/tier_d_entanglement_pipeline.jl", "test/extensions/entanglement_detection/runtests.jl", "test/extensions/entanglement_detection/load_order_probe.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/entanglement_detection_extension.md"]
 
 [[functions]]
 julia_name = "TraceNorm"

@@ -31,8 +31,7 @@ Use the neutral provisional repository and module name
 `45675e5b-5c8b-4983-b92d-4c3725d56c4e`.
 
 Describe the project as an independent Julia implementation. Do not use upstream
-logos or imply that QETLAB, QUBIT4MATLAB, their maintainers, or contributors
-endorse it.
+logos or imply that QETLAB, its maintainers, or contributors endorse it.
 
 ## Consequences
 

@@ -1,23 +1,22 @@
 # Session handoff
 
-Snapshot date: 2026-07-28. Refresh this file at the end of each substantive
+Snapshot date: 2026-07-29. Refresh this file at the end of each substantive
 session; do not assume the worktree details below remain current after parallel
 work continues.
 
 ## Repository state
 
 - Branch: `main`.
-- Implementation milestone: `9b0d0d3b8177eded5b8743d250044d5428625b1b`
-  (`feat: establish audited quantum entanglement core`).
-- This handoff is committed in the documentation-only successor to that
-  milestone; use `git rev-parse HEAD` for the exact handoff commit.
+- Milestone: `feat: add isolated backend and executable tutorials`. This
+  handoff is part of that milestone commit; use `git rev-parse HEAD` for its
+  exact revision.
 - Remote: none configured.
 - Package: `QuantumEntanglementTools`, UUID
   `45675e5b-5c8b-4983-b92d-4c3725d56c4e`, version `0.1.0`.
 - Package author metadata: `John MARTIN <jmartin@uliege.be>`.
-- Worktree: clean after the handoff commit, apart from ignored local manifests,
-  generated documentation, benchmark output, oracle output, and upstream
-  development checkouts.
+- Worktree: clean after the milestone commit, apart from ignored local
+  manifests, generated documentation, benchmark output, oracle output, and
+  upstream development checkouts.
 
 ## Evidence secured
 
@@ -27,11 +26,8 @@ work continues.
   hashes in `docs/LEGAL.md`.
 - EntanglementDetection.jl 0.2.2/tag SHA and MIT license hash are recorded.
   Its observed global RNG, stdout/logging, and BLAS-thread side effects are
-  explicit M6 gates.
-- The separately supplied QUBIT4MATLAB license is preserved verbatim.
-- The author-hosted QUBIT4MATLAB v6.5 archive and bundled license are hashed.
-  Their terms materially conflict, and no `.m` implementation files were
-  inspected.
+  contained by the completed fresh-child-process adapter and covered by the
+  dedicated extension suite.
 - Local Julia/OS/BLAS/tool evidence is in `docs/BUILD_ENVIRONMENT.md`.
 
 ## Current status
@@ -65,6 +61,26 @@ three-valued boundary outcomes, witnesses, explicit sparse-densification gates,
 and combinatorial limits. `IsPSD` remains partial because the pinned CVX
 symbolic branch is omitted.
 
+Three deterministic executable tutorials cover subsystem reductions and
+ordering, local channel action and representation conversion, and
+certificate-aware entanglement analysis. Each script runs independently from
+`tutorials/`; `tutorials/runtests.jl` supplies a 25/25 automated gate included
+by `Pkg.test()`. `docs/src/tutorials.md` executes those same scripts as live
+Documenter examples instead of publishing copied output.
+
+The optional EntanglementDetection.jl 0.2.2 integration is implemented as a
+weak-dependency Julia extension. Every heuristic search runs in a fresh child
+process so upstream RNG, stdout/logging, and BLAS-thread mutations do not alter
+the caller. Backend conclusions are retained only as candidate evidence:
+adapter reports remain `:unknown` and uncertified, including when the backend
+suggests `:entangled` or `:separable`. The dedicated Julia 1.12.6 suite passes
+125/125 focused assertions. The adapter checks the loaded package version, not
+its source-tree hash; the recorded local checkout and controlled CI resolution
+provide source provenance. Its isolated environment has a Julia 1.11 resolver
+floor because the compatible Ket 0.9 releases require Julia 1.11; the core
+package continues to support Julia 1.10. The configured Julia 1.11/1.12
+Linux/macOS/Windows extension workflow has not yet run remotely.
+
 Source-free Octave/QETLAB fixtures pass Tier A 52/52, Tier B 72/72, Tier C
 28/28, Tier D 34/34, Tier E coherence 25/25, Tier E product 68/68, and Tier E
 matrix 59/59. The matrix artifact has 22 fixtures, including five reviewed
@@ -75,30 +91,26 @@ analytic/property evidence, including 130/130 independent randomized
 eigenspectrum/minor cross-checks, but no MATLAB-family oracle.
 
 All 42 quick benchmark cases completed, including exactly three product and
-three matrix cases. Aqua passes 11/11 and all 24 representative JET probes
-pass; those probes do not cover matrix predicates. The integrated 2,270-assertion
-corpus passes on Julia 1.12.6 and Julia 1.10.11. Strict Documenter, formatter,
-inventory (163 files/503 edges/zero cycles), and public-API/provenance
-(212 bindings) gates pass. Every committed oracle comparator passes, including
-the 59-assertion matrix comparator.
-
-## Blocking issue
-
-QUBIT4MATLAB source-informed work is blocked. The bundled v6.5 license differs
-materially from the separately supplied license. Required action: obtain
-authoritative human/rightsholder clarification and preserve it as evidence.
-Until then, do not inspect archive implementation `.m` files, do not claim the
-supplied license governs the archive, and do not create a derived port.
+three matrix cases. Aqua passes 11/11 and all 25 representative JET probes
+pass; those probes do not cover matrix predicates. The integrated package
+corpus contains 2,295 assertions—2,270 core plus 25 executable-tutorial
+assertions—and passes on Julia 1.12.6 and Julia 1.10.11. Strict Documenter,
+formatter, inventory (163 files/503 edges/zero cycles), and
+public-API/provenance (214 bindings) gates pass. Every committed oracle
+comparator passes, including the 59-assertion matrix comparator. Remote core,
+documentation, quality, and optional-extension CI evidence remains pending.
 
 ## Next safe work
 
 1. Review the remaining 87 inventory rows and manually correct classifications.
 2. Keep `UpstreamManifest.toml`, `PROVENANCE.toml`, status overlays, and
-   generated inventory synchronized as Tier C and later slices land.
-3. Run the remote core/docs matrix on Julia 1.10/stable and supported platforms.
+   generated inventory synchronized as later slices land.
+3. Run the remote core/docs/quality matrices and the optional-extension
+   Julia 1.11/1.12 platform matrix.
 4. Add authoritative MATLAB differential checks when MATLAB is available.
-5. Design the optional EntanglementDetection adapter around observed global
-   side effects; do not expose it as safe before fresh-process regression tests.
+5. Preserve the EntanglementDetection adapter's child-process boundary and
+   uncertified-candidate semantics while reviewing remote platform results and
+   future pinned-upstream changes.
 6. Keep this handoff current with subsequent commits, failures, and
    uncommitted files.
 
@@ -108,8 +120,19 @@ supplied license governs the archive, and do not create a derived port.
 git status --short
 julia --startup-file=no --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 julia +1.10 --startup-file=no --project=. -e 'using Pkg; Pkg.test()'
+julia --startup-file=no --project=. tutorials/subsystem_reductions.jl
+julia --startup-file=no --project=. tutorials/local_channel_noise.jl
+julia --startup-file=no --project=. tutorials/entanglement_certificates.jl
+julia --startup-file=no --project=. tutorials/runtests.jl
 julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 julia --startup-file=no --project=docs docs/make.jl
+julia --project=test/extensions/entanglement_detection -e '
+    using Pkg
+    Pkg.develop(PackageSpec(path=pwd()))
+    Pkg.instantiate()
+'
+julia --startup-file=no --project=test/extensions/entanglement_detection \
+  test/extensions/entanglement_detection/runtests.jl
 julia --startup-file=no --project=benchmark benchmark/benchmarks.jl --quick --no-save
 julia --startup-file=no --project=quality quality/run_quality.jl
 julia --startup-file=no --project=quality quality/format.jl

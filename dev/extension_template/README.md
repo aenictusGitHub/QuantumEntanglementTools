@@ -19,3 +19,8 @@ load orders plus absence of the dependency.
 
 Do not copy this placeholder into runtime code without replacing every abstract
 name, auditing global side effects, and adding a dedicated test environment.
+
+For a reviewed implementation, see the EntanglementDetection adapter in
+`ext/`, its dedicated environment under
+`test/extensions/entanglement_detection/`, and
+`docs/src/entanglement_detection_extension.md`.

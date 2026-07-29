@@ -1,9 +1,11 @@
 # Validation report
 
-Evidence date: 2026-07-28.
+Evidence date: 2026-07-29.
 
 Status: Tier A and the reviewed Tier B--Tier E slices plus the native
-entanglement pipeline locally tested; no general parity claim.
+entanglement pipeline, executable tutorials, and the isolated optional
+EntanglementDetection.jl adapter locally tested; no general parity or
+production-backend claim.
 
 ## Summary
 
@@ -15,15 +17,26 @@ entanglement pipeline passes 68/68. Tier E coherence passes 52/52, product
 analysis passes 175/175 native plus 52/52 compatibility assertions, matrix
 analysis passes 127/127 native plus 32/32 compatibility assertions, and matrix
 predicates pass 166/166 native plus 37/37 compatibility assertions. The
-integrated 2,270-assertion package corpus passes on Julia 1.12.6 and the
-minimum supported Julia 1.10.11. This establishes a local development
-baseline, not complete QETLAB parity or a supported release. Remote
-cross-platform CI has not yet produced cited evidence. MATLAB is absent.
+integrated 2,295-assertion package corpus, comprising 2,270 core assertions
+plus 25 executable-tutorial assertions, passes on Julia 1.12.6 and the minimum
+supported Julia 1.10.11. The standalone tutorial runner also passes 25/25 on
+both Julia versions, and the public-API/provenance gate passes over 214 public
+bindings.
+
+The optional EntanglementDetection.jl 0.2.2 focused suite passes 125/125 on
+Julia 1.12.6. Its isolated dependency environment has an effective Julia 1.11
+resolver floor because compatible Ket 0.9 releases require Julia 1.11; this
+does not raise the core package's Julia 1.10 minimum. Every upstream candidate
+conclusion remains `unknown` and uncertified at the package boundary. This
+establishes a local development baseline, not complete QETLAB parity or a
+supported release. Remote core and optional-extension matrices have not yet
+produced cited evidence. MATLAB is absent.
 
 | Validation class | Current evidence |
 |---|---|
 | Package load | Passed as part of `Pkg.test()` |
-| Core unit tests | Tier A 304/304, Tier B 941/941, Tier C 154/154, Tier D measures/criteria 162/162, native pipeline 68/68, Tier E coherence 52/52, product analysis 175/175 native plus 52/52 compatibility, matrix analysis 127/127 native plus 32/32 compatibility, and matrix predicates 166/166 native plus 37/37 compatibility pass locally; the integrated total is 2,270/2,270 on Julia 1.12.6 and 1.10.11 |
+| Core unit tests | Tier A 304/304, Tier B 941/941, Tier C 154/154, Tier D measures/criteria 162/162, native pipeline 68/68, Tier E coherence 52/52, product analysis 175/175 native plus 52/52 compatibility, matrix analysis 127/127 native plus 32/32 compatibility, and matrix predicates 166/166 native plus 37/37 compatibility pass locally; these 2,270 core assertions plus 25 tutorial assertions give an integrated total of 2,295/2,295 on Julia 1.12.6 and 1.10.11 |
+| Executable tutorials | Three repository-native scripts run standalone, through a 25-assertion tutorial gate, from `Pkg.test()`, and as live Documenter examples; the standalone gate passes 25/25 on Julia 1.12.6 and 1.10.11 |
 | Tier A analytic tests | Bell reduction/PT spectrum, exact bases/projectors, tensor identities |
 | Tier B analytic tests | Operator-basis identities, named-state support/normalization, mixed-state PSD/trace/PPT properties |
 | Tier C analytic tests | Kraus/Choi/superoperator round trips, channel application, CP/TP/unital diagnostics, Hilbert--Schmidt duality, complementary/partial maps, and analytic channel/positive-map formulas |
@@ -41,32 +54,102 @@ cross-platform CI has not yet produced cited evidence. MATLAB is absent.
 | Explicit RNG safety | Six Tier B native/wrapper random constructors and the compatibility random `PauliChannel(rng, Q)` form are seeded/property tested; regressions verify the global stream is unchanged |
 | MATLAB compatibility wrappers | Tier A, Tier B, supported Tier C, all 11 Tier D wrappers, six Tier E product entry points, four Tier E matrix entry points, and four structured matrix-predicate entry points pass locally; explicit partial statuses and structured-result differences remain documented |
 | Benchmark smoke | 42 quick cases ran locally, including three product-analysis and three matrix-analysis cases; no regression threshold or comparative performance claim |
-| Optional extension/load order | Not implemented/pending |
+| Optional extension/load order | EntanglementDetection.jl 0.2.2 is integrated through a weak-dependency extension and an isolated child process; 125/125 focused assertions pass on Julia 1.12.6, including load order, lifecycle, failure, caller-state, timeout, IPC, and conservative-result checks. The compatible dependency graph resolves on Julia 1.11+; remote platform evidence is pending |
 | Optimization statuses | Pending |
-| Doctests/docs build | Strict Documenter build passed locally |
-| Julia 1.10/stable/nightly CI | Local Julia 1.10.11 and 1.12.6 suites pass; workflows are scaffolded, but no remote CI run or nightly result is cited |
-| Linux/macOS/Windows CI | Workflows scaffolded; no run cited |
+| Quality and API consistency | Aqua passes 11/11, all 25 representative JET probes pass, and the provenance consistency gate passes over 214 public bindings; the JET set does not cover matrix predicates |
+| Doctests/docs build | Strict Documenter build and live tutorial examples passed locally on Julia 1.12.6 and 1.10.11 |
+| Julia 1.10/stable/nightly CI | Local Julia 1.10.11 and 1.12.6 core suites pass; workflows are scaffolded, but no remote CI run or nightly result is cited. The optional extension's effective floor is Julia 1.11 |
+| Linux/macOS/Windows CI | Core and Julia 1.11/1.12 optional-extension workflows are scaffolded; no remote run is cited |
 
 ## Commands and results
 
-Run on the exact staged source tree committed as implementation milestone
-`9b0d0d3b8177eded5b8743d250044d5428625b1b`, on the environment recorded in
-`BUILD_ENVIRONMENT.md`:
+The historical 2,270-assertion core baseline was run on the exact staged source
+tree committed as implementation milestone
+`9b0d0d3b8177eded5b8743d250044d5428625b1b`. The 2026-07-29 integration
+evidence was recorded on the dirty integration worktree based on
+`1360aba6922ca565ffc6fc5663b9fe14397db53c`; the current corpus adds the
+executable tutorial gate without changing the historical oracle artifacts.
+The environment is recorded in `BUILD_ENVIRONMENT.md`:
 
 ```sh
 julia --startup-file=no --project=. -e 'using Pkg; Pkg.test()'
 ```
 
 Results on Julia 1.12.6 and Julia 1.10.11: every package testset passed. The
-corpus comprises Tier A `304`, Tier B `577 + 205 + 132 + 27 = 941`, Tier C
-`154`, Tier D measures/criteria `25 + 30 + 11 + 15 + 11 + 38 + 32 = 162`,
-the native pipeline `68`, coherence `52`, product `175 + 52`, matrix analysis
-`127 + 32`, and matrix predicates `166 + 37`, for `2,270 / 2,270`.
+core corpus comprises Tier A `304`, Tier B `577 + 205 + 132 + 27 = 941`,
+Tier C `154`, Tier D measures/criteria
+`25 + 30 + 11 + 15 + 11 + 38 + 32 = 162`, the native pipeline `68`,
+coherence `52`, product `175 + 52`, matrix analysis `127 + 32`, and matrix
+predicates `166 + 37`, for `2,270 / 2,270`. The executable tutorial gate adds
+`25 / 25`, giving the integrated package result `2,295 / 2,295`.
 The Julia 1.10 invocation warned that the ignored development
 `Manifest.toml` had been resolved by Julia 1.12 and that project compatibility
 had changed; `Pkg.test()` still resolved its temporary test environment and
 passed. No root manifest is committed, so CI resolves against each configured
 Julia version.
+
+The exact tutorial scripts were also run through their standalone gate:
+
+```sh
+julia --startup-file=no --project=. tutorials/runtests.jl
+```
+
+Result: `25 passed / 25 total` on Julia 1.12.6 and Julia 1.10.11. The runner
+executes `tutorials/subsystem_reductions.jl`,
+`tutorials/local_channel_noise.jl`, and
+`tutorials/entanglement_certificates.jl`; `Pkg.test()` includes the same
+runner, and the strict documentation build evaluates the same calculations as
+live examples.
+
+The optional EntanglementDetection.jl environment and focused suite were run
+with:
+
+```sh
+julia --project=test/extensions/entanglement_detection -e '
+    using Pkg
+    Pkg.develop(PackageSpec(path=pwd()))
+    Pkg.instantiate()
+'
+julia --startup-file=no --project=test/extensions/entanglement_detection \
+  test/extensions/entanglement_detection/runtests.jl
+```
+
+Result on Julia 1.12.6: `125 passed / 125 total` against
+EntanglementDetection.jl 0.2.2. The 125-assertion extension suite covers both
+load orders, repeated loading, method-ambiguity checks, configuration and
+density validation, caller RNG/stdout/logging/BLAS preservation, backend
+failures, malformed IPC, bounded reads, timeouts, forced termination, and child
+cleanup, including a post-launch output-stream close failure. The 68-assertion
+core pipeline suite separately verifies dependency absence and its actionable
+error.
+
+Independent smoke calls covered `Float32`, `Float64`, `ComplexF32`,
+`ComplexF64`, and multipartite input; those smoke calls are supplementary and
+are not counted as separate assertions in the committed focused suite.
+
+Searches run in a disposable child Julia process and exchange data through
+trusted local Julia `Serialization`; this is an isolation boundary for audited
+upstream side effects, not a security sandbox. Response and captured-output
+reads are bounded. Tested timeout and injected-wait-error paths terminate and
+reap their children; if bounded forced reaping ever fails, the adapter instead
+returns `:termination_failed` and leaves the temporary directory for
+process-exit cleanup.
+
+The recorded ignored test manifest used the audited local checkout at
+`dev/upstream/EntanglementDetection.jl`, pinned to
+`5f60da1ceef6442acb669e10acc2fa47670bab06`. That checkout is not part of a
+fresh clone; the setup command above and CI resolve the registered release
+under the exact `0.2.2` compatibility bound. The runtime checks the loaded
+package version but does not verify a source-tree hash, so a modified path
+dependency retaining version 0.2.2 is trusted rather than detected.
+
+The adapter exposes backend output only as candidate evidence. Whether
+EntanglementDetection.jl suggests entangled, separable, or inconclusive, the
+package-owned report remains `status = :unknown` and `certified = false`.
+The isolated environment's compatible Ket 0.9 dependency makes Julia 1.11 the
+effective resolver floor. This report cites the Julia 1.12.6 focused run only;
+the configured Julia 1.11/1.12 Linux/macOS/Windows extension matrix has not yet
+run remotely.
 
 The Tier C slice was also run directly through the package test environment:
 
@@ -232,9 +315,19 @@ the pinned CVX symbolic branch is omitted.
 julia --project=quality quality/run_quality.jl
 ```
 
-Result: Aqua passes 11/11 and all 24 representative JET inference probes pass,
-including four product-analysis and four matrix-analysis calls. The JET smoke
-does not currently include the matrix-predicate slice.
+Result: Aqua passes 11/11 and all 25 representative JET inference probes pass,
+including four product-analysis calls, four matrix-analysis calls, and the
+package-owned `EntanglementDetectionSearch` configuration constructor. The JET
+smoke does not load the optional dependency and does not currently include the
+matrix-predicate slice.
+
+```sh
+julia --startup-file=no --project=. scripts/check_public_api.jl
+```
+
+Result: the public-API/provenance consistency gate passes over 214 public
+bindings. This validates ledger consistency, not behavioral parity for every
+binding.
 
 ```sh
 julia --project=benchmark benchmark/benchmarks.jl --quick --no-save
@@ -251,10 +344,10 @@ a saved regression baseline or a comparative performance claim.
 julia --project=docs docs/make.jl
 ```
 
-Result: Documenter completed doctests, cross-references, strict exported-doc
-checks, and HTML rendering without errors. It emitted a non-failing size
-warning for the generated API page (about 179.4 KiB versus the 100 KiB warning
-threshold).
+Results on Julia 1.12.6 and Julia 1.10.11: Documenter completed doctests,
+cross-references, strict exported-doc checks, live tutorial examples, and HTML
+rendering without errors. It emitted a non-failing size warning for the
+generated API page (about 179.4 KiB versus the 100 KiB warning threshold).
 
 ## Acceptance rule
 

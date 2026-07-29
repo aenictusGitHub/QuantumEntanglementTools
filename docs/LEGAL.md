@@ -1,6 +1,6 @@
 # Legal and provenance status
 
-Last evidence update: 2026-07-28.
+Last evidence update: 2026-07-29.
 
 This file documents an engineering compliance review, not legal advice. A source
 being publicly accessible does not by itself authorize copying, adaptation, or
@@ -78,55 +78,26 @@ The inspected reference is:
 - MIT license SHA-256:
   `8d7174972190a50508c86dcc936c31d23cccea7ab4b381aa49ab8735ae326824`
 
-The intended integration is an optional Julia package dependency, not vendored
-source. Version 0.2.2 has caller-visible global-state hazards:
+The integration is an exact-version optional Julia package dependency, not
+vendored source. Version 0.2.2 has caller-visible global-state hazards:
 `separable_distance` calls `Random.seed!(0)`, may redirect global stdout when a
 log file is supplied, and performs logging/flush operations;
 `AlternatingSeparableLMO(..., parallelism=true)` globally sets BLAS threads to
-one. The extension is not safe or complete until those effects are isolated and
-covered by regression tests.
+one.
 
-## QUBIT4MATLAB v6.5: blocking conflict
-
-The maintainer supplied a BSD 3-Clause–style text with
-`Copyright (c) 2005-2024, Geza Toth`. It is preserved byte-for-byte, including
-single-space blank lines and the malformed phrase `Neither the name of  nor`, at
-[`licenses/QUBIT4MATLAB-LICENSE.txt`](../licenses/QUBIT4MATLAB-LICENSE.txt).
-The malformed clause is conservatively understood as a non-endorsement
-restriction covering the project and contributor names; it has not been
-silently repaired.
-
-Audit evidence for the author-hosted v6.5 archive:
-
-- retrieval date: 2026-07-28
-- archive SHA-256:
-  `282628dad2b8e134c7d88834770c1293abde3baa05664b161ce698ae30375547`
-- bundled license path: `QUBIT4MATLAB/bsd.txt`
-- bundled license SHA-256:
-  `b0bd73519dd6d16963c8aeb21ef9659e09dd3beb2536d9f736ec1d151f51ca81`
-- bundled README SHA-256:
-  `0fecb2c1ea22f352efd59c586a3a09f22c96a5f5dfc8525b8bec80c017b788e2`
-
-The bundled license materially conflicts with the supplied text: it identifies
-copyright years 2005–2015, contains only two redistribution clauses, omits the
-non-endorsement clause present in the supplied text, and contains a trailing
-quote. It is neither byte-identical nor materially identical.
-
-Consequently:
-
-1. The preserved supplied text is evidence only; this project does **not** claim
-   that it governs the v6.5 archive.
-2. No `.m` implementation files from the archive were inspected during the
-   audit.
-3. Direct or source-informed QUBIT4MATLAB porting is blocked pending human
-   clarification of the conflicting terms.
-4. If clarified, every archive file still requires an individual authorship,
-   generated-code, and third-party-license audit before adaptation.
-5. QUBIT4MATLAB work must remain on an isolated branch and requires human review
-   before merge.
-
-See `docs/QUBIT4MATLAB_LICENSE_AND_PROVENANCE.md` for the evidence ledger and
-future review checklist.
+The package-owned extension calls the documented public backend API only in a
+fresh Julia child process. It supplies no logfile or backend-parallelism option,
+contains failures as uncertified `unknown` reports, and never promotes the
+backend's heuristic Boolean to a certificate. The local 125-assertion extension
+suite covers caller RNG/stdout/logger/BLAS preservation, load order, lifecycle,
+timeout escalation, and structured response handling on Julia 1.12.6. This is
+engineering evidence for the stated isolation boundary, not a legal conclusion,
+a security sandbox, or remote supported-platform validation. The optional
+dependency currently resolves only on Julia 1.11 or later because registered
+Ket 0.9 releases have that compatibility floor. Runtime compatibility checks
+enforce version 0.2.2 but do not authenticate a source tree; controlled
+validation and release environments must use the registered release or the
+recorded pinned checkout.
 
 ## Distribution checklist
 

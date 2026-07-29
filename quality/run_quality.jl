@@ -46,6 +46,9 @@ end
     JET.@test_opt target_modules = (QET,) QET.ppt_criterion(
         bell_density, (2, 2); atol=1e-12, rtol=0.0
     )
+    JET.@test_opt target_modules = (QET,) QET.EntanglementDetectionSearch(
+        timeout_seconds=30, max_iteration=2, callback_iter=2
+    )
     JET.@test_opt target_modules = (QET,) QET.l1_coherence(bell)
     JET.@test_opt target_modules = (QET,) QET.relative_entropy_coherence(bell; base=2)
     JET.@test_opt target_modules = (QET,) QET.coherence_rank(bell)

@@ -6,10 +6,12 @@ C channels/maps suite passes 154 focused local assertions across 24 native
 public bindings/types and 11 `MATLABCompat` wrappers. Tier D passes 162 focused
 measures/criteria assertions across 22 native bindings and 11 wrappers. The
 native entanglement pipeline passes 68 assertions across 10 project-native
-orchestration exports, and Tier E coherence passes 52. The integrated package
-corpus passes 2,270 assertions on Julia 1.12.6 and 1.10.11. Tier E product
-analysis passes 175 native and 52
-compatibility assertions across 10 native bindings and six wrappers. Tier E
+orchestration exports, and the optional backend boundary adds two public
+descriptor/configuration types with 125 focused extension assertions. Tier E
+coherence passes 52. The integrated package corpus passes 2,295 assertions
+(2,270 core plus 25 executable tutorials) on Julia 1.12.6 and 1.10.11. Tier E
+product analysis passes 175 native and 52 compatibility assertions across 10
+native bindings and six wrappers. Tier E
 matrix analysis passes 127 native and 32 compatibility assertions across four
 native bindings and four compatibility entry points. Tier E matrix predicates
 pass 166 native and 37 compatibility assertions across nine native bindings
@@ -29,6 +31,9 @@ Tier D tri-state criteria, certificate semantics, the intentionally partial
 `Entropy` mapping, and the native pipeline are documented in
 [Entanglement backends](../entanglement_backends.md) and
 [Migration from QETLAB](../migration_from_qetlab.md#tier-d-measures-and-entanglement-criteria).
+The exact-version optional adapter, its Julia 1.11 resolver floor, and its
+uncertified child-process result semantics are documented in
+[EntanglementDetection.jl extension](../entanglement_detection_extension.md).
 Tier E operator Schmidt decompositions, structured product analysis,
 closed-form entanglement of formation, and sufficient separable-ball
 certificates are documented in

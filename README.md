@@ -14,9 +14,10 @@ backend integrations.
 
 ## Current status
 
-- Full local package suite: 2,270/2,270 assertions pass on Julia 1.12.6 and
-  Julia 1.10.11. This is a development baseline, not supported-platform or
-  MATLAB validation.
+- Full local package suite: 2,295/2,295 assertions pass on Julia 1.12.6 and
+  Julia 1.10.11: 2,270 core assertions plus 25 assertions that execute the
+  published tutorials. This is a development baseline, not supported-platform
+  or MATLAB validation.
 - Inventory: 76 of 163 QETLAB rows have been manually reviewed: 63 are marked
   implemented, 11 partial, and two deferred; 87 remain pending.
 - Tier A subsystem kernel: 304/304 focused assertions pass, covering
@@ -45,20 +46,20 @@ backend integrations.
   checks. The matrix-analysis artifact passes 59/59 assertions across 22
   fixtures. No MATLAB-family oracle has been run for the matrix predicates, and
   Octave evidence is not general MATLAB equivalence.
-- Quality and performance smoke: Aqua passes 11/11 and 24 representative JET
+- Quality and performance smoke: Aqua passes 11/11 and 25 representative JET
   probes pass; those JET probes do not cover the matrix predicates. All 42
   non-recording quick benchmark cases complete, without a regression threshold
   or comparative performance claim.
 - QETLAB parity: not claimed; inventory/provenance review and MATLAB
   differential validation remain incomplete. Consult
   [`docs/PORTING_STATUS.md`](docs/PORTING_STATUS.md).
-- Optional backends: a package-owned dependency-free backend interface and
-  conservative native pipeline are implemented. No external optional adapter is
-  currently described as safe or production-ready.
-- QUBIT4MATLAB v6.5 port: blocked because the license bundled in the
-  author-hosted archive materially conflicts with the separately supplied
-  license. No implementation files from that archive may be inspected pending
-  human clarification.
+- Optional backends: the exact EntanglementDetection.jl 0.2.2 weak-dependency
+  adapter passes 125/125 focused assertions on Julia 1.12.6. Searches run in a
+  bounded child process so the audited backend's RNG/stdout/BLAS side effects
+  do not escape into the caller. Backend conclusions remain uncertified
+  candidate evidence and the package report stays `unknown`. The optional
+  environment currently resolves on Julia 1.11 or later; its configured remote
+  platform matrix has not run.
 
 ## Installation
 
@@ -102,6 +103,16 @@ The `MATLABCompat` randomized spellings also require a leading RNG. See
 [states, operators, and random objects](docs/src/states_operators_random.md)
 for examples and current limitations.
 
+Three deterministic tutorials run as ordinary scripts and as part of
+`Pkg.test()`:
+
+```sh
+julia --startup-file=no --project=. tutorials/runtests.jl
+```
+
+See [Executable tutorials](docs/src/tutorials.md) for the standalone subsystem,
+channel, and entanglement-certificate workflows.
+
 ## Design commitments
 
 The core API will accept ordinary Julia vectors and matrices, preserve useful
@@ -120,6 +131,8 @@ Start with:
 - [Product structure and separable-ball certificates](docs/src/product_analysis.md)
 - [Matrix analysis](docs/src/matrix_analysis.md)
 - [Matrix predicates](docs/src/matrix_predicates.md)
+- [Executable tutorials](docs/src/tutorials.md)
+- [EntanglementDetection extension](docs/src/entanglement_detection_extension.md)
 - [Migration ledger](docs/src/migration_from_qetlab.md)
 - [Contributing](CONTRIBUTING.md)
 - [Legal and provenance status](docs/LEGAL.md)
@@ -146,5 +159,4 @@ additional compatible terms recorded in [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_
 [`NOTICE`](NOTICE), and `PROVENANCE.toml`.
 
 This project is independently maintained. It is not affiliated with, endorsed by,
-or officially supported by QETLAB, its maintainers, QUBIT4MATLAB, Geza Toth, or
-their contributors.
+or officially supported by QETLAB, its maintainers, or their contributors.
