@@ -2,6 +2,7 @@
 Manifest.toml
 docs/Manifest.toml
 docs/build/
+/docs/src/QuantumEntanglementTools.code-workspace
 benchmark/Manifest.toml
 dev/upstream/
 dev/downloads/

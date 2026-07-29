@@ -3,8 +3,9 @@
 ## Requirements
 
 The minimum supported Julia version is 1.10. Development currently targets the
-repository checkout. The experimental `v0.1.0` release candidate is not
-registered, and its API may change in later `0.x` releases.
+repository checkout. The experimental `0.1.0` development milestone is
+unreleased and unregistered, and its API may change before publication or in
+later `0.x` releases.
 
 From the repository root:
 
@@ -12,7 +13,7 @@ From the repository root:
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 ```
 
-The package test entry point executes the five published tutorials. They can
+The package test entry point executes the five repository tutorials. They can
 also be run directly:
 
 ```sh

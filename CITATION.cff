@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: >-
-  This is an experimental, scoped release. Please cite the exact version and
-  commit used; no complete QETLAB-parity claim is made.
+  This is an experimental, unreleased development milestone. Please cite the
+  exact version and commit used; no complete QETLAB-parity claim is made.
 type: software
 title: QuantumEntanglementTools.jl
 abstract: >-
@@ -12,7 +12,6 @@ authors:
     given-names: John
     email: jmartin@uliege.be
 version: 0.1.0
-date-released: "2026-07-29"
 license: BSD-3-Clause
 repository-code: "https://github.com/aenictusGitHub/QuantumEntanglementTools"
 keywords:

@@ -1,14 +1,15 @@
 # QuantumEntanglementTools.jl
 
 `QuantumEntanglementTools` is an independent Julia package for
-quantum-information and entanglement calculations. The experimental `v0.1.0`
-release candidate provides a scoped, type-generic, sparse-aware API, explicit
-QETLAB migration helpers, and optional backend integrations.
+quantum-information and entanglement calculations. Development currently
+targets an unreleased, experimental `0.1.0` milestone with a scoped,
+type-generic, sparse-aware API, explicit QETLAB migration helpers, and optional
+backend integrations.
 
 > [!WARNING]
-> Version `0.1.0` is experimental. It is not a claim of complete QETLAB parity,
-> API stability, comparative performance, or registry availability. Check the
-> [porting status](docs/PORTING_STATUS.md) and
+> The unreleased `0.1.0` development milestone is experimental. It is not a
+> claim of complete QETLAB parity, API stability, comparative performance, or
+> registry availability. Check the [porting status](docs/PORTING_STATUS.md) and
 > [validation report](docs/VALIDATION_REPORT.md) before relying on a migration
 > mapping or numerical certificate.
 
@@ -35,8 +36,8 @@ QETLAB migration helpers, and optional backend integrations.
 
 ## Installation
 
-The release candidate is not registered. Clone the repository and use Julia's
-package manager from the checkout:
+No version has been released or registered. Clone the repository and use
+Julia's package manager from the checkout:
 
 ```julia
 using Pkg
@@ -107,7 +108,7 @@ The `MATLABCompat` randomized spellings also require a leading RNG. See
 [states, operators, and random objects](docs/src/states_operators_random.md)
 for examples and current limitations.
 
-Five deterministic tutorials run as ordinary scripts and as part of
+Five deterministic repository tutorials run as ordinary scripts and as part of
 `Pkg.test()`:
 
 ```sh
@@ -152,9 +153,9 @@ julia --project=docs docs/make.jl
 
 ## Citation
 
-Versioned citation metadata is available in [`CITATION.cff`](CITATION.cff) and
-[`CITATION.bib`](CITATION.bib). No archival DOI has been assigned; include the
-exact version and commit used.
+Development citation metadata is available in [`CITATION.cff`](CITATION.cff)
+and [`CITATION.bib`](CITATION.bib). No version or archival DOI has been
+published; include the exact commit used.
 
 ## Development and review disclosure
 

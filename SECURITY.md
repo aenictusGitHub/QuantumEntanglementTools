@@ -2,15 +2,14 @@
 
 ## Supported versions
 
-The `0.1.x` line is experimental. Only the latest published `0.1.x` patch and
-the default development branch receive security fixes; earlier `0.1.x` patches
-may be superseded rather than patched in place. Versions older than `0.1.0` are
-unsupported.
+No version has been published. During the unreleased `0.1.0` development
+milestone, only the default development branch receives security fixes.
 
-The API may change in later `0.x` minor releases, while `0.1.x` patch releases
-may correct numerical behavior. A scientific-correctness issue is not
-automatically a security vulnerability, but an incorrect certificate or an
-exploitable resource-exhaustion path should be reported privately.
+The API may change before the first release and in later `0.x` minor releases.
+After publication, `0.1.x` patch releases may correct numerical behavior. A
+scientific-correctness issue is not automatically a security vulnerability, but
+an incorrect certificate or an exploitable resource-exhaustion path should be
+reported privately.
 
 ## Reporting a vulnerability
 

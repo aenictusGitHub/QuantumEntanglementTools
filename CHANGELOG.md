@@ -9,9 +9,8 @@ a minor-version increment.
 
 ## [Unreleased]
 
-No user-visible changes yet.
-
-## [0.1.0] - 2026-07-29
+The changes below are part of the unreleased `0.1.0` development milestone.
+No version has been tagged or published.
 
 ### Added
 
@@ -92,6 +91,3 @@ No user-visible changes yet.
 ### Security
 
 - Added a private vulnerability-reporting policy.
-
-[Unreleased]: https://github.com/aenictusGitHub/QuantumEntanglementTools/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/aenictusGitHub/QuantumEntanglementTools/releases/tag/v0.1.0

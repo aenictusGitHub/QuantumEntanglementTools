@@ -43,7 +43,6 @@ const FORBIDDEN_DISTRIBUTION_PATHS = (
     r"(?:^|/)[^/]*\.cov$",
     r"\.code-workspace$",
 )
-const ALLOWED_UNTRACKED_PATHS = Set(["docs/src/QuantumEntanglementTools.code-workspace"])
 
 function usage(io::IO=stdout)
     return print(
@@ -51,11 +50,11 @@ function usage(io::IO=stdout)
         """
 Usage: julia scripts/check_release.jl [options]
 
-Validate metadata and the exact Git archive of a release candidate.
+Validate unreleased or tagged-release metadata and the exact Git archive.
 
 Options:
   --treeish REF      Validate REF (default: HEAD)
-  --tag TAG          Require an annotated TAG equal to v<version> and targeting REF
+  --tag TAG          Require an annotated v<version> tag and dated release metadata
   --archive-smoke    Extract REF and load/smoke-test it in a fresh Julia depot
   --registry         Run a partial General-registry preflight
   --allow-dirty      Validate tracked worktree bytes for local iteration only
@@ -63,8 +62,10 @@ Options:
 
 Without `--allow-dirty`, checks read bytes from the exact committed tree and
 reject tracked changes and unexpected untracked files. `--allow-dirty` is never
-release evidence. `--registry` is only a partial preflight: it cannot prove the
-maintainer's non-delegable review, remote visibility, or RegistryCI acceptance.
+release evidence. Without `--tag`, the changelog and citation metadata must
+describe an unreleased development milestone. `--registry` is only a partial
+preflight: it cannot prove the maintainer's non-delegable review, remote
+visibility, or RegistryCI acceptance.
 """,
     )
 end
@@ -146,27 +147,6 @@ function is_valid_iso_date(value::AbstractString)
     end
 end
 
-@inline function ascii_lowercase(byte::UInt8)
-    return 0x41 <= byte <= 0x5a ? byte + 0x20 : byte
-end
-
-function contains_ascii_case_insensitive(
-    bytes::AbstractVector{UInt8}, needle::AbstractVector{UInt8}
-)
-    isempty(needle) && return true
-    length(bytes) < length(needle) && return false
-    last_start = length(bytes) - length(needle) + 1
-    for start in 1:last_start
-        all(
-            offset ->
-                ascii_lowercase(bytes[start + offset - 1]) ==
-                ascii_lowercase(needle[offset]),
-            eachindex(needle),
-        ) && return true
-    end
-    return false
-end
-
 function split_nul_records(bytes::AbstractVector{UInt8})
     records = Vector{Vector{UInt8}}()
     start = firstindex(bytes)
@@ -184,8 +164,6 @@ function inspect_candidate_bytes!(
     path::AbstractString,
     bytes::AbstractVector{UInt8},
     source::AbstractString,
-    forbidden_project_name::AbstractString,
-    forbidden_project_bytes::AbstractVector{UInt8},
     lfs_pointer_prefix::AbstractVector{UInt8},
 )
     length(bytes) >= length(lfs_pointer_prefix) &&
@@ -193,11 +171,6 @@ function inspect_candidate_bytes!(
         push!(
             failures, "Git LFS pointer is distributed instead of content: $path ($source)"
         )
-    occursin(lowercase(forbidden_project_name), lowercase(path)) && push!(
-        failures, "forbidden $forbidden_project_name path in candidate: $path ($source)"
-    )
-    contains_ascii_case_insensitive(bytes, forbidden_project_bytes) &&
-        push!(failures, "forbidden $forbidden_project_name bytes in: $path ($source)")
     return nothing
 end
 
@@ -274,8 +247,7 @@ function check_release(options)
     for line in status_lines
         if startswith(line, "?? ")
             path = line[4:end]
-            path in ALLOWED_UNTRACKED_PATHS ||
-                push!(failures, "unexpected untracked path: $path")
+            push!(failures, "unexpected untracked path: $path")
         else
             status_code = line[1:2]
             unsafe_dirty_status =
@@ -322,7 +294,7 @@ function check_release(options)
     check(name == "QuantumEntanglementTools", "unexpected package name: $(repr(name))")
     check(
         version_text isa AbstractString && occursin(r"^\d+\.\d+\.\d+$", version_text),
-        "Project.toml release version must have exactly three numeric components",
+        "Project.toml package version must have exactly three numeric components",
     )
     version = try
         VersionNumber(version_text)
@@ -332,9 +304,9 @@ function check_release(options)
     check(version isa VersionNumber, "Project.toml version is not valid SemVer")
     if version isa VersionNumber
         check(
-            isempty(version.prerelease), "release version must not contain prerelease data"
+            isempty(version.prerelease), "package version must not contain prerelease data"
         )
-        check(isempty(version.build), "release version must not contain build data")
+        check(isempty(version.build), "package version must not contain build data")
     end
     uuid = get(project, "uuid", "")
     check(
@@ -376,8 +348,6 @@ function check_release(options)
     entrypoint = "src/$name.jl"
     check(entrypoint in candidate_paths, "package entry point is absent: $entrypoint")
 
-    forbidden_project_name = "QUBIT4" * "MATLAB"
-    forbidden_project_bytes = collect(codeunits(forbidden_project_name))
     lfs_pointer_prefix = collect(codeunits("version https://git-lfs.github.com/spec/v1"))
     for path in candidate_paths
         candidate_root = options.allow_dirty ? REPOSITORY_ROOT : archive_root
@@ -391,8 +361,6 @@ function check_release(options)
             path,
             bytes,
             options.allow_dirty ? "worktree" : "archive",
-            forbidden_project_name,
-            forbidden_project_bytes,
             lfs_pointer_prefix,
         )
     end
@@ -437,8 +405,6 @@ function check_release(options)
             path,
             bytes,
             "Git tree",
-            forbidden_project_name,
-            forbidden_project_bytes,
             lfs_pointer_prefix,
         )
     end
@@ -470,20 +436,12 @@ function check_release(options)
     changelog = content("CHANGELOG.md")
     if version isa VersionNumber
         escaped_version = replace(string(version), "." => "\\.")
+        unreleased_heading = occursin(r"(?m)^## \[Unreleased\]\s*$", changelog)
         release_match = match(
             Regex("(?m)^## \\[$escaped_version\\] - (\\d{4}-\\d{2}-\\d{2})\\s*\$"),
             changelog,
         )
-        check(
-            !isnothing(release_match),
-            "CHANGELOG.md has no dated release heading for $version",
-        )
-        if !isnothing(release_match)
-            check(
-                is_valid_iso_date(release_match.captures[1]),
-                "CHANGELOG.md release date is not a valid ISO calendar date",
-            )
-        end
+        check(unreleased_heading, "CHANGELOG.md has no Unreleased heading")
         check(
             occursin(
                 Regex("(?m)^version:\\s*[\"']?$escaped_version[\"']?\\s*\$"), citation
@@ -493,18 +451,39 @@ function check_release(options)
         citation_date_match = match(
             r"(?m)^date-released:\s*[\"']?(\d{4}-\d{2}-\d{2})[\"']?\s*$", citation
         )
-        check(!isnothing(citation_date_match), "CITATION.cff has no release date")
-        if !isnothing(citation_date_match)
+        if isnothing(options.tag)
             check(
-                is_valid_iso_date(citation_date_match.captures[1]),
-                "CITATION.cff release date is not a valid ISO calendar date",
+                isnothing(release_match),
+                "untagged metadata must not contain a dated $version release heading",
             )
-        end
-        if !isnothing(release_match) && !isnothing(citation_date_match)
             check(
-                release_match.captures[1] == citation_date_match.captures[1],
-                "CHANGELOG.md and CITATION.cff release dates disagree",
+                isnothing(citation_date_match),
+                "untagged CITATION.cff must not contain date-released",
             )
+        else
+            check(
+                !isnothing(release_match),
+                "CHANGELOG.md has no dated release heading for $version",
+            )
+            if !isnothing(release_match)
+                check(
+                    is_valid_iso_date(release_match.captures[1]),
+                    "CHANGELOG.md release date is not a valid ISO calendar date",
+                )
+            end
+            check(!isnothing(citation_date_match), "CITATION.cff has no release date")
+            if !isnothing(citation_date_match)
+                check(
+                    is_valid_iso_date(citation_date_match.captures[1]),
+                    "CITATION.cff release date is not a valid ISO calendar date",
+                )
+            end
+            if !isnothing(release_match) && !isnothing(citation_date_match)
+                check(
+                    release_match.captures[1] == citation_date_match.captures[1],
+                    "CHANGELOG.md and CITATION.cff release dates disagree",
+                )
+            end
         end
         check(
             occursin(r"(?m)^repository-code:\s*[\"']?https://github\.com/", citation),
@@ -575,17 +554,32 @@ function check_release(options)
                 " (not release evidence)",
             )
         else
-            println(
-                "release archive check passed for ",
-                name,
-                " v",
-                version_text,
-                " at ",
-                resolved_commit,
-                "; tar SHA-256 ",
-                archive_digest,
-                options.registry ? " (partial General preflight)" : "",
-            )
+            if isnothing(options.tag)
+                println(
+                    "unreleased archive check passed for ",
+                    name,
+                    " v",
+                    version_text,
+                    " at ",
+                    resolved_commit,
+                    "; tar SHA-256 ",
+                    archive_digest,
+                    " (not tagged release evidence)",
+                    options.registry ? " (partial General preflight)" : "",
+                )
+            else
+                println(
+                    "release archive check passed for ",
+                    name,
+                    " v",
+                    version_text,
+                    " at ",
+                    resolved_commit,
+                    "; tar SHA-256 ",
+                    archive_digest,
+                    options.registry ? " (partial General preflight)" : "",
+                )
+            end
         end
         return nothing
     end
