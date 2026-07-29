@@ -20,8 +20,8 @@ proper prefix and also requires equal total sums within one symmetric
 tolerance:
 
 ```math
-\operatorname{atol}
-+ \operatorname{rtol}
+\mathrm{atol}
++ \mathrm{rtol}
   \max\!\left(\lVert a\rVert_1,\lVert b\rVert_1,1\right).
 ```
 

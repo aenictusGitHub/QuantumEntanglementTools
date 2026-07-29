@@ -117,7 +117,7 @@ For a normalized bipartite state of total dimension `D > 1`,
 `in_separable_ball` tests the sufficient condition
 
 ```math
-\operatorname{tr}(\rho^2) \leq \frac{1}{D-1}.
+\mathrm{tr}(\rho^2) \leq \frac{1}{D-1}.
 ```
 
 The result is a [`SeparableBallResult`](@ref):

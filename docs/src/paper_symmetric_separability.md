@@ -42,7 +42,7 @@ Here ``I_{N+1}`` is the identity **inside the symmetric subspace**, not the
 For any normalized symmetric ``|\psi_0\rangle``, the spectrum is
 
 ```math
-\operatorname{spec}\rho(p)
+\mathrm{spec}\,\rho(p)
 =
 \left(
 1-\frac{Np}{N+1},
@@ -304,7 +304,7 @@ printed. It does not recover any unprinted higher-precision SDP coefficients.
 For ``|\mathrm{GHZ}_5^+\rangle``, define
 
 ```math
-m=\operatorname{Tr}\left(W_5\frac{I_6}{6}\right)
+m=\mathrm{Tr}\left(W_5\frac{I_6}{6}\right)
 =\frac{a+b+1}{3},
 \qquad
 g=\langle\mathrm{GHZ}_5^+|W_5|\mathrm{GHZ}_5^+\rangle
@@ -314,7 +314,7 @@ g=\langle\mathrm{GHZ}_5^+|W_5|\mathrm{GHZ}_5^+\rangle
 The witness expectation is therefore the affine function
 
 ```math
-\operatorname{Tr}\!\left[W_5\rho_{\mathrm{GHZ}}(p)\right]
+\mathrm{Tr}\!\left[W_5\rho_{\mathrm{GHZ}}(p)\right]
 =pm+(1-p)g.
 ```
 
@@ -349,7 +349,7 @@ The paper's theorem therefore makes the state SAPPT, while the reconstructed
 witness gives
 
 ```math
-\operatorname{Tr}\!\left[
+\mathrm{Tr}\!\left[
 W_5\rho_{\mathrm{GHZ}}\!\left(\frac{121}{125}\right)
 \right]
 \approx-0.0059816272<0.
@@ -417,15 +417,15 @@ This is a decomposable witness: for every state ``\sigma`` that is PPT across
 the ``2|3`` split,
 
 ```math
-\operatorname{Tr}(W_{\mathrm{NPT}}\sigma)
+\mathrm{Tr}(W_{\mathrm{NPT}}\sigma)
 =
-\operatorname{Tr}(Q\sigma^{T_A})\geq0.
+\mathrm{Tr}(Q\sigma^{T_A})\geq0.
 ```
 
 For the target state,
 
 ```math
-\operatorname{Tr}\!\left[
+\mathrm{Tr}\!\left[
 W_{\mathrm{NPT}}\rho_{\mathrm{GHZ}}\!\left(\frac{29}{30}\right)
 \right]
 =
@@ -486,7 +486,7 @@ The tutorial helper constructs all three reported witnesses as
 ```math
 W_N
 =
-\operatorname{Diag}(d_0,\ldots,d_N)
+\mathrm{Diag}(d_0,\ldots,d_N)
 +z\left(
 |D_N^{(0)}\rangle\langle D_N^{(N)}|
 +|D_N^{(N)}\rangle\langle D_N^{(0)}|
@@ -504,7 +504,7 @@ The rounded coefficients are:
 Recomputing expectations and detection endpoints from those rounded numbers
 gives:
 
-| ``N`` | ``p_{\min}`` | ``\operatorname{Tr}[W_N\rho(p_{\min})]`` | rounded-coefficient endpoint |
+| ``N`` | ``p_{\min}`` | ``\mathrm{Tr}[W_N\rho(p_{\min})]`` | rounded-coefficient endpoint |
 |---:|---:|---:|---:|
 | 5 | ``30/31`` | ``-0.0084547871`` | ``0.9686241593`` |
 | 7 | ``140/141`` | ``-0.0037891203`` | ``0.9930282522`` |

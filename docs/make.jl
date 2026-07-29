@@ -1,6 +1,16 @@
 using Documenter
 using QuantumEntanglementTools
 
+for (directory, _, files) in walkdir(joinpath(@__DIR__, "src"))
+    for file in files
+        endswith(file, ".md") || continue
+        path = joinpath(directory, file)
+        occursin(raw"\operatorname", read(path, String)) && error(
+            "GitHub-incompatible operator-name macro found in $path; use \\mathrm instead",
+        )
+    end
+end
+
 DocMeta.setdocmeta!(
     QuantumEntanglementTools,
     :DocTestSetup,

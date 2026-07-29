@@ -123,7 +123,7 @@ In the ordered product basis
 projectors:
 
 ```math
-\rho_3 = \operatorname{diag}
+\rho_3 = \mathrm{diag}
 \left(\frac18,\frac18,\frac18,\frac18,\frac18,\frac18,\frac18,
 \frac1{16},\frac1{16}\right).
 ```

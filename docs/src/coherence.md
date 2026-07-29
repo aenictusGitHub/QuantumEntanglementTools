@@ -26,7 +26,7 @@ For a density matrix ``\rho`` in the selected computational basis,
 ```math
 C_{l_1}(\rho) = \sum_{i \ne j} |\rho_{ij}|,
 \qquad
-C_{\mathrm{rel}}(\rho) = S(\operatorname{diag}(\rho)) - S(\rho).
+C_{\mathrm{rel}}(\rho) = S(\mathrm{diag}(\rho)) - S(\rho).
 ```
 
 The logarithm base for `relative_entropy_coherence` is required explicitly.

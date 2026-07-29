@@ -72,6 +72,8 @@ a stable public API exists.
 - Randomized native and `MATLABCompat` APIs require a leading explicit
   `rng::AbstractRNG`; no public random constructor draws from Julia's global
   stream.
+- Documentation equations use GitHub-compatible roman-text notation instead of
+  the unsupported operator-name macro.
 
 ### Security
 

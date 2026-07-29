@@ -750,7 +750,7 @@ bipartite density matrix or to its supplied eigenvalue vector. For total
 dimension `D > 1`, a trace-one positive state is certified when
 
 ```math
-\\operatorname{tr}(\\rho^2) \\leq \\frac{1}{D-1}.
+\\mathrm{tr}(\\rho^2) \\leq \\frac{1}{D-1}.
 ```
 
 A general matrix input is fully density-validated and requires a dense

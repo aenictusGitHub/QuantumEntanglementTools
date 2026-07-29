@@ -7,12 +7,13 @@ work continues.
 ## Repository state
 
 - Branch: `main`.
-- Milestone: `docs: add symmetric SAPPT witness tutorial`. This handoff is part
-  of that milestone commit; use `git rev-parse HEAD` for its exact revision.
+- Milestone: `docs: use GitHub-compatible math macros`. This handoff is part of
+  that milestone commit; use `git rev-parse HEAD` for its exact revision.
 - Remote: private `origin` at
   `https://github.com/aenictusGitHub/QuantumEntanglementTools.git`; `main`
-  tracks `origin/main`. After this milestone, local `main` is two commits ahead
-  of `origin/main`; neither local documentation commit has been pushed.
+  tracks `origin/main`. The separability documentation commits are present on
+  the remote. After this milestone, local `main` is one commit ahead of
+  `origin/main`; the GitHub-math compatibility commit has not been pushed.
 - Package: `QuantumEntanglementTools`, UUID
   `45675e5b-5c8b-4983-b92d-4c3725d56c4e`, version `0.1.0`.
 - Package author metadata: `John MARTIN <jmartin@uliege.be>`.
@@ -35,6 +36,9 @@ work continues.
   executable tutorial records the GHZ phase mismatch explicitly, gives an
   exact Bernstein-basis block-positivity proof for the printed five-qubit
   witness, and does not claim to rerun the source paper's SDP.
+- Markdown and matching API-docstring equations avoid GitHub's unsupported
+  operator-name macro; the replacement roman-text forms pass the strict local
+  Documenter build.
 - Local Julia/OS/BLAS/tool evidence is in `docs/BUILD_ENVIRONMENT.md`.
 
 ## Current status

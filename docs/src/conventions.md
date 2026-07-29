@@ -33,8 +33,8 @@ Vectorization is Julia/MATLAB column-major `vec`: rows vary fastest within each
 matrix column. Consequently, the intended identity is
 
 ```math
-\operatorname{vec}(A X B) = (B^\mathsf{T} \otimes A)
-\operatorname{vec}(X).
+\mathrm{vec}(A X B) = (B^\mathsf{T} \otimes A)
+\mathrm{vec}(X).
 ```
 
 The transpose on `B` is ordinary transpose, not adjoint.
