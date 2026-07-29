@@ -14,7 +14,7 @@ merely because a similarly named Julia method exists.
 | Neutral name audit | The 2026-07-28 local General snapshot (12,263 non-JLL names) has no exact case-insensitive name or UUID collision, and AutoMerge 1.0.0's similarity check passes; GitHub and JuliaHub checks remain provisional and must be rerun before public registration |
 | QETLAB pin | Inspected at `d8589610f00cff106537268dee2e2a1153f3a601` |
 | Raw QETLAB source count | 127 root `.m` files and 36 helper `.m` files |
-| Authoritative inventory | Generated (163 files, 503 dependency edges, no detected cycles); 76 rows manually reviewed and 87 pending |
+| Authoritative inventory | Generated (163 files, 503 dependency edges, no detected cycles); all 163 rows source-reviewed and zero pending |
 | Tier A native kernel | Implemented; 345/345 focused local tests pass on Julia 1.12.6 and Julia 1.10.11, including constructor-integrity and non-one-based-array rejection |
 | Tier A QETLAB entry-point mappings | 12 implemented and manually reviewed mappings |
 | Tier B operators/states/random | 22 complete mappings plus the scalar bipartite Werner path; 954/954 focused local tests pass, including capped pre-allocation guards and compatibility-keyword forwarding for Brauer-state combinatorics |
@@ -33,7 +33,7 @@ merely because a similarly named Julia method exists.
 | Recorded full local package run | The integrated 2,417-assertion package corpus (2,369 core plus 48 executable tutorials) passes on Julia 1.12.6 and the minimum supported Julia 1.10.11 |
 | Exact local release archive | Candidate code commit `0b63359159e1c0c1527c8753f78b61940701eb25` passes the release checker and fresh-depot archive smoke on Julia 1.12.6 and Julia 1.10.11; the final documentation-only evidence `HEAD` was rerun on both versions |
 | Browser code generator | Original BSD-licensed documentation tool covers nine curated state families, six analysis/measure routes, guarded decomposable PPT witnesses, and the five-qubit published symmetric witness; 71 deterministic JavaScript assertions and all nine generated Julia branches pass locally on Julia 1.12.6 and 1.10.11 |
-| Reviewed status totals | 63 implemented, 11 partial, 2 deferred, and 87 pending inventory rows |
+| Reviewed public-row totals | 63 implemented, 15 partial, 19 deferred, 30 blocked with explicit reasons, and zero pending; the 36 private helpers have separate internal dispositions |
 | Upstream differential validation | Tier A: 13 Octave/QETLAB fixtures and 52 assertions pass; Tier B: 18 deterministic fixtures and 72 assertions pass; Tier C: 7 fixtures and 28 assertions pass; Tier D: 13 fixtures and 34 assertions pass; Tier E coherence: 6 fixtures and 25 assertions pass; Tier E product: 14 fixtures and 68 assertions pass; Tier E matrix: 22 fixtures and 59 assertions pass. MATLAB not run; Octave evidence is function-specific and supplemental |
 | Benchmark smoke | 42 quick cases ran locally, including three product-analysis and three matrix-analysis cases; not a regression baseline or comparative performance claim |
 | Native entanglement orchestration | Dependency-free certificate-first pipeline implemented; a satisfied necessary criterion remains `unknown` except for the exact `2×2`/`2×3` PPT theorem, and no full `IsSeparable` mapping is claimed |
@@ -45,20 +45,23 @@ merely because a similarly named Julia method exists.
 
 | Milestone | Status | Exit evidence still required |
 |---|---|---|
-| M0 — audit and scaffold | In progress | Review the remaining 87 inventory rows and obtain passing remote CI on the exact candidate commit |
+| M0 — audit and scaffold | Inventory classification complete; release evidence still in progress | Obtain passing remote CI on the exact candidate commit and complete the non-delegable maintainer review |
 | M1 — subsystem kernel | In progress; local implementation/tests and reviewed mappings pass | Cross-version/platform CI, MATLAB differential review, and reviewed benchmark baseline |
 | M2 — states/operators/random | In progress; reviewed core slice locally validated | Add reviewed benchmarks, supported-platform CI, MATLAB evidence, and decide/develop deferred multipartite Werner/random capabilities in their proper milestones |
 | M3 — channels/maps | In progress; representation, physicality, constructor, wrapper, and focused oracle tests pass locally | Add two-sided Kraus and rectangular row/column operator-space support or retain explicit partial statuses; add supported-platform CI, MATLAB evidence, and reviewed benchmarks |
 | M4 — measures/criteria | In progress; reviewed scalar measures, tri-state necessary criteria, native orchestration, focused tests, supplemental oracle fixtures, and benchmark smoke pass locally | Implement Rényi entropy or retain the explicit partial status; add supported-platform CI and MATLAB evidence; do not claim a general `IsSeparable` implementation |
 | M5 — optimization | Not started | Documented formulations, optional solvers, status-aware tests |
 | M6 — EntanglementDetection | Local adapter, load-order checks, lifecycle hardening, caller-state isolation, and tri-state translation pass for exact 0.2.2; the six-job remote matrix passed at `6bf8d61` | Rerun the configured Julia 1.11/1.12 Linux/macOS/Windows matrix on the exact candidate; reassess every widened backend version and retain the trusted-worker/non-certificate limitations |
-| M7 — QETLAB parity sweep | Not started | Every reviewed inventory row implemented, mapped, superseded, or explicitly blocked |
+| M7 — QETLAB parity sweep | In progress; all rows classified, with 64 public rows still partial, deferred, or blocked | Advance each public row to verified, intentionally superseded, or a maintained explicit blocker; do not convert classification into a parity claim |
 | M8 — release candidate | In progress; scoped `v0.1.0` release candidate preparation | Complete remote CI, documentation, legal/API/archive review, non-delegable human review of Codex-assisted work, and the explicit visibility/rename decision required for General registration |
 
 The `v0.1.0` candidate is scoped to the package-owned API whose provenance,
-documentation, and tests are recorded. It does not complete M7 or change the
-fact that 87 QETLAB inventory rows remain pending. A private GitHub release and
-General registration have separate gates in `docs/RELEASE_CHECKLIST.md`.
+documentation, and tests are recorded. The source review removes the inventory
+classification backlog, but it does not complete M7: 64 public QETLAB rows
+remain partial, deferred, or blocked. See
+[`INVENTORY_REVIEW.md`](INVENTORY_REVIEW.md) for their exact dispositions. A
+private GitHub release and General registration have separate gates in
+`docs/RELEASE_CHECKLIST.md`.
 
 ## Completion vocabulary
 
@@ -68,15 +71,22 @@ General registration have separate gates in `docs/RELEASE_CHECKLIST.md`.
 - `compatibility_alias`: tested wrapper delegates to a verified native API.
 - `superseded_with_documented_mapping`: no capability loss and migration is
   documented.
-- `blocked_with_explicit_reason`: evidence and required human/external action are
-  recorded.
+- `deferred`: the row is understood but implementation is outside the current
+  release scope; its required specification and prerequisites are recorded.
+- `blocked_with_explicit_reason`: evidence and the required implementation
+  prerequisite or external action are recorded.
+- Private-helper dispositions record whether a helper was replaced internally,
+  intentionally excluded, partially covered, or deferred with its parent. They
+  are not public API completion claims.
 
 `forgotten`, blank, or an unreviewed generated classification is never an
 acceptable final status.
 
 ## Immediate gates
 
-1. Review the remaining 87 generated root/helper rows and dependency edges.
+1. Work through the 64 partial, deferred, or blocked public rows in
+   `docs/INVENTORY_REVIEW.md` without weakening solver, RNG, validation, sparse,
+   or certificate semantics.
 2. Keep `UpstreamManifest.toml`, `PROVENANCE.toml`, and reviewed status overlays
    synchronized as later milestones export new bindings.
 3. Run the Tier A--Tier E reviewed slices and native pipeline on Julia 1.10 and

@@ -129,6 +129,7 @@ equivalence.
 | `PauliChannel` | `pauli_channel` | `MATLABCompat.PauliChannel` | Native probabilities are validated without clipping/normalization; random compatibility form is `PauliChannel(rng::AbstractRNG, Q)` | Implemented; deterministic fixture plus explicit-RNG/global-stream tests pass |
 | `ChoiMap` | `choi_map` | `MATLABCompat.ChoiMap` | Native output is a typed general-map representation; wrapper output is the raw Choi matrix | Implemented; local and exact Octave fixture tests pass |
 | `ReductionMap` | `reduction_map` | `MATLABCompat.ReductionMap` | Native output is a typed general-map representation; wrapper output is the raw Choi matrix | Implemented; local and exact Octave fixture tests pass |
+| `IsCP` | `is_completely_positive` | — | Native input is a package-owned typed map representation with separate absolute and relative tolerances; raw two-sided Kraus input and QETLAB's scalar tolerance contract are not exposed | **Partial:** the typed Kraus/Choi/superoperator diagnostic is tested, but there is no compatibility entry point or QETLAB differential fixture |
 
 “Rectangular channel” and “rectangular operator space” are different here.
 The native representation layer supports channels between unequal Hilbert
@@ -161,6 +162,15 @@ equivalence.
 | `SchmidtRank` | `schmidt_rank` | `MATLABCompat.SchmidtRank` | Native absolute/relative tolerances are explicit; result is a tolerance-defined numerical rank | Implemented; local and Octave fixture tests pass |
 | `Concurrence` | `concurrence` | `MATLABCompat.Concurrence` | Domain is explicitly normalized two-qubit pure vectors or `4×4` density matrices | Implemented; local and Octave fixture tests pass |
 | `IsPPT` | `ppt_criterion` | `MATLABCompat.IsPPT` | Native input is a density matrix; wrapper also accepts finite Hermitian operators. Both return structured tri-state `CriterionResult`, intentionally not QETLAB's boundary-collapsing Boolean | Implemented with documented tri-state result; local and Octave fixture tests pass |
+
+Three additional reviewed rows have useful native subsets but deliberately no
+compatibility entry point:
+
+| QETLAB function | Native subset | How to migrate the supported case | Missing scope |
+|---|---|---|---|
+| `kpNorm` | `ky_fan_norm`, `schatten_norm`, `trace_norm` | Use `ky_fan_norm(X, k)` for `p=1`; use `schatten_norm(X, p)` when `k` includes the full singular-value/vector spectrum | General top-`k`, `p` norm and the CVX symbolic branch |
+| `SkVectorNorm` | `schmidt_coefficients` | Compute `norm(schmidt_coefficients(v, dims)[1:k])` after validating `k` against the Schmidt spectrum | Dedicated result, QETLAB argument defaults, and `MATLABCompat.SkVectorNorm` |
+| `IsSeparable` | `analyze_entanglement` and the separate `in_separable_ball` sufficient test | Inspect `EntanglementReport.status`, `certified`, `certificate_kind`, and every recorded attempt; call the separable-ball test explicitly when relevant | The pinned filtering, covariance, positive-map, randomized-subtraction, symmetric-extension, and inner-extension branches |
 
 The project-native scalar additions `trace_distance`,
 `logarithmic_negativity`, and `schmidt_coefficients` have no fabricated

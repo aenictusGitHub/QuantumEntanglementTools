@@ -18,10 +18,11 @@ session; do not assume the repository state below remains current.
 - Package: `QuantumEntanglementTools`, UUID
   `45675e5b-5c8b-4983-b92d-4c3725d56c4e`, experimental version `0.1.0`.
 - Package author metadata: `John MARTIN <jmartin@uliege.be>`.
-- Expected post-commit worktree: clean except the user-owned untracked
-  `docs/src/QuantumEntanglementTools.code-workspace` and ignored local
-  manifests, built documentation, benchmark output, oracle output, and
-  development checkouts. Never stage the workspace file.
+- Expected post-commit worktree: the user-owned staged
+  `docs/src/QuantumEntanglementTools.code-workspace` remains outside the
+  inventory-review commit, together with ignored local manifests, built
+  documentation, benchmark output, oracle output, and development checkouts.
+  Never include the workspace file in an agent-authored commit.
 - No push, tag, GitHub release, visibility change, branch-rule change, or
   General-registry submission was made during release preparation.
 
@@ -30,9 +31,22 @@ session; do not assume the repository state below remains current.
 This is an experimental `v0.1.0` candidate for the package-owned, documented
 API. It is not a full QETLAB port, a parity claim, or a production-stability
 claim. The generated inventory contains 163 upstream files and 503 dependency
-edges with no automatically detected cycle. Its reviewed overlay contains 63
-implemented rows, 11 partial rows, two explicit deferrals, and 87 pending rows.
-The public API and provenance gate covers 214 bindings.
+edges with no automatically detected cycle. All 163 rows now have source-level
+dispositions and none remains pending. Among the 127 public rows, 63 are
+implemented, 15 partial, 19 deferred, and 30 blocked with explicit reasons.
+The 36 private helpers are recorded separately as 13 internally superseded, two
+unreferenced and intentionally excluded, four partially covered, and 17
+deferred with their parent scope. The public API and provenance gate covers 214
+bindings.
+
+The 2026-07-29 inventory sweep inspected all 87 formerly pending MATLAB files
+against the pinned source, current API, provenance, tests, and documentation.
+It added a per-row reviewed overlay entry and the human-readable
+`docs/INVENTORY_REVIEW.md`. The generator now reports
+`review_status = "source_review_complete"`, and the public-API checker fails if
+any future upstream row lacks an overlay entry or remains automatically
+pending. Source review is a classification milestone, not implementation or
+human-release-review evidence.
 
 The integrated local package corpus contains 2,417 assertions: 2,369 core
 assertions plus 48 executable-tutorial assertions. It passes on Julia 1.12.6
@@ -157,6 +171,33 @@ two archive gates were rerun successfully against the final local `HEAD`.
   schema 1.2.0.
 - The prior Quality and Codecov remote shortcomings above remain unverified
   until an exact-candidate push and remote run.
+- During the completed-inventory sweep, sandboxed Quality and docs invocations
+  again failed only because Julia could not create cache or usage-log pidfiles.
+  The permitted reruns passed. The first permitted docs build then exposed an
+  ignored stale cross-version `docs/Manifest.toml` entry for `MbedTLS_jll`;
+  developing the local package, resolving, and instantiating the ignored docs
+  environment removed that stale entry, and the exact docs build passed.
+
+## Inventory-sweep validation
+
+The following commands passed after the 87-row source review:
+
+```sh
+julia --startup-file=no --project=. scripts/build_upstream_inventory.jl --check
+julia --startup-file=no --project=. scripts/check_public_api.jl
+julia +1.10 --startup-file=no --project=. scripts/build_upstream_inventory.jl --check
+julia +1.10 --startup-file=no --project=. scripts/check_public_api.jl
+julia --startup-file=no --project=quality quality/format.jl
+julia --startup-file=no --project=quality quality/run_quality.jl
+julia --startup-file=no --project=. -e 'using Pkg; Pkg.test()'
+julia --startup-file=no --project=docs docs/make.jl
+```
+
+Results were 163 inventoried and reviewed rows, 503 dependency edges, zero
+detected cycles, 214 API/provenance bindings, Aqua 11/11, JET 25/25, the full
+2,417-assertion package corpus, and a strict Documenter build. Documenter
+retained the known non-fatal warning that the approximately 158 KiB native API
+page is above the 100 KiB warning threshold but below the 200 KiB hard limit.
 
 ## Remaining release gates
 

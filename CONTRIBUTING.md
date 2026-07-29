@@ -83,9 +83,10 @@ julia --project=. scripts/validate_matrix_predicates.jl
 ```
 
 The current quality run reports Aqua 11/11 and 25 representative JET probes.
-Those JET probes do not cover the matrix-predicate functions. The inventory
-currently has 76 manually reviewed rows: 63 implemented, 11 partial, two
-deferred, and 87 pending.
+Those JET probes do not cover the matrix-predicate functions. All 163
+inventory rows now have source-reviewed dispositions. Of the 127 public rows,
+63 are implemented, 15 partial, 19 deferred, and 30 blocked with explicit
+reasons; the 36 private helpers have separate internal dispositions.
 
 Run the optional development oracle against a pinned QETLAB checkout with:
 

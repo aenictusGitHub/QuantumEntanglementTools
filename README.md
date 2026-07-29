@@ -17,8 +17,10 @@ QETLAB migration helpers, and optional backend integrations.
 - The local package corpus contains 2,417 passing assertions on Julia 1.10.11
   and 1.12.6: 2,369 core assertions plus 48 assertions that execute the
   published tutorials.
-- Of 163 inventoried QETLAB files, 76 have been manually reviewed: 63 mappings
-  are implemented, 11 are partial, two are deferred, and 87 remain pending.
+- All 163 inventoried QETLAB files have source-reviewed dispositions. Among the
+  127 public rows, 63 mappings are implemented, 15 are partial, 19 are
+  deferred, and 30 are blocked with explicit reasons; none remains pending.
+  The 36 private helpers are tracked separately.
 - The implemented scope covers subsystem operations, states and random objects,
   channels, scalar measures and criteria, certificate-aware entanglement
   analysis, coherence, product analysis, and selected matrix analysis.
@@ -27,6 +29,7 @@ QETLAB migration helpers, and optional backend integrations.
   evidence and never becomes a package-owned separability certificate.
 - Full test, oracle, platform, benchmark, and limitation details live in the
   [porting status](docs/PORTING_STATUS.md),
+  [inventory source review](docs/INVENTORY_REVIEW.md),
   [validation report](docs/VALIDATION_REPORT.md), and
   [benchmark report](docs/BENCHMARK_REPORT.md).
 

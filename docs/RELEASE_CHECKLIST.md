@@ -42,8 +42,9 @@ not suitable for registration.
       `0.1.0`, authors, Julia floor, weak dependency, extension, and compat
       bounds.
 - [ ] State that `v0.1.0` covers only the API recorded in `PROVENANCE.toml`.
-- [ ] Keep the 87 pending QETLAB inventory rows and every partial or deferred
-      mapping visible; do not claim complete QETLAB parity.
+- [ ] Keep all 64 partial, deferred, or explicitly blocked public QETLAB rows
+      visible; zero pending classifications does not imply complete QETLAB
+      parity.
 - [ ] Run `julia --startup-file=no --project=. scripts/check_public_api.jl` and
       verify every exported binding has specification, provenance, tests, and
       documentation.

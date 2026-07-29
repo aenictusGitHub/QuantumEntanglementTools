@@ -362,6 +362,26 @@ function main(args)
     get(inventory, "status_overlay_entry_count", nothing) == length(status_entries) ||
         fail("generated inventory status_overlay_entry_count is stale")
 
+    missing_status_rows = sort!(collect(setdiff(Set(keys(inventory_by_name)), status_keys)))
+    isempty(missing_status_rows) || fail(
+        "inventory rows without reviewed status entries: " *
+        join(missing_status_rows, ", "),
+    )
+    pending_review_rows = sort!([
+        record["function_name"] for record in inventory_entries if
+        get(record, "review_status", "") == "automated_parse_pending_manual_review"
+    ])
+    isempty(pending_review_rows) || fail(
+        "inventory rows still pending source review: " * join(pending_review_rows, ", ")
+    )
+    get(inventory, "source_reviewed_count", nothing) ==
+    length(inventory_entries) - length(pending_review_rows) ||
+        fail("generated inventory source_reviewed_count is stale")
+    get(inventory, "pending_review_count", nothing) == length(pending_review_rows) ||
+        fail("generated inventory pending_review_count is stale")
+    get(inventory, "review_status", nothing) == "source_review_complete" ||
+        fail("generated inventory top-level review_status is not source_review_complete")
+
     for inventory_record in inventory_entries
         get(inventory_record, "implementation_status", "not_started") in
         IMPLEMENTED_INVENTORY_STATUSES || continue

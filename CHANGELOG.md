@@ -51,8 +51,8 @@ No user-visible changes yet.
   partial because the pinned CVX symbolic branch is omitted.
 - A 2,417-assertion full package suite passing locally on Julia 1.12.6 and
   Julia 1.10.11, comprising 2,369 core assertions and 48 executable-tutorial
-  assertions, plus consistency checks over 214 public bindings and 76 manually
-  reviewed inventory rows.
+  assertions, plus consistency checks over 214 public bindings and all 163
+  source-reviewed inventory rows.
 - Five deterministic executable tutorials for subsystem reductions, local
   channel noise, separability certificates, symmetric SAPPT states and
   constructive witnesses, and certificate-aware entanglement analysis. The

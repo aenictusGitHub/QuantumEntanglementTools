@@ -398,9 +398,12 @@ broader tolerance.
 
 ## Known gaps
 
-The authoritative QETLAB inventory contains 163 rows: 63 are marked
-implemented, 11 are explicitly partial, 2 are explicitly deferred, and 87
-still await manual review. The project-native criteria and orchestration
-bindings do not mark QETLAB `IsSeparable` implemented. Until every public row
-maps to tests and docs, whole-project parity percentages would be misleading
-and are intentionally omitted.
+The authoritative QETLAB inventory contains 163 source-reviewed rows and none
+remains pending. Among its 127 public rows, 63 are marked implemented, 15 are
+explicitly partial, 19 are deferred, and 30 are blocked with explicit reasons;
+the 36 private helpers have separate internal dispositions. The project-native
+criteria and orchestration bindings mark only a conservative subset of QETLAB
+`IsSeparable`, not the complete entry point. Until every public row maps to
+function-level provenance, tests, and docs—or an intentionally maintained
+replacement/blocker—whole-project parity percentages would be misleading and
+are intentionally omitted. See `docs/INVENTORY_REVIEW.md`.
