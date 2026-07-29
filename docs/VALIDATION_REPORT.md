@@ -372,8 +372,12 @@ The dirty-worktree release preflight passed on Julia 1.12.6 and Julia 1.10.11.
 CFFConvert 2.0.0 validated `CITATION.cff` against schema 1.2.0; the offline
 upstream audit passed 10/10 pin and license checks; the inventory remained at
 163 files, 503 edges, and zero detected cycles; and the public API remained at
-214 provenance-covered bindings. Exact committed-archive and fresh-depot smoke
-checks are recorded only after the candidate commit exists.
+214 provenance-covered bindings. The exact Git archive of candidate code
+commit `0b63359159e1c0c1527c8753f78b61940701eb25` passed the release check and
+fresh-depot smoke on Julia 1.12.6 and Julia 1.10.11; both runs produced tar
+SHA-256 `226302eb31191306111fad3aae293548beceec9c5c45640ddda1a110b22c2396`.
+The same two archive gates were rerun successfully on the final
+documentation-only evidence `HEAD`.
 
 ## Acceptance rule
 

@@ -6,8 +6,11 @@ session; do not assume the repository state below remains current.
 ## Repository state
 
 - Branch: `main`.
-- Candidate milestone: `release: prepare experimental v0.1.0 candidate`; use
-  `git rev-parse HEAD` for the exact local revision after the candidate commit.
+- Candidate code commit:
+  `0b63359159e1c0c1527c8753f78b61940701eb25`
+  (`release: prepare experimental v0.1.0 candidate`). A documentation-only
+  evidence commit follows it; use `git rev-parse HEAD` for the final local
+  handoff revision.
 - Candidate base: `485b6a3` (`docs: add entanglement example code generator`),
   which is also the current `origin/main` revision before release preparation.
 - Remote: private `origin` at
@@ -75,6 +78,13 @@ hard limit. A Julia 1.12.6 CI-mode pretty-URL build passed. The browser-local
 code generator passes 71 deterministic JavaScriptCore assertions, and the
 generated smoke program covers all nine state families on Julia 1.12.6 and
 Julia 1.10.11.
+
+The exact Git archive of candidate code commit
+`0b63359159e1c0c1527c8753f78b61940701eb25` passes the release check and
+fresh-depot smoke on Julia 1.12.6 and Julia 1.10.11. Both runs produced tar
+SHA-256 `226302eb31191306111fad3aae293548beceec9c5c45640ddda1a110b22c2396`.
+After this evidence was recorded in a documentation-only commit, the same
+two archive gates were rerun successfully against the final local `HEAD`.
 
 ## Release hardening completed
 
@@ -150,23 +160,20 @@ Julia 1.10.11.
 
 ## Remaining release gates
 
-1. Commit the candidate and run
-   `scripts/check_release.jl --archive-smoke` on Julia 1.12.6 and Julia 1.10.11
-   against the exact committed archive.
-2. Have a maintainer perform the non-delegable human review required for
+1. Have a maintainer perform the non-delegable human review required for
    Codex-assisted registry submissions, including mathematical conclusions,
    public API, licenses, and generated changes.
-3. With explicit authorization, push the candidate and require successful
+2. With explicit authorization, push the candidate and require successful
    Core, Docs, Quality, Coverage, and optional-extension runs at that exact SHA;
    confirm Codecov accepted the upload rather than relying only on a green job.
-4. Decide separately whether this remains a private experimental release or
+3. Decide separately whether this remains a private experimental release or
    becomes a public General-registry candidate. General registration requires a
    public repository and the conventional `.jl` repository URL; the current
    private URL intentionally does not satisfy that preflight.
-5. Before any public visibility change, decide whether to preserve or rewrite
+4. Before any public visibility change, decide whether to preserve or rewrite
    historical commits that contain references to material removed from the
    current tree. History rewriting is destructive and was not authorized.
-6. Only after the exact remote gates and human review pass, update the release
+5. Only after the exact remote gates and human review pass, update the release
    date if necessary, create an annotated `v0.1.0` tag, rerun tagged-archive
    checks, and create the GitHub release. Do not infer authorization to publish
    from this handoff.
@@ -190,6 +197,8 @@ julia --startup-file=no --project=. scripts/check_public_api.jl
 julia --startup-file=no --project=. scripts/validate_matrix_predicates.jl
 julia --startup-file=no --project=. scripts/check_release.jl --allow-dirty
 julia +1.10 --startup-file=no --project=. scripts/check_release.jl --allow-dirty
+julia --startup-file=no --project=. scripts/check_release.jl --archive-smoke
+julia +1.10 --startup-file=no --project=. scripts/check_release.jl --archive-smoke
 ```
 
 MATLAB is absent locally. Octave 11.3.0 is available but must not be treated as
