@@ -26,7 +26,7 @@ executes every tutorial. None of these workflows needs an optional backend.
 
 ## Subsystem reductions and ordering
 
-The first workflow constructs ``|0\rangle_A \otimes |\Phi^+\rangle_{BC}``.
+The first workflow constructs $|0\rangle_A \otimes |\Phi^+\rangle_{BC}$.
 It traces out selected systems, moves the product qubit from the first position
 to the last, and checks the Bell pair's partial-transpose spectrum. This makes
 the package's left-to-right subsystem order observable rather than implicit.
@@ -61,13 +61,13 @@ TutorialLocalChannelNoise.run()
 
 Both entanglement conclusions in this workflow name their certificates. The
 initial negative-partial-transpose witness certifies entanglement; after local
-depolarization, the PPT theorem in the exact ``2\times2`` domain certifies
+depolarization, the PPT theorem in the exact $2\times2$ domain certifies
 separability.
 
 ## Separability certificates by example
 
 This workflow starts with a visibly factorized pure state, builds full-rank
-``2\times2`` and ``3\times3`` density matrices from product-basis projectors,
+$2\times2$ and $3\times3$ density matrices from product-basis projectors,
 and compares the native criterion pipeline with the sufficient separable-ball
 test. It also shows why `:outside_ball` is not an entanglement verdict.
 
@@ -117,9 +117,9 @@ The certificate workflow contrasts four outcomes:
 - Schmidt rank certifies that a pure Bell state is entangled.
 - An explicit product decomposition certifies a pure product state as
   separable.
-- The ``3\times3`` Horodecki example passes the PPT attempt without obtaining a
+- The $3\times3$ Horodecki example passes the PPT attempt without obtaining a
   separability certificate, then violates the realignment criterion.
-- The maximally mixed ``3\times3`` state passes all requested necessary tests,
+- The maximally mixed $3\times3$ state passes all requested necessary tests,
   but the native pipeline conservatively reports `unknown` because those passes
   do not constitute a separability certificate in that dimension.
 

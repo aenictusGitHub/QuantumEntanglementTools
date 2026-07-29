@@ -21,7 +21,7 @@ arbitrary-precision eigensolver dependency.
 
 ## Definitions and example
 
-For a density matrix ``\rho`` in the selected computational basis,
+For a density matrix $\rho$ in the selected computational basis,
 
 ```math
 C_{l_1}(\rho) = \sum_{i \ne j} |\rho_{ij}|,
@@ -30,7 +30,7 @@ C_{\mathrm{rel}}(\rho) = S(\mathrm{diag}(\rho)) - S(\rho).
 ```
 
 The logarithm base for `relative_entropy_coherence` is required explicitly.
-For a pure vector ``\psi``, coherence rank is the number of basis
+For a pure vector $\psi$, coherence rank is the number of basis
 coefficients above the requested numerical threshold.
 
 ```jldoctest coherence
@@ -63,7 +63,7 @@ inverse. A sparse basis transform may become dense and therefore requires
 - Rank is a tolerance-defined numerical count, not an exact symbolic rank.
 
 The pure `l1` path uses
-``(\sum_i |\psi_i|)^2-\lVert\psi\rVert_2^2`` and is linear in the vector
+$(\sum_i |\psi_i|)^2-\lVert\psi\rVert_2^2$ and is linear in the vector
 length. Pure relative entropy is the Shannon entropy of `abs2.(ψ)`. Matrix
 relative entropy requires a dense Hermitian eigendecomposition and therefore
 has cubic time and quadratic workspace in the matrix dimension.

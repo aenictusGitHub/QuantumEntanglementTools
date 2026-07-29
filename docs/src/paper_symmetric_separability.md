@@ -15,7 +15,7 @@ SAPPT do not by themselves imply separability for the five-qubit states below.
 
 ## The one-parameter family
 
-The symmetric subspace of ``N`` qubits has the ordered Dicke basis
+The symmetric subspace of $N$ qubits has the ordered Dicke basis
 
 ```math
 \left\{
@@ -23,8 +23,8 @@ The symmetric subspace of ``N`` qubits has the ordered Dicke basis
 \right\},
 ```
 
-where ``|D_N^{(k)}\rangle`` is the normalized equal superposition of
-computational-basis vectors with ``k`` excitations. The paper considers
+where $|D_N^{(k)}\rangle$ is the normalized equal superposition of
+computational-basis vectors with $k$ excitations. The paper considers
 
 ```math
 \rho(p)
@@ -35,11 +35,11 @@ p\rho_0+(1-p)|\psi_0\rangle\langle\psi_0|,
 \qquad 0\leq p\leq1.
 ```
 
-Here ``I_{N+1}`` is the identity **inside the symmetric subspace**, not the
-``2^N``-dimensional identity on the full qubit Hilbert space. The parameter
-``p`` is the weight of this symmetric maximally mixed state.
+Here $I_{N+1}$ is the identity **inside the symmetric subspace**, not the
+$2^N$-dimensional identity on the full qubit Hilbert space. The parameter
+$p$ is the weight of this symmetric maximally mixed state.
 
-For any normalized symmetric ``|\psi_0\rangle``, the spectrum is
+For any normalized symmetric $|\psi_0\rangle$, the spectrum is
 
 ```math
 \mathrm{spec}\,\rho(p)
@@ -50,7 +50,7 @@ For any normalized symmetric ``|\psi_0\rangle``, the spectrum is
 \right).
 ```
 
-For the bipartition ``k|N-k``, the paper obtains the unitary-orbit lower
+For the bipartition $k|N-k$, the paper obtains the unitary-orbit lower
 bound
 
 ```math
@@ -62,7 +62,7 @@ bound
 \frac{p}{(N+1)\binom Nk}-\frac{1-p}{2}.
 ```
 
-The strictest condition is at ``k=\lfloor N/2\rfloor``. The resulting spectral
+The strictest condition is at $k=\lfloor N/2\rfloor$. The resulting spectral
 SAPPT threshold is
 
 ```math
@@ -81,12 +81,12 @@ p_{\min}=\frac{30}{31}\approx0.9677419355.
 ```
 
 The theorem concerns the whole symmetric-unitary orbit: every symmetric state
-with this spectrum is SAPPT when ``p\geq p_{\min}``. A PPT computation on one
+with this spectrum is SAPPT when $p\geq p_{\min}$. A PPT computation on one
 representative would not, by itself, prove that absolute statement.
 
 ## Same spectrum, different separability
 
-Set ``N=5`` and ``p=p_{\min}``. Consider first
+Set $N=5$ and $p=p_{\min}$. Consider first
 
 ```math
 \rho_{\mathrm{sep}}
@@ -95,7 +95,7 @@ p\frac{I_6}{6}
 +(1-p)|D_5^{(0)}\rangle\langle D_5^{(0)}|.
 ```
 
-Since ``|D_5^{(0)}\rangle=|0\rangle^{\otimes5}``, its second term is a product
+Since $|D_5^{(0)}\rangle=|0\rangle^{\otimes5}$, its second term is a product
 projector. The first term also has an explicit product decomposition. To make
 that statement executable, the tutorial uses three Gauss--Legendre nodes
 
@@ -105,7 +105,7 @@ z_i\in\left\{-\sqrt{\frac35},0,\sqrt{\frac35}\right\},
 \omega_i\in\left\{\frac5{18},\frac49,\frac5{18}\right\},
 ```
 
-and six phases ``\phi_j=2\pi j/6`` for ``j=0,\ldots,5``. Define the normalized
+and six phases $\phi_j=2\pi j/6$ for $j=0,\ldots,5$. Define the normalized
 single-qubit vectors
 
 ```math
@@ -140,11 +140,11 @@ polynomials exactly, giving
 \langle\varphi_{ij}|^{\otimes5}.
 ```
 
-Thus ``\rho_{\mathrm{sep}}`` has a concrete 19-term decomposition:
+Thus $\rho_{\mathrm{sep}}$ has a concrete 19-term decomposition:
 
 - 18 spin-coherent product projectors with weights
-  ``p\omega_i/6``; and
-- ``|0\rangle^{\otimes5}\langle0|^{\otimes5}`` with weight ``1-p``.
+  $p\omega_i/6$; and
+- $|0\rangle^{\otimes5}\langle0|^{\otimes5}$ with weight $1-p$.
 
 All weights are nonnegative and sum to one. The tutorial constructs these 19
 terms and checks their normalization and reconstruction residual directly.
@@ -168,8 +168,8 @@ p\frac{I_6}{6}
 
 The two density matrices have the same spectrum and are connected by a
 unitary acting within the symmetric subspace. Nevertheless, the witness below
-certifies that ``\rho_{\mathrm{GHZ}}(p_{\min})`` is entangled. Consequently,
-the explicitly separable ``\rho_{\mathrm{sep}}`` is SAPPT but not symmetric
+certifies that $\rho_{\mathrm{GHZ}}(p_{\min})$ is entangled. Consequently,
+the explicitly separable $\rho_{\mathrm{sep}}$ is SAPPT but not symmetric
 absolutely separable (SAS): another state on its allowed unitary orbit is
 entangled.
 
@@ -196,14 +196,14 @@ c&=-9.31947.
 ```
 
 This is a **symmetric** entanglement witness. Every separable symmetric state
-is a convex mixture of vectors ``|\varphi\rangle^{\otimes5}``, so witness
+is a convex mixture of vectors $|\varphi\rangle^{\otimes5}$, so witness
 validity reduces to checking
 
 ```math
 \langle\varphi|^{\otimes5}W_5|\varphi\rangle^{\otimes5}\geq0
 ```
 
-for every normalized single-qubit ``|\varphi\rangle``.
+for every normalized single-qubit $|\varphi\rangle$.
 
 The matrix construction itself is direct Julia:
 
@@ -242,8 +242,8 @@ F_5(\theta,\phi)
 \end{aligned}
 ```
 
-Because ``c<0``, the phase minimum has ``\cos(5\phi)=1``. With
-``t=xy\in[0,1/2]``, the remaining expression is
+Because $c<0$, the phase minimum has $\cos(5\phi)=1$. With
+$t=xy\in[0,1/2]$, the remaining expression is
 
 ```math
 f(t)
@@ -252,7 +252,7 @@ a+5(b-a)t^2+(5a-15b+10)t^4+2ct^5.
 ```
 
 The tutorial treats the displayed decimal coefficients as exact rationals and
-proves positivity without a floating grid or root finder. Set ``u=2t``. Exact
+proves positivity without a floating grid or root finder. Set $u=2t$. Exact
 polynomial division gives
 
 ```math
@@ -268,7 +268,7 @@ q(u)=
 }{16000000}.
 ```
 
-The code converts ``q`` to the Bernstein basis and raises its degree from four
+The code converts $q$ to the Bernstein basis and raises its degree from four
 to eight. Its exact degree-eight Bernstein coefficients are
 
 ```math
@@ -286,9 +286,9 @@ to eight. Its exact degree-eight Bernstein coefficients are
 ```
 
 Every coefficient is positive, and every Bernstein basis polynomial is
-nonnegative on ``u\in[0,1]``. Hence ``q(u)>0`` throughout the interval and the
-global minimum occurs exactly at ``t=1/2``, corresponding to
-``(\theta,\phi)=(\pi/2,0)``:
+nonnegative on $u\in[0,1]$. Hence $q(u)>0$ throughout the interval and the
+global minimum occurs exactly at $t=1/2$, corresponding to
+$(\theta,\phi)=(\pi/2,0)$:
 
 ```math
 \min_{\theta,\phi}F_5(\theta,\phi)
@@ -301,7 +301,7 @@ global minimum occurs exactly at ``t=1/2``, corresponding to
 This is an exact positivity certificate for the rounded decimal matrix as
 printed. It does not recover any unprinted higher-precision SDP coefficients.
 
-For ``|\mathrm{GHZ}_5^+\rangle``, define
+For $|\mathrm{GHZ}_5^+\rangle$, define
 
 ```math
 m=\mathrm{Tr}\left(W_5\frac{I_6}{6}\right)
@@ -326,7 +326,7 @@ p_{W_5}
 \approx0.9686241593.
 ```
 
-At ``p=p_{\min}``, the value is approximately ``-0.0084547871``. A zero
+At $p=p_{\min}$, the value is approximately $-0.0084547871$. A zero
 expectation is inconclusive, so executable checks use a point strictly inside
 the negative interval rather than treating the rounded endpoint as a
 certificate.
@@ -357,8 +357,8 @@ W_5\rho_{\mathrm{GHZ}}\!\left(\frac{121}{125}\right)
 
 The tutorial also evaluates the representative state's partial transposes
 within the supported products of the two subsystems' symmetric sectors. It
-finds restricted-sector minimum eigenvalues approximately ``0.0162667`` for
-``1|4`` and ``0.000133333`` for ``2|3``. The full computational-space
+finds restricted-sector minimum eigenvalues approximately $0.0162667$ for
+$1|4$ and $0.000133333$ for $2|3$. The full computational-space
 partial transposes also contain zero modes orthogonal to those supported
 sectors. The positive restricted values are useful consistency checks; the
 SAPPT conclusion itself comes from the spectral theorem, not from checking
@@ -367,7 +367,7 @@ bound-entangled example.
 
 ## Below the SAPPT threshold: a decomposable NPT witness
 
-For the same GHZ family below ``p_{\min}``, the ``2|3`` partial transpose has
+For the same GHZ family below $p_{\min}$, the $2|3$ partial transpose has
 the eigenvalue
 
 ```math
@@ -376,7 +376,7 @@ the eigenvalue
 \frac{31p-30}{60}.
 ```
 
-At ``p=29/30`` this is exactly
+At $p=29/30$ this is exactly
 
 ```math
 \lambda_{\min}=-\frac1{1800}.
@@ -394,7 +394,7 @@ An associated normalized eigenvector is
 }{\sqrt2}.
 ```
 
-Set ``Q=|\eta\rangle\langle\eta|\succeq0`` and construct
+Set $Q=|\eta\rangle\langle\eta|\succeq0$ and construct
 
 ```math
 W_{\mathrm{NPT}}=Q^{T_A}.
@@ -413,8 +413,8 @@ Q = eta * eta'
 W_npt = partial_transpose(Q, ntuple(_ -> 2, 5); systems=(1, 2))
 ```
 
-This is a decomposable witness: for every state ``\sigma`` that is PPT across
-the ``2|3`` split,
+This is a decomposable witness: for every state $\sigma$ that is PPT across
+the $2|3$ split,
 
 ```math
 \mathrm{Tr}(W_{\mathrm{NPT}}\sigma)
@@ -433,9 +433,9 @@ W_{\mathrm{NPT}}\rho_{\mathrm{GHZ}}\!\left(\frac{29}{30}\right)
 =-\frac1{1800}.
 ```
 
-Unlike ``W_5``, which is represented as a ``6\times6`` symmetric-subspace
-witness, the tutorial constructs ``W_{\mathrm{NPT}}`` in the full
-``2^5\times2^5`` computational space with [`dicke_state`](@ref),
+Unlike $W_5$, which is represented as a $6\times6$ symmetric-subspace
+witness, the tutorial constructs $W_{\mathrm{NPT}}$ in the full
+$2^5\times2^5$ computational space with [`dicke_state`](@ref),
 [`tensor_product`](@ref), and [`partial_transpose`](@ref).
 
 ## Matching the GHZ phase convention
@@ -448,8 +448,8 @@ The journal PDF writes the GHZ vector with a minus sign,
 \frac{|D_5^{(0)}\rangle-|D_5^{(5)}\rangle}{\sqrt2},
 ```
 
-while its displayed negative corner ``c`` is phase-matched to
-``|\mathrm{GHZ}_5^+\rangle``. Taken together without adjustment, the printed
+while its displayed negative corner $c$ is phase-matched to
+$|\mathrm{GHZ}_5^+\rangle$. Taken together without adjustment, the printed
 minus vector and negative corner do not reproduce the paper's claimed
 negative expectation. Indeed,
 
@@ -457,14 +457,14 @@ negative expectation. Indeed,
 \langle\mathrm{GHZ}_5^-|W_5|\mathrm{GHZ}_5^-\rangle=a-c>0,
 ```
 
-whereas the plus convention gives ``a+c<0``.
+whereas the plus convention gives $a+c<0$.
 
-For the mixed state at ``p_{\min}``, combining the written minus vector with
-the unadjusted negative-corner matrix gives approximately ``+0.59280134``.
+For the mixed state at $p_{\min}$, combining the written minus vector with
+the unadjusted negative-corner matrix gives approximately $+0.59280134$.
 The executable regression checks that this value is positive before applying
 the phase correction.
 
-The tutorial uses ``|\mathrm{GHZ}_5^+\rangle`` with the displayed negative
+The tutorial uses $|\mathrm{GHZ}_5^+\rangle$ with the displayed negative
 corner. It also demonstrates the equivalent phase-matched construction. For
 
 ```math
@@ -474,8 +474,8 @@ corner. It also demonstrates the equivalent phase-matched construction. For
 ```
 
 conjugating the witness by the same endpoint phase changes its upper-right
-corner to ``ce^{-i\delta}`` and its lower-left corner to
-``ce^{i\delta}``. At ``\delta=\pi``, this flips the real corner sign and
+corner to $ce^{-i\delta}$ and its lower-left corner to
+$ce^{i\delta}$. At $\delta=\pi$, this flips the real corner sign and
 restores exactly the same expectation for the minus-phase state. This is a
 phase convention, not a different entanglement result.
 
@@ -495,24 +495,24 @@ W_N
 
 The rounded coefficients are:
 
-| ``N`` | Dicke-basis diagonal ``(d_0,\ldots,d_N)`` | corner ``z`` | extension split used in the paper |
+| $N$ | Dicke-basis diagonal $(d_0,\ldots,d_N)$ | corner $z$ | extension split used in the paper |
 |---:|---|---:|---:|
-| 5 | ``(0.0366656, -0.134595, 1, 1, -0.134595, 0.0366656)`` | ``-9.31947`` | ``1|4`` |
-| 7 | ``(0.00197514, 0.0643064, -0.189017, 1, 1, -0.189017, 0.0643064, 0.00197514)`` | ``-31.2405`` | ``1|6`` |
-| 9 | ``(0.00235791, -0.013747, 0.0621661, -0.1636915, 1, 1, -0.1636915, 0.0621661, -0.013747, 0.00235791)`` | ``-114.305`` | ``4|5`` |
+| 5 | $(0.0366656, -0.134595, 1, 1, -0.134595, 0.0366656)$ | $-9.31947$ | $1\vert4$ |
+| 7 | $(0.00197514, 0.0643064, -0.189017, 1, 1, -0.189017, 0.0643064, 0.00197514)$ | $-31.2405$ | $1\vert6$ |
+| 9 | $(0.00235791, -0.013747, 0.0621661, -0.1636915, 1, 1, -0.1636915, 0.0621661, -0.013747, 0.00235791)$ | $-114.305$ | $4\vert5$ |
 
 Recomputing expectations and detection endpoints from those rounded numbers
 gives:
 
-| ``N`` | ``p_{\min}`` | ``\mathrm{Tr}[W_N\rho(p_{\min})]`` | rounded-coefficient endpoint |
+| $N$ | $p_{\min}$ | $\mathrm{Tr}[W_N\rho(p_{\min})]$ | rounded-coefficient endpoint |
 |---:|---:|---:|---:|
-| 5 | ``30/31`` | ``-0.0084547871`` | ``0.9686241593`` |
-| 7 | ``140/141`` | ``-0.0037891203`` | ``0.9930282522`` |
-| 9 | ``630/631`` | ``-0.0040092993`` | ``0.9984502358`` |
+| 5 | $30/31$ | $-0.0084547871$ | $0.9686241593$ |
+| 7 | $140/141$ | $-0.0037891203$ | $0.9930282522$ |
+| 9 | $630/631$ | $-0.0040092993$ | $0.9984502358$ |
 
 The paper reports minimum symmetric-product expectations of approximately
-``0.00276`` for ``W_5``, ``0.001975`` for ``W_7``, and ``0.0002234`` for
-``W_9``. The extra digits in the table above are arithmetic consequences of
+$0.00276$ for $W_5$, $0.001975$ for $W_7$, and $0.0002234$ for
+$W_9$. The extra digits in the table above are arithmetic consequences of
 the published rounded coefficients, not recovered higher-precision witness
 data.
 
@@ -521,22 +521,22 @@ data.
 The provenance of each conclusion matters:
 
 - The 19-term positive decomposition is an explicit separability certificate
-  for the ``|D_5^{(0)}\rangle`` representative.
-- The product-state minimization and negative ``W_5`` expectation reproduce an
+  for the $|D_5^{(0)}\rangle$ representative.
+- The product-state minimization and negative $W_5$ expectation reproduce an
   explicit symmetric entanglement-witness certificate.
-- ``W_{\mathrm{NPT}}=Q^{T_A}`` is constructed directly and certifies the
+- $W_{\mathrm{NPT}}=Q^{T_A}$ is constructed directly and certifies the
   below-threshold NPT example.
 - The SAPPT conclusion uses the paper's analytic spectral theorem; the package
   does not currently expose a general SAPPT predicate.
-- The published ``W_5``, ``W_7``, and ``W_9`` arose from duals of failed
+- The published $W_5$, $W_7$, and $W_9$ arose from duals of failed
   two-copy PPT symmetric-extension problems. The tutorial reconstructs and
   checks the reported matrices; it does **not** rerun those witness-generation
   semidefinite programs.
 - The paper reports, using a truncated-moment semidefinite method with
-  ``10^{-5}`` parameter resolution, that the five-qubit GHZ family is
-  entangled for ``p_{\min}\leq p< p_{\mathrm{ent}}=0.96953`` and separable
-  for ``p_{\mathrm{ent}}\leq p\leq1``. The tutorial does not rerun that
-  optimization, and ``0.96953`` is not presented as a package-owned exact
+  $10^{-5}$ parameter resolution, that the five-qubit GHZ family is
+  entangled for $p_{\min}\leq p< p_{\mathrm{ent}}=0.96953$ and separable
+  for $p_{\mathrm{ent}}\leq p\leq1$. The tutorial does not rerun that
+  optimization, and $0.96953$ is not presented as a package-owned exact
   separability certificate.
 
 Outside the interval detected by a particular witness, its expectation is

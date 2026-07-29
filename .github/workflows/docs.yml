@@ -12,6 +12,7 @@ on:
       - "src/**"
       - "Project.toml"
       - "README.md"
+      - "scripts/check_docs_math_compat.jl"
       - ".github/workflows/docs.yml"
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - "src/**"
       - "Project.toml"
       - "README.md"
+      - "scripts/check_docs_math_compat.jl"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 

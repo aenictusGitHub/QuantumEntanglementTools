@@ -79,6 +79,73 @@
         );
     }
 
+    function validateDocumentation(pageSource, uiSource) {
+        var failures = [];
+        var templateMatch = /var GENERATOR_MARKUP = `([\s\S]*?)`;/m.exec(uiSource);
+        if (!templateMatch) {
+            failures.push("UI adapter must define the generator markup template");
+        }
+
+        var renderedSource = pageSource + "\n" + (templateMatch ? templateMatch[1] : "");
+        if (pageSource.indexOf("## Interactive generator") !== -1) {
+            renderedSource += '\n<h2 id="Interactive-generator"></h2>';
+        }
+        for (var idIndex = 0; idIndex < REQUIRED_DOM_IDS.length; idIndex += 1) {
+            var id = REQUIRED_DOM_IDS[idIndex];
+            if (renderedSource.indexOf('id="' + id + '"') === -1) {
+                failures.push("rendered generator is missing required DOM id " + id);
+            }
+        }
+
+        var referencedIdPattern = /byId\("([^"]+)"\)/g;
+        var referencedIdMatch;
+        while ((referencedIdMatch = referencedIdPattern.exec(uiSource)) !== null) {
+            if (renderedSource.indexOf('id="' + referencedIdMatch[1] + '"') === -1) {
+                failures.push(
+                    "UI adapter references missing DOM id " + referencedIdMatch[1]
+                );
+            }
+        }
+
+        if (pageSource.indexOf("```@raw html") !== -1) {
+            failures.push("documentation page must not expose raw HTML in GitHub previews");
+        }
+        if (pageSource.indexOf("## Interactive generator") === -1) {
+            failures.push("documentation page must provide the generator mount heading");
+        }
+        if (pageSource.indexOf('id="qet-generator-form"') !== -1) {
+            failures.push("interactive form markup must live in the UI asset");
+        }
+        if (uiSource.indexOf('byId("Interactive-generator")') === -1) {
+            failures.push("UI adapter must target the generated mount-heading id");
+        }
+
+        if (pageSource.indexOf("Viewing this source on GitHub?") === -1) {
+            failures.push("documentation page must explain the GitHub source preview");
+        }
+        if (pageSource.indexOf("/actions/workflows/docs.yml") === -1) {
+            failures.push("documentation page must link to the Documentation workflow");
+        }
+        if (pageSource.indexOf("`documentation` artifact") === -1) {
+            failures.push("documentation page must explain the downloadable docs artifact");
+        }
+        if (pageSource.indexOf("`code_generator/index.html`") === -1) {
+            failures.push("documentation page must identify the artifact entry point");
+        }
+        if (
+            pageSource.indexOf(
+                "julia --startup-file=no --project=docs docs/make.jl"
+            ) === -1
+        ) {
+            failures.push("documentation page must provide the local docs build command");
+        }
+        if (pageSource.indexOf("[executable tutorials](tutorials.md)") === -1) {
+            failures.push("documentation page must link to executable tutorials");
+        }
+
+        return failures;
+    }
+
     function run(core) {
         var failures = [];
         var checks = 0;
@@ -342,5 +409,9 @@
         };
     }
 
-    return { run: run, requiredDomIds: REQUIRED_DOM_IDS.slice() };
+    return {
+        run: run,
+        requiredDomIds: REQUIRED_DOM_IDS.slice(),
+        validateDocumentation: validateDocumentation,
+    };
 });

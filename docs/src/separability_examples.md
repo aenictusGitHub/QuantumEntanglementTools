@@ -32,7 +32,7 @@ when it is relevant.
 
 ## 1. A pure product state
 
-The vector ``|0\rangle\otimes|1\rangle`` is visibly a product state. Subsystem
+The vector $|0\rangle\otimes|1\rangle$ is visibly a product state. Subsystem
 dimensions are supplied from left to right, so `(2, 2)` assigns two levels to
 each factor.
 
@@ -118,8 +118,8 @@ reported sufficient bound.
 ## 3. A higher-dimensional state needs the right certificate
 
 In the ordered product basis
-``|00\rangle,|01\rangle,\ldots,|22\rangle``, the following diagonal
-``3\times3`` bipartite state is an explicit mixture of nine product-basis
+$|00\rangle,|01\rangle,\ldots,|22\rangle$, the following diagonal
+$3\times3$ bipartite state is an explicit mixture of nine product-basis
 projectors:
 
 ```math

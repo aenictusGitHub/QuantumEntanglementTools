@@ -244,3 +244,54 @@ julia +1.10 --startup-file=no --project=. scripts/check_release.jl --archive-smo
 
 MATLAB is absent locally. Octave 11.3.0 is available but must not be treated as
 an equivalent oracle without function-specific compatibility evidence.
+
+## GitHub documentation-preview repair
+
+The commit containing this section repairs the two repository-preview failures
+reported from GitHub:
+
+- 110 Documenter-only inline double-backtick equations across four pages now
+  use `$...$`, which is rendered by GitHub and by Documenter. The 49 fenced
+  display equations are unchanged, and table-cell bipartitions use `\vert` so
+  that GitHub does not parse them as column separators.
+- The full code-generator form moved from an `@raw html` Markdown block into
+  the existing deferred UI asset. The source page now renders cleanly on
+  GitHub, explains the platform limitation, and points private-repository users
+  to the seven-day Documentation workflow artifact, local build commands, and
+  executable tutorials. The built Documenter page still inserts the complete
+  interactive form after the `Interactive generator` heading.
+- `scripts/check_docs_math_compat.jl` is invoked by `docs/make.jl`, and changes
+  to that script trigger the Documentation workflow. It rejects the incompatible
+  inline form, unbalanced dollar delimiters, `\operatorname`, literal math
+  pipes in table cells, and unclosed fences.
+
+Focused validation completed:
+
+```sh
+julia --startup-file=no --project=. scripts/check_docs_math_compat.jl
+julia --startup-file=no --project=. -e 'include("scripts/check_docs_math_compat.jl"); mktemp() do path, io; write(io, "bad ``x``\n"); close(io); result = DocsMathCompatibility.check_file(path); @assert !isempty(result.errors); end; println("Checker rejection self-test passed.")'
+/usr/bin/osascript -l JavaScript docs/test/code_generator_jxa.js \
+  /private/tmp/qet-generator-smoke-20260729-final
+julia --startup-file=no --project=docs \
+  /private/tmp/qet-generator-smoke-20260729-final/generated_smoke.jl
+julia --startup-file=no --project=docs docs/make.jl
+git diff --check
+```
+
+The compatibility scan passed 25 pages, 110 inline spans, and 49 display
+blocks. Its synthetic double-backtick rejection test passed. JavaScriptCore
+passed 71 generator assertions, all nine emitted Julia branches passed, and the
+strict Documenter build/doctests passed. A live GitHub Markdown API render also
+returned math-renderer elements for representative bra-ket, floor, `\mathrm`,
+and table expressions. Node.js remains unavailable locally, so the documented
+macOS JavaScriptCore fallback was used.
+
+The first sandboxed Documenter rerun failed only when Julia attempted to write
+`~/.julia/logs/manifest_usage.toml.pid`; the permitted rerun passed. The sole
+build warning remains the known approximately 158 KiB native API page.
+
+No GitHub setting, Pages site, branch, or deployment was changed. The existing
+workflow produces an authenticated artifact, not a hosted site. GitHub Pages is
+not configured; publishing Pages from this private personal repository would
+make the documentation site public and therefore still requires an explicit
+maintainer visibility decision. No push was performed as part of this repair.

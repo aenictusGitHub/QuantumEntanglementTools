@@ -44,21 +44,17 @@ function run(arguments) {
 
     var result = QETCodeGeneratorCases.run(QETCodeGenerator);
     var pageSource = readUtf8(pagePath);
-    for (var idIndex = 0; idIndex < result.requiredDomIds.length; idIndex += 1) {
-        var id = result.requiredDomIds[idIndex];
-        if (pageSource.indexOf('id="' + id + '"') === -1) {
-            result.failures.push("documentation page is missing required DOM id " + id);
-        }
-    }
-    var referencedIdPattern = /byId\("([^"]+)"\)/g;
-    var referencedIdMatch;
     var uiSource = readUtf8(uiPath);
-    while ((referencedIdMatch = referencedIdPattern.exec(uiSource)) !== null) {
-        if (pageSource.indexOf('id="' + referencedIdMatch[1] + '"') === -1) {
-            result.failures.push(
-                "UI adapter references missing DOM id " + referencedIdMatch[1]
-            );
-        }
+    var documentationFailures = QETCodeGeneratorCases.validateDocumentation(
+        pageSource,
+        uiSource
+    );
+    for (
+        var failureIndex = 0;
+        failureIndex < documentationFailures.length;
+        failureIndex += 1
+    ) {
+        result.failures.push(documentationFailures[failureIndex]);
     }
     if (result.failures.length > 0) {
         throw new Error("Code-generator checks failed:\n" + result.failures.join("\n"));

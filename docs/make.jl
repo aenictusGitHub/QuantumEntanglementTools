@@ -1,15 +1,9 @@
 using Documenter
 using QuantumEntanglementTools
 
-for (directory, _, files) in walkdir(joinpath(@__DIR__, "src"))
-    for file in files
-        endswith(file, ".md") || continue
-        path = joinpath(directory, file)
-        occursin(raw"\operatorname", read(path, String)) && error(
-            "GitHub-incompatible operator-name macro found in $path; use \\mathrm instead",
-        )
-    end
-end
+include(joinpath(@__DIR__, "..", "scripts", "check_docs_math_compat.jl"))
+DocsMathCompatibility.check_docs_math_compat() ||
+    error("documentation math compatibility checks failed")
 
 DocMeta.setdocmeta!(
     QuantumEntanglementTools,

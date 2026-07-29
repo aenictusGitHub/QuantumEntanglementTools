@@ -30,25 +30,18 @@ var pageSource = fs.readFileSync(pagePath, "utf8");
 new Function(uiSource);
 
 var result = cases.run(core);
-for (var idIndex = 0; idIndex < result.requiredDomIds.length; idIndex += 1) {
-    var id = result.requiredDomIds[idIndex];
-    if (pageSource.indexOf('id="' + id + '"') === -1) {
-        result.failures.push("documentation page is missing required DOM id " + id);
-    }
-}
-var referencedIdPattern = /byId\("([^"]+)"\)/g;
-var referencedIdMatch;
-while ((referencedIdMatch = referencedIdPattern.exec(uiSource)) !== null) {
-    if (pageSource.indexOf('id="' + referencedIdMatch[1] + '"') === -1) {
-        result.failures.push(
-            "UI adapter references missing DOM id " + referencedIdMatch[1]
-        );
-    }
+var documentationFailures = cases.validateDocumentation(pageSource, uiSource);
+for (
+    var failureIndex = 0;
+    failureIndex < documentationFailures.length;
+    failureIndex += 1
+) {
+    result.failures.push(documentationFailures[failureIndex]);
 }
 
 if (result.failures.length > 0) {
-    for (var failureIndex = 0; failureIndex < result.failures.length; failureIndex += 1) {
-        process.stderr.write("FAIL: " + result.failures[failureIndex] + "\n");
+    for (var resultIndex = 0; resultIndex < result.failures.length; resultIndex += 1) {
+        process.stderr.write("FAIL: " + result.failures[resultIndex] + "\n");
     }
     process.exitCode = 1;
 } else {
