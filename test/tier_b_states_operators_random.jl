@@ -4,6 +4,15 @@ using SparseArrays
 
 const CompatB = QuantumEntanglementTools.MATLABCompat
 
+struct _TierBZeroBasedVector{T,V<:AbstractVector{T}} <: AbstractVector{T}
+    storage::V
+end
+
+Base.size(vector::_TierBZeroBasedVector) = size(vector.storage)
+Base.axes(vector::_TierBZeroBasedVector) = (0:(length(vector.storage) - 1),)
+Base.IndexStyle(::Type{<:_TierBZeroBasedVector}) = IndexLinear()
+Base.getindex(vector::_TierBZeroBasedVector, index::Int) = vector.storage[index + 1]
+
 function _minimum_eigenvalue(matrix)
     return eigmin(Hermitian(Matrix(matrix)))
 end
@@ -210,6 +219,15 @@ end
         @test sort(vec(Matrix(brauer' * brauer))) ==
             sort([4.0, 4.0, 4.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
         @test size(brauer_states(3, 1)) == (9, 1)
+        @test brauer_states(2, 2; max_matchings=3, max_nonzeros=12) == brauer
+        @test brauer_states(2, 2; max_matchings=nothing, max_nonzeros=nothing) == brauer
+        @test_throws ArgumentError brauer_states(2, 2; max_matchings=2)
+        @test_throws ArgumentError brauer_states(2, 2; max_nonzeros=11)
+        @test_throws ArgumentError brauer_states(2, 7)
+        @test_throws ArgumentError brauer_states(3, 6; max_matchings=nothing)
+        @test_throws ArgumentError brauer_states(2, 2; max_matchings=0)
+        @test_throws ArgumentError brauer_states(2, 2; max_nonzeros=0)
+        @test_throws ArgumentError brauer_states(1, 100_000_000)
 
         chessboard = chessboard_state(1, 2, 3, 4, 5, 6)
         @test size(chessboard) == (9, 9)
@@ -270,6 +288,9 @@ end
         @test_throws DimensionMismatch random_state_vector(Xoshiro(1), (2, 3, 4))
         @test_throws ArgumentError random_state_vector(Xoshiro(1), (2, 3); schmidt_rank=3)
         @test_throws ArgumentError random_state_vector(Xoshiro(1), 3; schmidt_rank=0)
+        @test_throws ArgumentError random_state_vector(
+            Xoshiro(1), _TierBZeroBasedVector([2, 2]); schmidt_rank=1
+        )
     end
 
     @testset "unitaries and density matrices" begin
@@ -379,6 +400,10 @@ end
     @test CompatB.GisinState(0.2, 0.3) == gisin_state(0.2, 0.3)
     @test CompatB.BreuerState(4, 0.2) == breuer_state(4, 0.2)
     @test CompatB.BrauerStates(2, 2) == brauer_states(2, 2)
+    @test CompatB.BrauerStates(2, 2; max_matchings=3, max_nonzeros=12) ==
+        brauer_states(2, 2)
+    @test eltype(CompatB.BrauerStates(2, 2; T=Int)) == Int
+    @test_throws ArgumentError CompatB.BrauerStates(2, 2; max_matchings=2)
     @test CompatB.ChessboardState(1, 2, 3, 4, 5, 6) == chessboard_state(1, 2, 3, 4, 5, 6)
 
     rng_first = Xoshiro(77)

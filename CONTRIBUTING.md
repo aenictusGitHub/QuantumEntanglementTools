@@ -1,8 +1,8 @@
 # Contributing
 
-Thank you for helping build `QuantumEntanglementTools`. The project is pre-alpha,
-so correctness, traceable provenance, and explicit conventions take priority
-over API breadth.
+Thank you for helping build `QuantumEntanglementTools`. The `0.1.x` API is
+experimental, so correctness, traceable provenance, and explicit conventions
+take priority over API breadth.
 
 ## Before starting
 
@@ -19,7 +19,7 @@ Install Julia 1.10 or later, then instantiate and test from the repository root:
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 ```
 
-The current full corpus contains 2,295 assertions—2,270 core plus 25
+The current full corpus contains 2,417 assertions—2,369 core plus 48
 executable-tutorial assertions—and has passed locally on Julia 1.12.6 and Julia
 1.10.11. Those runs are development evidence, not a substitute for
 supported-platform CI or MATLAB validation.
@@ -68,8 +68,9 @@ version, not a source-tree hash, so controlled validation environments are
 responsible for source integrity. Run this optional environment on Julia 1.11
 or later; its Ket 0.9 dependency does not currently resolve on the core
 package's Julia 1.10 minimum. The dedicated extension suite passes 125/125
-locally on Julia 1.12.6; the configured Julia 1.11/1.12 platform workflow has
-not yet run remotely.
+locally on Julia 1.12.6. The six-job Julia 1.11/1.12 Linux/macOS/Windows
+workflow passed at predecessor commit `6bf8d61`; an exact release-candidate
+rerun remains required.
 
 Run the package-quality and ledger checks with:
 
@@ -109,7 +110,7 @@ julia --project=test/oracle test/oracle/compare_tier_e_matrix_analysis_oracle.jl
 
 MATLAB is preferred when present. Octave results are labeled supplemental and
 function-specific. The committed matrix-analysis artifact passes 59 assertions
-over 22 fixtures. Matrix predicates have 166 native and 37 compatibility
+over 22 fixtures. Matrix predicates have 170 native and 37 compatibility
 assertions but no MATLAB-family oracle.
 
 ## Completing a public function

@@ -2,9 +2,15 @@
 
 ## Supported versions
 
-There is no supported release yet. The repository is pre-alpha, version `0.1.0`,
-and its API and numerical behavior may change. Security fixes currently target
-the default development branch only.
+The `0.1.x` line is experimental. Only the latest published `0.1.x` patch and
+the default development branch receive security fixes; earlier `0.1.x` patches
+may be superseded rather than patched in place. Versions older than `0.1.0` are
+unsupported.
+
+The API may change in later `0.x` minor releases, while `0.1.x` patch releases
+may correct numerical behavior. A scientific-correctness issue is not
+automatically a security vulnerability, but an incorrect certificate or an
+exploitable resource-exhaustion path should be reported privately.
 
 ## Reporting a vulnerability
 

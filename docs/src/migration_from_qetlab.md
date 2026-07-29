@@ -1,9 +1,9 @@
 # Migration from QETLAB
 
-The mappings below are covered by focused local suites: 304 Tier A assertions,
-941 Tier B assertions, 154 Tier C assertions, 162 Tier D measures/criteria
+The mappings below are covered by focused local suites: 345 Tier A assertions,
+954 Tier B assertions, 177 Tier C assertions, 168 Tier D measures/criteria
 assertions, and 68 project-native entanglement-pipeline assertions. The
-integrated corpus passes 2,318 assertions (2,270 core plus 48 executable
+integrated corpus passes 2,417 assertions (2,369 core plus 48 executable
 tutorials) on Julia 1.12.6 and 1.10.11. Reviewed
 inventory/provenance rows exist for these slices, including
 explicit partial statuses where the Tier C compatibility surface does not yet
@@ -58,7 +58,7 @@ evidence, not general MATLAB equivalence.
 | `HorodeckiState` | `horodecki_state` | `MATLABCompat.HorodeckiState` | Local dimensions use a `dims` keyword in the native API | Implemented; both `3×3` and `2×4` local/Octave fixtures pass |
 | `GisinState` | `gisin_state` | `MATLABCompat.GisinState` | Mixing probability is validated; angle is in radians | Implemented; local and Octave fixture tests pass |
 | `BreuerState` | `breuer_state` | `MATLABCompat.BreuerState` | Even dimension and convex weight are validated; sparse output is a keyword | Implemented; local and Octave fixture tests pass |
-| `BrauerStates` | `brauer_states` | `MATLABCompat.BrauerStates` | Returns a sparse matrix; numeric output type is a keyword | Implemented; local and exact Octave fixture tests pass |
+| `BrauerStates` | `brauer_states` | `MATLABCompat.BrauerStates` | Returns a sparse matrix; numeric output type and pre-allocation combinatorial guards are keywords | Implemented; local guard/property and exact Octave fixture tests pass |
 | `ChessboardState` | `chessboard_state` | `MATLABCompat.ChessboardState` | Optional `s`/`t` are native keywords; construction does not issue an implicit PPT verdict | Implemented; local and Octave fixture tests pass |
 
 ## Tier B randomized constructors
@@ -141,7 +141,7 @@ row and column dimension arrays in QETLAB.
 
 Tier D adds 22 native scalar-measure/criterion bindings, 11 reviewed QETLAB
 entry-point wrappers, and a separate 10-binding project-native orchestration
-layer. The focused suites pass 162 measures/criteria assertions and 68
+layer. The focused suites pass 168 measures/criteria assertions and 68
 pipeline assertions. The committed Octave 11.3.0/QETLAB artifact contains 13
 fixtures, passes 34 comparisons, and has SHA-256
 `ad0cdc45077390fc1eb736fc7c7ff1ec41696c796a508b536774cb6e0020160a`.
@@ -185,7 +185,7 @@ do not implement or claim parity with QETLAB `IsSeparable`.
 
 ## Tier E coherence slice
 
-The focused coherence suite passes 52 local assertions. Its committed
+The focused coherence suite passes 54 local assertions. Its committed
 Octave 11.3.0/QETLAB artifact contains six deterministic fixtures and passes
 25 native/compatibility/discrepancy assertions, with SHA-256
 `11bcaaee88fac8a595e9a4eff164432dbaa4e141cdd26554da2522e22981811a`.
@@ -205,7 +205,7 @@ Matrix entropy/positivity work has the same explicit BLAS-type and
 ## Tier E product analysis and separable-ball slice
 
 This slice adds 10 native bindings and six reviewed QETLAB entry-point
-wrappers. The native focused suite passes 175 assertions and the compatibility
+wrappers. The native focused suite passes 179 assertions and the compatibility
 suite passes 52. The committed Octave 11.3.0/QETLAB artifact contains 14
 deterministic fixtures and passes 68 native, wrapper, reconstruction, and
 discrepancy assertions, with SHA-256
@@ -230,8 +230,8 @@ structure-aware paths. See
 
 ## Tier E matrix analysis
 
-The native matrix-analysis suite passes 127 local assertions, and the separate
-compatibility suite passes 32. The committed Octave 11.3.0/QETLAB artifact
+The native matrix-analysis suite passes 131 local assertions, and the separate
+compatibility suite passes 34. The committed Octave 11.3.0/QETLAB artifact
 contains 22 deterministic fixtures: 17 agreement fixtures and five reviewed
 semantic discrepancies. Its 59 assertions pass with SHA-256
 `e37685c262ce5982d10dd705cef8c172d49d9c55c89a0a67d4de729a5068f540`.
@@ -251,7 +251,7 @@ rectangular high-order compound shape, and the additive order-zero error. See
 
 ## Tier E matrix predicates
 
-The native predicate suite passes 166 assertions and its compatibility suite
+The native predicate suite passes 170 assertions and its compatibility suite
 passes 37. No MATLAB predicate oracle has been run.
 
 | QETLAB function | Julia-native function | Compatibility name | Changed arguments/conventions | Status |

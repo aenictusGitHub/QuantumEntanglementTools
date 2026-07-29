@@ -1,18 +1,20 @@
 cff-version: 1.2.0
 message: >-
-  This software is pre-alpha. Please cite the exact version and commit used;
-  archival citation metadata will be added when a release is published.
+  This is an experimental, scoped release. Please cite the exact version and
+  commit used; no complete QETLAB-parity claim is made.
 type: software
 title: QuantumEntanglementTools.jl
 abstract: >-
-  A provisional, independent Julia package under development for
+  An independent Julia package providing a scoped, certificate-aware API for
   quantum-information and entanglement computations.
 authors:
   - family-names: Martin
     given-names: John
     email: jmartin@uliege.be
 version: 0.1.0
+date-released: "2026-07-29"
 license: BSD-3-Clause
+repository-code: "https://github.com/aenictusGitHub/QuantumEntanglementTools"
 keywords:
   - Julia
   - quantum information

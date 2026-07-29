@@ -60,7 +60,7 @@ majorization and compound boundary behavior without making those behaviors
 native expected values. Its SHA-256 is
 `e37685c262ce5982d10dd705cef8c172d49d9c55c89a0a67d4de729a5068f540`.
 
-The matrix-predicate slice passes 166 native and 37 compatibility assertions in
+The matrix-predicate slice passes 170 native and 37 compatibility assertions in
 the package test suite. It has no MATLAB-family oracle artifact; do not infer
 upstream parity from its analytic, exact, property, or randomized checks.
 

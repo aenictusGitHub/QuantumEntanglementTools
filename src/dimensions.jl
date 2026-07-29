@@ -3,6 +3,63 @@
 # QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
 # Full upstream terms: licenses/QETLAB-LICENSE.txt.
 
+struct _ReadOnlyPlanArray{T,N,A<:Array{T,N}} <: AbstractArray{T,N}
+    storage::A
+end
+
+function _read_only_plan_array(array::Array{T,N}) where {T,N}
+    copied = copy(array)
+    return _ReadOnlyPlanArray{T,N,typeof(copied)}(copied)
+end
+
+Base.size(array::_ReadOnlyPlanArray) = size(getfield(array, :storage))
+Base.axes(array::_ReadOnlyPlanArray) = axes(getfield(array, :storage))
+Base.IndexStyle(::Type{<:_ReadOnlyPlanArray}) = IndexLinear()
+Base.copy(array::_ReadOnlyPlanArray) = copy(getfield(array, :storage))
+
+Base.@propagate_inbounds function Base.getindex(array::_ReadOnlyPlanArray, indices...)
+    return getfield(array, :storage)[indices...]
+end
+
+function Base.getproperty(array::_ReadOnlyPlanArray, name::Symbol)
+    name === :storage && return copy(getfield(array, :storage))
+    return getfield(array, name)
+end
+
+const _ReadOnlyPlanVector = _ReadOnlyPlanArray{Int,1,Vector{Int}}
+const _ReadOnlyPlanMatrix = _ReadOnlyPlanArray{Int,2,Matrix{Int}}
+
+mutable struct _ValidatedConstructorToken end
+
+const _VALIDATED_CONSTRUCTOR_TOKEN = _ValidatedConstructorToken()
+
+@inline function _require_validated_constructor_token(token::_ValidatedConstructorToken)
+    token === _VALIDATED_CONSTRUCTOR_TOKEN ||
+        throw(ArgumentError("the validated constructor token is internal"))
+    return nothing
+end
+
+function _validate_layout_components(
+    dims::NTuple{N,Int}, strides::NTuple{N,Int}, total_dimension::Int
+) where {N}
+    expected_total = 1
+    for position in N:-1:1
+        dims[position] > 0 ||
+            throw(ArgumentError("validated layout dimensions must be positive"))
+        strides[position] == expected_total ||
+            throw(ArgumentError("validated layout strides are inconsistent"))
+        expected_total = try
+            Base.checked_mul(expected_total, dims[position])
+        catch err
+            err isa OverflowError || rethrow()
+            throw(ArgumentError("validated layout dimensions overflow Int"))
+        end
+    end
+    total_dimension == expected_total ||
+        throw(ArgumentError("validated layout total dimension is inconsistent"))
+    return nothing
+end
+
 """
     SubsystemLayout(dims)
 
@@ -22,6 +79,17 @@ struct SubsystemLayout{N}
     dims::NTuple{N,Int}
     strides::NTuple{N,Int}
     total_dimension::Int
+
+    function SubsystemLayout(
+        token::_ValidatedConstructorToken,
+        dims::NTuple{N,Int},
+        strides::NTuple{N,Int},
+        total_dimension::Int,
+    ) where {N}
+        _require_validated_constructor_token(token)
+        _validate_layout_components(dims, strides, total_dimension)
+        return new{N}(dims, strides, total_dimension)
+    end
 end
 
 function _positive_int(value, name::AbstractString)
@@ -96,7 +164,7 @@ function SubsystemLayout(dims::Tuple)
         end
     end
     strides = ntuple(i -> stride_values[i], length(stride_values))
-    return SubsystemLayout(checked_dims, strides, total)
+    return SubsystemLayout(_VALIDATED_CONSTRUCTOR_TOKEN, checked_dims, strides, total)
 end
 
 SubsystemLayout(dims::AbstractVector{<:Integer}) = SubsystemLayout(Tuple(dims))
@@ -201,6 +269,7 @@ function _complement_systems(systems::NTuple{K,Int}, ::SubsystemLayout{N}) where
 end
 
 function _validate_vector_dimension(vector::AbstractVector, layout::SubsystemLayout)
+    Base.require_one_based_indexing(vector)
     length(vector) == layout.total_dimension || throw(
         DimensionMismatch(
             "vector length $(length(vector)) does not match prod(dims)=$(layout.total_dimension) for dims=$(layout.dims)",
@@ -210,6 +279,7 @@ function _validate_vector_dimension(vector::AbstractVector, layout::SubsystemLay
 end
 
 function _validate_matrix_dimension(matrix::AbstractMatrix, layout::SubsystemLayout)
+    Base.require_one_based_indexing(matrix)
     expected = layout.total_dimension
     size(matrix) == (expected, expected) || throw(
         DimensionMismatch(
@@ -222,6 +292,7 @@ end
 function _validate_matrix_dimensions(
     matrix::AbstractMatrix, row_layout::SubsystemLayout, column_layout::SubsystemLayout
 )
+    Base.require_one_based_indexing(matrix)
     expected = (row_layout.total_dimension, column_layout.total_dimension)
     size(matrix) == expected || throw(
         DimensionMismatch(

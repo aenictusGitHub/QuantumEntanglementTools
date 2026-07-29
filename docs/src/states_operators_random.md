@@ -1,9 +1,9 @@
 # States, operators, and random objects
 
-Tier B provides a reviewed local implementation slice for common operator
-bases, named states, and randomized quantum objects. The package remains
-pre-alpha: the evidence below applies to the exact functions and inputs tested,
-not to all of QETLAB.
+Tier B provides a reviewed implementation slice for common operator bases,
+named states, and randomized quantum objects. The `0.1.x` API remains
+experimental: the evidence below applies to the exact functions and inputs
+tested, not to all of QETLAB.
 
 ## Operator bases
 
@@ -69,6 +69,11 @@ Also implemented are maximally entangled, Bell, Gisin, Breuer, Brauer, and
 chessboard constructors. The Werner implementation is deliberately limited to
 the verified scalar bipartite family. QETLAB's multipartite vector-parameter
 form remains deferred pending a separate semantics and normalization review.
+Because the number of Brauer columns is `(2*pairs-1)!!`,
+`brauer_states` rejects more than 100,000 matchings or 1,000,000 stored entries
+by default, before enumerating them. The `max_matchings` and `max_nonzeros`
+keywords may be raised—or explicitly set to `nothing`—only after reviewing the
+memory cost.
 
 ## Mandatory explicit RNG
 

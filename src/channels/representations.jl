@@ -16,12 +16,13 @@ For Kraus operators this replaces every `K` by `K'`; for a superoperator it
 uses the adjoint transfer matrix.
 """
 function dual_channel(map::KrausRepresentation)
-    return KrausRepresentation([copy(adjoint(operator)) for operator in map.operators])
+    operators = _validated_kraus_operators(map)
+    return KrausRepresentation([copy(adjoint(operator)) for operator in operators])
 end
 
 function dual_channel(map::SuperoperatorRepresentation)
     return SuperoperatorRepresentation(
-        copy(adjoint(map.matrix)), map.output_dim, map.input_dim
+        copy(adjoint(_validated_representation_matrix(map))), map.output_dim, map.input_dim
     )
 end
 
@@ -46,13 +47,14 @@ function complementary_channel(
     map::KrausRepresentation; atol=zero(_default_rtol(map)), rtol=_default_rtol(map)
 )
     _checked_tolerances(map, atol, rtol)
-    environment_dim = length(map.operators)
+    operators = _validated_kraus_operators(map)
+    environment_dim = length(operators)
     scalar_type = eltype(map)
     complementary_operators = Vector{Matrix{scalar_type}}(undef, map.output_dim)
     @inbounds for output_index in 1:map.output_dim
         operator = Matrix{scalar_type}(undef, environment_dim, map.input_dim)
         for kraus_index in 1:environment_dim, input_index in 1:map.input_dim
-            operator[kraus_index, input_index] = map.operators[kraus_index][
+            operator[kraus_index, input_index] = operators[kraus_index][
                 output_index, input_index
             ]
         end
@@ -76,11 +78,16 @@ function complementary_channel(
 end
 
 function _map_has_sparse_storage(map::KrausRepresentation)
-    return all(issparse, map.operators)
+    return all(issparse, _validated_kraus_operators(map))
 end
 
-_map_has_sparse_storage(map::ChoiRepresentation) = issparse(map.matrix)
-_map_has_sparse_storage(map::SuperoperatorRepresentation) = issparse(map.matrix)
+function _map_has_sparse_storage(map::ChoiRepresentation)
+    return issparse(_validated_representation_matrix(map))
+end
+
+function _map_has_sparse_storage(map::SuperoperatorRepresentation)
+    return issparse(_validated_representation_matrix(map))
+end
 
 """
     partial_map(input, map, subsystem, dims)
@@ -263,6 +270,7 @@ for a positive integer `q`, in lexicographic base-four order with labels
 The probabilities are neither clipped nor normalized.
 """
 function pauli_channel(probabilities::AbstractArray; atol=nothing, rtol=nothing)
+    Base.require_one_based_indexing(probabilities)
     probability_vector = vec(probabilities)
     qubits = _number_of_qubits(length(probability_vector))
     all(probability -> probability isa Real, probability_vector) ||

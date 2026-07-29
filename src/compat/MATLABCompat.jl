@@ -226,6 +226,7 @@ function _dimension_tuple(dim, name::AbstractString="DIM")
 end
 
 function _matrix_dimension_rows(dim::AbstractMatrix, subsystem_count=nothing)
+    Base.require_one_based_indexing(dim)
     size(dim, 1) == 2 || throw(
         DimensionMismatch(
             "a row/column DIM matrix must have exactly 2 rows; got size $(size(dim))"
@@ -249,6 +250,7 @@ function _equal_default_dimensions(total::Int, subsystem_count::Int)
 end
 
 function _state_vector(matrix::AbstractMatrix)
+    Base.require_one_based_indexing(matrix)
     min(size(matrix)...) == 1 ||
         throw(ArgumentError("matrix is not a row or column pure-state array"))
     if issparse(matrix)
@@ -313,6 +315,7 @@ QETLAB-compatible reconstruction from a tensor decomposition.
 """
 function TensorSum(first, second, rest...)
     if _looks_like_weights(first, second)
+        first isa AbstractArray && Base.require_one_based_indexing(first)
         weights = vec(first)
         return tensor_sum(second, rest...; weights=weights)
     end
@@ -689,8 +692,19 @@ GisinState(lambda, theta) = gisin_state(lambda, theta)
 """QETLAB-compatible Breuer-state constructor."""
 BreuerState(dim, lambda) = breuer_state(dim, lambda; sparse_output=true)
 
-"""QETLAB-compatible matrix of unnormalized Brauer states."""
-BrauerStates(dim, pairs) = brauer_states(dim, pairs)
+"""
+QETLAB-compatible matrix of unnormalized Brauer states.
+
+The Julia-only `T`, `max_matchings`, and `max_nonzeros` keywords are forwarded
+to [`brauer_states`](@ref); the resource guards retain the native defaults.
+"""
+function BrauerStates(
+    dim, pairs; T::Type{<:Number}=Float64, max_matchings=100_000, max_nonzeros=1_000_000
+)
+    return brauer_states(
+        dim, pairs; T=T, max_matchings=max_matchings, max_nonzeros=max_nonzeros
+    )
+end
 
 """QETLAB-compatible chessboard-state constructor."""
 function ChessboardState(a, b, c, d, m, n, s=nothing, t=nothing)
@@ -752,6 +766,7 @@ function _compat_map_dimensions(dim)
         value = _positive_dimension(dim, "DIM")
         (value, value)
     elseif dim isa AbstractMatrix
+        Base.require_one_based_indexing(dim)
         size(dim) == (2, 2) || throw(
             DimensionMismatch("a map DIM matrix must have size (2, 2); got $(size(dim))"),
         )
@@ -971,6 +986,7 @@ function _compat_operator_dimensions(input::AbstractMatrix, dim)
     elseif dim isa Integer
         return _expand_scalar_dimension(dim, total_dimension, "DIM")
     elseif dim isa AbstractMatrix
+        Base.require_one_based_indexing(dim)
         size(dim, 1) == 2 || throw(
             DimensionMismatch(
                 "a PartialMap DIM matrix must have two rows; got $(size(dim))"
@@ -1130,6 +1146,7 @@ Julia-native [`QuantumEntanglementTools.purity`](@ref) should be preferred when 
 validation is required.
 """
 function Purity(rho::AbstractMatrix{<:Number})
+    Base.require_one_based_indexing(rho)
     size(rho, 1) == size(rho, 2) ||
         throw(DimensionMismatch("RHO must be square; got size $(size(rho))"))
     all(isfinite, rho) || throw(ArgumentError("RHO must contain only finite entries"))
@@ -1585,6 +1602,7 @@ function InSeparableBall(
     rtol=nothing,
     allow_densify::Bool=false,
 )
+    Base.require_one_based_indexing(input)
     total_dimension = if input isa AbstractVector
         length(input)
     else
@@ -1615,6 +1633,7 @@ end
 function _compat_majorization_values(
     input::Union{AbstractVector,AbstractMatrix}, name::AbstractString; allow_densify::Bool
 )
+    Base.require_one_based_indexing(input)
     if issparse(input) && !allow_densify
         throw(
             ArgumentError(
@@ -1726,10 +1745,12 @@ function Majorizes(
 end
 
 function _compat_symmetric_polynomial_values(values::AbstractVector)
+    Base.require_one_based_indexing(values)
     return values
 end
 
 function _compat_symmetric_polynomial_values(values::AbstractMatrix)
+    Base.require_one_based_indexing(values)
     1 in size(values) || throw(
         DimensionMismatch(
             "X must be a vector or a row/column matrix; got size $(size(values))"
@@ -1948,6 +1969,7 @@ function _compat_coherence_state(
     state::Union{AbstractVector{<:Number},AbstractMatrix{<:Number}}
 )
     if state isa AbstractMatrix && one(size(state, 1)) in size(state)
+        Base.require_one_based_indexing(state)
         return vec(state)
     end
     return state

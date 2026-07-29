@@ -17,10 +17,52 @@ struct PartialTracePlan{L<:SubsystemLayout,TO<:Tuple,K<:Tuple,O<:SubsystemLayout
     trace_out::TO
     keep::K
     output_layout::O
-    keep_index::Vector{Int}
-    trace_index::Vector{Int}
+    keep_index::_ReadOnlyPlanVector
+    trace_index::_ReadOnlyPlanVector
     trace_dimension::Int
-    source_indices::Matrix{Int}
+    source_indices::_ReadOnlyPlanMatrix
+
+    function PartialTracePlan(
+        token::_ValidatedConstructorToken,
+        layout::L,
+        trace_out::TO,
+        keep::K,
+        output_layout::O,
+        keep_index::Vector{Int},
+        trace_index::Vector{Int},
+        trace_dimension::Int,
+        source_indices::Matrix{Int},
+    ) where {L<:SubsystemLayout,TO<:Tuple,K<:Tuple,O<:SubsystemLayout}
+        _require_validated_constructor_token(token)
+        length(keep_index) == layout.total_dimension ||
+            throw(ArgumentError("validated keep-index lookup length is inconsistent"))
+        length(trace_index) == layout.total_dimension ||
+            throw(ArgumentError("validated trace-index lookup length is inconsistent"))
+        trace_dimension > 0 ||
+            throw(ArgumentError("validated trace dimension must be positive"))
+        size(source_indices) == (output_layout.total_dimension, trace_dimension) ||
+            throw(ArgumentError("validated source-index lookup shape is inconsistent"))
+        for old_index in 1:layout.total_dimension
+            keep_position = keep_index[old_index]
+            trace_position = trace_index[old_index]
+            1 <= keep_position <= output_layout.total_dimension ||
+                throw(ArgumentError("validated keep-index lookup is out of bounds"))
+            1 <= trace_position <= trace_dimension ||
+                throw(ArgumentError("validated trace-index lookup is out of bounds"))
+            source_indices[keep_position, trace_position] == old_index ||
+                throw(ArgumentError("validated source-index lookup is inconsistent"))
+        end
+        return new{L,TO,K,O}(
+            layout,
+            trace_out,
+            keep,
+            output_layout,
+            _read_only_plan_array(keep_index),
+            _read_only_plan_array(trace_index),
+            trace_dimension,
+            _read_only_plan_array(source_indices),
+        )
+    end
 end
 
 function PartialTracePlan(dims, trace_out)
@@ -38,6 +80,7 @@ function PartialTracePlan(dims, trace_out)
         source_indices[keep_index[old_index], trace_index[old_index]] = old_index
     end
     return PartialTracePlan(
+        _VALIDATED_CONSTRUCTOR_TOKEN,
         layout,
         checked_trace,
         keep,

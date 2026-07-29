@@ -4,6 +4,39 @@ using SparseArrays
 const QETD = QuantumEntanglementTools
 const CompatD = QuantumEntanglementTools.MATLABCompat
 
+struct _TierDZeroBasedVector{T,V<:AbstractVector{T}} <: AbstractVector{T}
+    storage::V
+end
+
+Base.size(vector::_TierDZeroBasedVector) = size(vector.storage)
+Base.axes(vector::_TierDZeroBasedVector) = (0:(length(vector.storage) - 1),)
+Base.IndexStyle(::Type{<:_TierDZeroBasedVector}) = IndexLinear()
+Base.getindex(vector::_TierDZeroBasedVector, index::Int) = vector.storage[index + 1]
+
+struct _TierDZeroBasedMatrix{T,M<:AbstractMatrix{T}} <: AbstractMatrix{T}
+    storage::M
+end
+
+Base.size(matrix::_TierDZeroBasedMatrix) = size(matrix.storage)
+function Base.axes(matrix::_TierDZeroBasedMatrix)
+    return (0:(size(matrix.storage, 1) - 1), 0:(size(matrix.storage, 2) - 1))
+end
+Base.IndexStyle(::Type{<:_TierDZeroBasedMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_TierDZeroBasedMatrix, row::Int, column::Int)
+    return matrix.storage[row + 1, column + 1]
+end
+
+@testset "Tier D array axes validation" begin
+    bell = _TierDZeroBasedVector([1.0, 0.0, 0.0, 1.0] / sqrt(2))
+    density = _TierDZeroBasedMatrix(Matrix{Float64}(I, 4, 4) / 4)
+    @test_throws ArgumentError QETD.trace_norm(density)
+    @test_throws ArgumentError QETD.purity(density)
+    @test_throws ArgumentError QETD.schmidt_coefficients(bell, (2, 2))
+    @test_throws ArgumentError QETD.concurrence(bell)
+    @test_throws ArgumentError CompatD.Purity(density)
+    @test_throws ArgumentError CompatD.InSeparableBall(density, (2, 2))
+end
+
 @testset "Tier D matrix norms" begin
     matrix = Diagonal([3.0, 2.0, 1.0])
     @test QETD.trace_norm(matrix) == 6.0

@@ -39,6 +39,7 @@ function parse_options(args)
     output_dir = DEFAULT_OUTPUT
     status_path = DEFAULT_STATUS
     audit_date = string(Dates.today())
+    audit_date_explicit = false
     check = false
     positional = String[]
     i = 1
@@ -69,10 +70,12 @@ function parse_options(args)
             status_path = args[i]
         elseif startswith(arg, "--date=")
             audit_date = split(arg, "="; limit=2)[2]
+            audit_date_explicit = true
         elseif arg == "--date"
             i == length(args) && error("--date requires YYYY-MM-DD")
             i += 1
             audit_date = args[i]
+            audit_date_explicit = true
         elseif startswith(arg, "-")
             error("unknown option: $arg")
         else
@@ -82,6 +85,17 @@ function parse_options(args)
     end
     length(positional) <= 1 || error("at most one positional checkout path is accepted")
     isempty(positional) || (source = only(positional))
+    output_dir = abspath(output_dir)
+    if check && !audit_date_explicit
+        inventory_path = joinpath(output_dir, "qetlab_inventory.toml")
+        if isfile(inventory_path)
+            existing_inventory = TOML.parsefile(inventory_path)
+            recorded_date = get(existing_inventory, "audit_date", nothing)
+            recorded_date isa AbstractString ||
+                error("existing inventory has no string audit_date: $inventory_path")
+            audit_date = String(recorded_date)
+        end
+    end
     try
         Date(audit_date)
     catch
@@ -89,7 +103,7 @@ function parse_options(args)
     end
     return (
         source=abspath(source),
-        output_dir=abspath(output_dir),
+        output_dir,
         status_path=abspath(status_path),
         audit_date,
         check,

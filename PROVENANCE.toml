@@ -1135,7 +1135,7 @@ source_sha256 = "cdbd6acf49c39c296fe2f4523791e2f3f0d21d93ee741c4499a5fd0b898773b
 specification = "docs/src/states_operators_random.md"
 implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
 status = "implemented"
-verification_status = "local_perfect_matching_sparse_and_exact_octave_fixture_tests_pass_matlab_not_run"
+verification_status = "local_capped_preallocation_guard_perfect_matching_sparse_and_exact_octave_fixture_tests_pass_matlab_not_run"
 tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
 docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md"]
 
@@ -2250,7 +2250,7 @@ specification = "docs/src/migration_from_qetlab.md"
 implementation_kind = "tested-compatibility-wrapper-over-native-api"
 delegates_to = ["QuantumEntanglementTools.brauer_states"]
 status = "compatibility_alias"
-verification_status = "local_wrapper_and_exact_octave_fixture_tests_pass_matlab_not_run"
+verification_status = "local_guard_keyword_wrapper_and_exact_octave_fixture_tests_pass_matlab_not_run"
 tests = ["test/tier_b_states_operators_random.jl", "test/oracle/compare_tier_b_oracle.jl"]
 docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/states_operators_random.md"]
 

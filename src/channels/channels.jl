@@ -52,8 +52,9 @@ Represent the completely positive map
 
 `operators` must be a nonempty collection of finite numeric matrices with one
 common `(output_dimension, input_dimension)` size. The matrices are copied;
-sparse matrices remain sparse. Trace preservation is deliberately not imposed
-by the constructor.
+sparse matrices remain sparse, and the stored collection does not permit
+entry replacement. Use [`kraus_operators`](@ref) to obtain mutable copies.
+Trace preservation is deliberately not imposed by the constructor.
 """
 struct KrausRepresentation{T,V<:AbstractVector} <: AbstractMapRepresentation{T}
     operators::V
@@ -61,8 +62,18 @@ struct KrausRepresentation{T,V<:AbstractVector} <: AbstractMapRepresentation{T}
     output_dim::Int
 
     function KrausRepresentation{T,V}(
-        ::Val{:validated}, operators::V, input_dim::Int, output_dim::Int
+        token::_ValidatedConstructorToken, operators::V, input_dim::Int, output_dim::Int
     ) where {T,V<:AbstractVector}
+        _require_validated_constructor_token(token)
+        input_dim > 0 && output_dim > 0 ||
+            throw(ArgumentError("validated map dimensions must be positive"))
+        isempty(operators) &&
+            throw(ArgumentError("validated Kraus operators must be nonempty"))
+        all(
+            operator ->
+                operator isa AbstractMatrix && size(operator) == (output_dim, input_dim),
+            operators,
+        ) || throw(ArgumentError("validated Kraus operator shapes are inconsistent"))
         return new{T,V}(operators, input_dim, output_dim)
     end
 end
@@ -86,8 +97,14 @@ struct ChoiRepresentation{T,M<:AbstractMatrix{T}} <: AbstractMapRepresentation{T
     output_dim::Int
 
     function ChoiRepresentation{T,M}(
-        ::Val{:validated}, matrix::M, input_dim::Int, output_dim::Int
+        token::_ValidatedConstructorToken, matrix::M, input_dim::Int, output_dim::Int
     ) where {T,M<:AbstractMatrix{T}}
+        _require_validated_constructor_token(token)
+        input_dim > 0 && output_dim > 0 ||
+            throw(ArgumentError("validated map dimensions must be positive"))
+        total = Base.checked_mul(input_dim, output_dim)
+        size(matrix) == (total, total) ||
+            throw(ArgumentError("validated Choi matrix shape is inconsistent"))
         return new{T,M}(matrix, input_dim, output_dim)
     end
 end
@@ -110,8 +127,16 @@ struct SuperoperatorRepresentation{T,M<:AbstractMatrix{T}} <: AbstractMapReprese
     output_dim::Int
 
     function SuperoperatorRepresentation{T,M}(
-        ::Val{:validated}, matrix::M, input_dim::Int, output_dim::Int
+        token::_ValidatedConstructorToken, matrix::M, input_dim::Int, output_dim::Int
     ) where {T,M<:AbstractMatrix{T}}
+        _require_validated_constructor_token(token)
+        input_dim > 0 && output_dim > 0 ||
+            throw(ArgumentError("validated map dimensions must be positive"))
+        expected = (
+            Base.checked_mul(output_dim, output_dim), Base.checked_mul(input_dim, input_dim)
+        )
+        size(matrix) == expected ||
+            throw(ArgumentError("validated superoperator matrix shape is inconsistent"))
         return new{T,M}(matrix, input_dim, output_dim)
     end
 end
@@ -126,6 +151,7 @@ _all_finite(matrix::AbstractMatrix) = all(isfinite, matrix)
 _all_finite(matrix::SparseMatrixCSC) = all(isfinite, nonzeros(matrix))
 
 function _validate_numeric_matrix(matrix::AbstractMatrix, name::AbstractString)
+    Base.require_one_based_indexing(matrix)
     eltype(matrix) <: Number || throw(
         ArgumentError("$name must have a numeric element type; got $(eltype(matrix))")
     )
@@ -172,8 +198,9 @@ function KrausRepresentation(operators)
 
     scalar_type = foldl(promote_type, (eltype(operator) for operator in operators))
     copied = [copy(operator) for operator in operators]
-    return KrausRepresentation{scalar_type,typeof(copied)}(
-        Val(:validated), copied, input_dim, output_dim
+    read_only = _read_only_plan_array(copied)
+    return KrausRepresentation{scalar_type,typeof(read_only)}(
+        _VALIDATED_CONSTRUCTOR_TOKEN, read_only, input_dim, output_dim
     )
 end
 
@@ -195,7 +222,7 @@ function ChoiRepresentation(matrix::AbstractMatrix, input_dim, output_dim)
     )
     copied = copy(matrix)
     return ChoiRepresentation{eltype(copied),typeof(copied)}(
-        Val(:validated), copied, checked_input, checked_output
+        _VALIDATED_CONSTRUCTOR_TOKEN, copied, checked_input, checked_output
     )
 end
 
@@ -232,7 +259,7 @@ function SuperoperatorRepresentation(matrix::AbstractMatrix, input_dim, output_d
     )
     copied = copy(matrix)
     return SuperoperatorRepresentation{eltype(copied),typeof(copied)}(
-        Val(:validated), copied, checked_input, checked_output
+        _VALIDATED_CONSTRUCTOR_TOKEN, copied, checked_input, checked_output
     )
 end
 
@@ -256,6 +283,56 @@ function SuperoperatorRepresentation(
         throw(ArgumentError("input_dim and output_dim must be supplied together"))
     end
     return SuperoperatorRepresentation(matrix, input_dim, output_dim)
+end
+
+function _validated_representation_matrix(map::ChoiRepresentation)
+    matrix = getfield(map, :matrix)
+    Base.require_one_based_indexing(matrix)
+    total = _checked_product((map.input_dim, map.output_dim), "stored Choi dimensions")
+    size(matrix) == (total, total) || throw(
+        DimensionMismatch(
+            "stored Choi matrix has size $(size(matrix)); expected ($total, $total) " *
+            "for input_dim=$(map.input_dim) and output_dim=$(map.output_dim)",
+        ),
+    )
+    _all_finite(matrix) ||
+        throw(ArgumentError("stored Choi matrix must contain only finite values"))
+    return matrix
+end
+
+function _validated_representation_matrix(map::SuperoperatorRepresentation)
+    matrix = getfield(map, :matrix)
+    Base.require_one_based_indexing(matrix)
+    expected = (
+        _squared_dimension(map.output_dim, "stored output dimension"),
+        _squared_dimension(map.input_dim, "stored input dimension"),
+    )
+    size(matrix) == expected || throw(
+        DimensionMismatch(
+            "stored superoperator matrix has size $(size(matrix)); expected $expected " *
+            "for input_dim=$(map.input_dim) and output_dim=$(map.output_dim)",
+        ),
+    )
+    _all_finite(matrix) ||
+        throw(ArgumentError("stored superoperator matrix must contain only finite values"))
+    return matrix
+end
+
+function _validated_kraus_operators(map::KrausRepresentation)
+    operators = getfield(map, :operators)
+    for (index, operator) in enumerate(operators)
+        Base.require_one_based_indexing(operator)
+        size(operator) == (map.output_dim, map.input_dim) || throw(
+            DimensionMismatch(
+                "stored Kraus operator $index has size $(size(operator)); expected " *
+                "($(map.output_dim), $(map.input_dim))",
+            ),
+        )
+        _all_finite(operator) || throw(
+            ArgumentError("stored Kraus operator $index must contain only finite values"),
+        )
+    end
+    return operators
 end
 
 function _choi_to_superoperator(matrix::SparseMatrixCSC, input_dim::Int, output_dim::Int)
@@ -355,34 +432,44 @@ densifies sparse Choi matrices. Eigenvalues whose magnitude is at most
 eigenvalue below that threshold raises `DomainError`.
 """
 function choi_representation(map::ChoiRepresentation)
-    return ChoiRepresentation(map.matrix, map.input_dim, map.output_dim)
+    return ChoiRepresentation(
+        _validated_representation_matrix(map), map.input_dim, map.output_dim
+    )
 end
 
 function choi_representation(map::KrausRepresentation)
-    return ChoiRepresentation(_kraus_to_choi(map.operators), map.input_dim, map.output_dim)
+    operators = _validated_kraus_operators(map)
+    return ChoiRepresentation(_kraus_to_choi(operators), map.input_dim, map.output_dim)
 end
 
 function choi_representation(map::SuperoperatorRepresentation)
     return ChoiRepresentation(
-        _superoperator_to_choi(map.matrix, map.input_dim, map.output_dim),
+        _superoperator_to_choi(
+            _validated_representation_matrix(map), map.input_dim, map.output_dim
+        ),
         map.input_dim,
         map.output_dim,
     )
 end
 
 function superoperator_representation(map::SuperoperatorRepresentation)
-    return SuperoperatorRepresentation(map.matrix, map.input_dim, map.output_dim)
+    return SuperoperatorRepresentation(
+        _validated_representation_matrix(map), map.input_dim, map.output_dim
+    )
 end
 
 function superoperator_representation(map::KrausRepresentation)
+    operators = _validated_kraus_operators(map)
     return SuperoperatorRepresentation(
-        _kraus_to_superoperator(map.operators), map.input_dim, map.output_dim
+        _kraus_to_superoperator(operators), map.input_dim, map.output_dim
     )
 end
 
 function superoperator_representation(map::ChoiRepresentation)
     return SuperoperatorRepresentation(
-        _choi_to_superoperator(map.matrix, map.input_dim, map.output_dim),
+        _choi_to_superoperator(
+            _validated_representation_matrix(map), map.input_dim, map.output_dim
+        ),
         map.input_dim,
         map.output_dim,
     )
@@ -392,7 +479,7 @@ function kraus_representation(
     map::KrausRepresentation; atol=zero(_default_rtol(map)), rtol=_default_rtol(map)
 )
     _checked_tolerances(map, atol, rtol)
-    return KrausRepresentation(map.operators)
+    return KrausRepresentation(_validated_kraus_operators(map))
 end
 
 function _real_float_type(::Type{T}) where {T}
@@ -423,7 +510,7 @@ function kraus_representation(
 )
     atol, rtol = _checked_tolerances(map, atol, rtol)
     choi = map isa ChoiRepresentation ? map : choi_representation(map)
-    matrix = choi.matrix
+    matrix = _validated_representation_matrix(choi)
     isapprox(matrix, adjoint(matrix); atol=atol, rtol=rtol) ||
         throw(DomainError(matrix, "the map's Choi matrix is not Hermitian"))
 
@@ -453,19 +540,29 @@ end
 
 """
     choi_matrix(map)
-    superoperator_matrix(map)
-    kraus_operators(map; atol, rtol)
 
-Return copied ordinary-array data for a representation. Conversion is
-performed when necessary. `kraus_operators` follows the explicit dense
-eigendecomposition behavior of `kraus_representation`.
+Return a mutable copy of the ordinary-array Choi matrix, converting the map
+representation when necessary.
 """
 choi_matrix(map::AbstractMapRepresentation) = copy(choi_representation(map).matrix)
 
+"""
+    superoperator_matrix(map)
+
+Return a mutable copy of the ordinary-array superoperator matrix, converting
+the map representation when necessary.
+"""
 function superoperator_matrix(map::AbstractMapRepresentation)
     return copy(superoperator_representation(map).matrix)
 end
 
+"""
+    kraus_operators(map; atol, rtol)
+
+Return mutable copies of the map's Kraus operators. Conversion follows the
+explicit dense eigendecomposition and tolerance behavior of
+`kraus_representation`.
+"""
 function kraus_operators(map::AbstractMapRepresentation; kwargs...)
     return [copy(operator) for operator in kraus_representation(map; kwargs...).operators]
 end
@@ -496,7 +593,8 @@ linear algebra permits it; no input is normalized, symmetrized, or repaired.
 """
 function apply_channel(input::AbstractMatrix, map::KrausRepresentation)
     _validate_channel_input(input, map)
-    terms = Base.map(map.operators) do operator
+    operators = _validated_kraus_operators(map)
+    terms = Base.map(operators) do operator
         return operator * input * adjoint(operator)
     end
     return reduce(+, terms)
@@ -504,7 +602,7 @@ end
 
 function apply_channel(input::AbstractMatrix, map::SuperoperatorRepresentation)
     _validate_channel_input(input, map)
-    output_vector = map.matrix * vec(input)
+    output_vector = _validated_representation_matrix(map) * vec(input)
     return reshape(output_vector, map.output_dim, map.output_dim)
 end
 
@@ -537,6 +635,7 @@ function is_completely_positive(
     map::KrausRepresentation; atol=zero(_default_rtol(map)), rtol=_default_rtol(map)
 )
     _checked_tolerances(map, atol, rtol)
+    _validated_kraus_operators(map)
     return true
 end
 
@@ -547,7 +646,7 @@ function is_completely_positive(
 )
     atol, rtol = _checked_tolerances(map, atol, rtol)
     choi = map isa ChoiRepresentation ? map : choi_representation(map)
-    matrix = choi.matrix
+    matrix = _validated_representation_matrix(choi)
     isapprox(matrix, adjoint(matrix); atol=atol, rtol=rtol) || return false
     scale = max(norm(matrix, Inf), one(_real_float_type(eltype(matrix))))
     threshold = atol + rtol * scale

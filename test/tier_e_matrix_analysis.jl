@@ -3,6 +3,30 @@ using Random
 using SparseArrays
 using Test
 
+struct _TierEMatrixAnalysisZeroBasedVector{T,V<:AbstractVector{T}} <: AbstractVector{T}
+    storage::V
+end
+
+Base.size(vector::_TierEMatrixAnalysisZeroBasedVector) = size(vector.storage)
+Base.axes(vector::_TierEMatrixAnalysisZeroBasedVector) = (0:(length(vector.storage) - 1),)
+Base.IndexStyle(::Type{<:_TierEMatrixAnalysisZeroBasedVector}) = IndexLinear()
+function Base.getindex(vector::_TierEMatrixAnalysisZeroBasedVector, index::Int)
+    return vector.storage[index + 1]
+end
+
+struct _TierEMatrixAnalysisZeroBasedMatrix{T,M<:AbstractMatrix{T}} <: AbstractMatrix{T}
+    storage::M
+end
+
+Base.size(matrix::_TierEMatrixAnalysisZeroBasedMatrix) = size(matrix.storage)
+function Base.axes(matrix::_TierEMatrixAnalysisZeroBasedMatrix)
+    return (0:(size(matrix.storage, 1) - 1), 0:(size(matrix.storage, 2) - 1))
+end
+Base.IndexStyle(::Type{<:_TierEMatrixAnalysisZeroBasedMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_TierEMatrixAnalysisZeroBasedMatrix, row::Int, column::Int)
+    return matrix.storage[row + 1, column + 1]
+end
+
 function _tier_e_combination_products(values, order)
     order == 0 && return one(eltype(values))
     result = zero(eltype(values))
@@ -35,6 +59,15 @@ function _tier_e_pair_sums(values)
 end
 
 @testset "Tier E matrix analysis" begin
+    @testset "array axes validation" begin
+        vector = _TierEMatrixAnalysisZeroBasedVector([2.0, 1.0])
+        matrix = _TierEMatrixAnalysisZeroBasedMatrix([1.0 0.0; 0.0 2.0])
+        @test_throws ArgumentError majorizes(vector, [1.5, 1.5])
+        @test_throws ArgumentError elementary_symmetric_polynomial(vector, 1)
+        @test_throws ArgumentError compound_matrix(matrix, 1)
+        @test_throws ArgumentError additive_compound_matrix(matrix, 1)
+    end
+
     @testset "strong vector and singular-value majorization" begin
         @test majorizes([4, 1, 1], [3, 2, 1]; rtol=0)
         @test !majorizes([3, 2, 1], [4, 1, 1]; rtol=0)

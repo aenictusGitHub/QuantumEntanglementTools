@@ -380,22 +380,89 @@ function _perfect_matchings(vertex_count::Int)
     return recurse(collect(1:vertex_count))
 end
 
+function _brauer_matching_count(pair_count::Int, max_matchings, max_nonzeros)
+    matching_limit = if max_matchings === nothing
+        nothing
+    else
+        BigInt(_positive_int(max_matchings, "max_matchings"))
+    end
+    nonzero_limit = if max_nonzeros === nothing
+        nothing
+    else
+        BigInt(_positive_int(max_nonzeros, "max_nonzeros"))
+    end
+    count = BigInt(1)
+    for factor in 1:2:(2 * pair_count - 1)
+        count *= factor
+        matching_limit !== nothing &&
+            count > matching_limit &&
+            _brauer_complexity_guard(
+                count, matching_limit, "max_matchings", "perfect matchings"
+            )
+        nonzero_limit !== nothing &&
+            count > nonzero_limit &&
+            _brauer_complexity_guard(count, nonzero_limit, "max_nonzeros", "stored entries")
+    end
+    return count
+end
+
+function _brauer_complexity_guard(
+    planned::BigInt, limit, keyword::AbstractString, resource::AbstractString
+)
+    limit === nothing && return nothing
+    checked_limit = _positive_int(limit, keyword)
+    planned <= checked_limit || throw(
+        ArgumentError(
+            "brauer_states would generate $planned $resource, exceeding " *
+            "$keyword=$checked_limit; raise the guard only after reviewing " *
+            "the combinatorial memory cost",
+        ),
+    )
+    return nothing
+end
+
 """
-    brauer_states(dim, pairs; T=Float64)
+    brauer_states(
+        dim, pairs;
+        T=Float64, max_matchings=100_000, max_nonzeros=1_000_000
+    )
 
 Return all unnormalized Brauer vectors as columns of a sparse matrix.
 There are `(2*pairs-1)!!` columns; each is the tensor product of `pairs`
 unnormalized maximally entangled pairs arranged according to one perfect
-matching of the `2*pairs` labeled subsystems.
+matching of the `2*pairs` labeled subsystems. The output has `dim^pairs`
+stored entries per column.
+
+`max_matchings` and `max_nonzeros` reject excessive work before matching
+generation or allocation. Setting either guard to `nothing` explicitly disables
+that guard; overflow and allocation failure remain possible for sufficiently
+large requests.
 """
-function brauer_states(dim, pairs; T::Type{<:Number}=Float64)
+function brauer_states(
+    dim, pairs; T::Type{<:Number}=Float64, max_matchings=100_000, max_nonzeros=1_000_000
+)
     dimension = _positive_int(dim, "dim")
     pair_count = _positive_int(pairs, "pairs")
     party_count = _checked_product((2, pair_count), "pairs")
-    total = _checked_power(dimension, party_count, "dim")
+    matching_count_big = _brauer_matching_count(pair_count, max_matchings, max_nonzeros)
+    _brauer_complexity_guard(
+        matching_count_big, max_matchings, "max_matchings", "perfect matchings"
+    )
+    matching_count_big <= typemax(Int) ||
+        throw(ArgumentError("Brauer matching count exceeds typemax(Int)"))
+    matching_count = Int(matching_count_big)
     assignments = _checked_power(dimension, pair_count, "dim")
+    nonzero_count_big = BigInt(assignments) * matching_count_big
+    _brauer_complexity_guard(
+        nonzero_count_big, max_nonzeros, "max_nonzeros", "stored entries"
+    )
+    nonzero_count_big <= typemax(Int) ||
+        throw(ArgumentError("Brauer stored-entry count exceeds typemax(Int)"))
+    nonzeros = Int(nonzero_count_big)
+    total = _checked_power(dimension, party_count, "dim")
     matchings = _perfect_matchings(party_count)
-    nonzeros = _checked_product((assignments, length(matchings)), "Brauer nonzeros")
+    length(matchings) == matching_count ||
+        error("internal Brauer matching enumeration count is inconsistent")
 
     rows = Vector{Int}(undef, nonzeros)
     columns = Vector{Int}(undef, nonzeros)
@@ -420,7 +487,7 @@ function brauer_states(dim, pairs; T::Type{<:Number}=Float64)
             cursor += 1
         end
     end
-    return sparse(rows, columns, values, total, length(matchings))
+    return sparse(rows, columns, values, total, matching_count)
 end
 
 """

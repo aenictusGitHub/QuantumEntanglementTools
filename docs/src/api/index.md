@@ -1,20 +1,20 @@
 # API reference
 
-The Tier A subsystem kernel passes 304 local tests and the focused Tier B
-operators/states/random suite passes 941 local tests on Julia 1.12.6. The Tier
-C channels/maps suite passes 154 focused local assertions across 24 native
-public bindings/types and 11 `MATLABCompat` wrappers. Tier D passes 162 focused
+The Tier A subsystem kernel passes 345 local tests and the focused Tier B
+operators/states/random suite passes 954 local tests on Julia 1.12.6. The Tier
+C channels/maps suite passes 177 focused local assertions across 24 native
+public bindings/types and 11 `MATLABCompat` wrappers. Tier D passes 168 focused
 measures/criteria assertions across 22 native bindings and 11 wrappers. The
 native entanglement pipeline passes 68 assertions across 10 project-native
 orchestration exports, and the optional backend boundary adds two public
 descriptor/configuration types with 125 focused extension assertions. Tier E
-coherence passes 52. The integrated package corpus passes 2,318 assertions
-(2,270 core plus 48 executable tutorials) on Julia 1.12.6 and 1.10.11. Tier E
-product analysis passes 175 native and 52 compatibility assertions across 10
+coherence passes 54. The integrated package corpus passes 2,417 assertions
+(2,369 core plus 48 executable tutorials) on Julia 1.12.6 and 1.10.11. Tier E
+product analysis passes 179 native and 52 compatibility assertions across 10
 native bindings and six wrappers. Tier E
-matrix analysis passes 127 native and 32 compatibility assertions across four
+matrix analysis passes 131 native and 34 compatibility assertions across four
 native bindings and four compatibility entry points. Tier E matrix predicates
-pass 166 native and 37 compatibility assertions across nine native bindings
+pass 170 native and 37 compatibility assertions across nine native bindings
 and four structured-result compatibility entry points. The reference below
 covers all exported native operations and compatibility wrappers. This local
 evidence does not establish full QETLAB parity, supported-platform coverage,
@@ -53,16 +53,8 @@ a runnable example, and complexity for important operations.
 
 Internal helpers are not public merely because Documenter can render them.
 
-## Julia-native exports
+The generated reference is split into two pages so each page remains
+comfortably below Documenter's strict HTML-size limit:
 
-```@autodocs
-Modules = [QuantumEntanglementTools]
-Private = false
-```
-
-## MATLAB compatibility namespace
-
-```@autodocs
-Modules = [QuantumEntanglementTools.MATLABCompat]
-Private = false
-```
+- [Julia-native exports](native.md)
+- [MATLAB compatibility namespace](matlab_compat.md)

@@ -4,7 +4,38 @@ using Test
 
 const CompatMatrixAnalysis = QuantumEntanglementTools.MATLABCompat
 
+struct _TierEMatrixCompatZeroBasedVector{T,V<:AbstractVector{T}} <: AbstractVector{T}
+    storage::V
+end
+
+Base.size(vector::_TierEMatrixCompatZeroBasedVector) = size(vector.storage)
+Base.axes(vector::_TierEMatrixCompatZeroBasedVector) = (0:(length(vector.storage) - 1),)
+Base.IndexStyle(::Type{<:_TierEMatrixCompatZeroBasedVector}) = IndexLinear()
+function Base.getindex(vector::_TierEMatrixCompatZeroBasedVector, index::Int)
+    return vector.storage[index + 1]
+end
+
+struct _TierEMatrixCompatZeroBasedMatrix{T,M<:AbstractMatrix{T}} <: AbstractMatrix{T}
+    storage::M
+end
+
+Base.size(matrix::_TierEMatrixCompatZeroBasedMatrix) = size(matrix.storage)
+function Base.axes(matrix::_TierEMatrixCompatZeroBasedMatrix)
+    return (0:(size(matrix.storage, 1) - 1), 0:(size(matrix.storage, 2) - 1))
+end
+Base.IndexStyle(::Type{<:_TierEMatrixCompatZeroBasedMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_TierEMatrixCompatZeroBasedMatrix, row::Int, column::Int)
+    return matrix.storage[row + 1, column + 1]
+end
+
 @testset "Tier E matrix-analysis compatibility" begin
+    @testset "array axes validation" begin
+        vector = _TierEMatrixCompatZeroBasedVector([2.0, 1.0])
+        row_matrix = _TierEMatrixCompatZeroBasedMatrix(reshape([2.0, 1.0], 1, :))
+        @test_throws ArgumentError CompatMatrixAnalysis.Majorizes(vector, [1.5, 1.5])
+        @test_throws ArgumentError CompatMatrixAnalysis.ElemSymPoly(row_matrix, 1)
+    end
+
     @testset "Majorizes preserves pinned weak semantics" begin
         @test CompatMatrixAnalysis.Majorizes([4, 1, 1], [3, 2, 1]; rtol=0)
         @test CompatMatrixAnalysis.Majorizes([2, 0], [1, 0]; rtol=0)

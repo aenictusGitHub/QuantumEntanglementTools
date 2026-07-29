@@ -3,7 +3,8 @@
 ## Requirements
 
 The minimum supported Julia version is 1.10. Development currently targets the
-repository checkout; the package is not registered and has no stable release.
+repository checkout. The experimental `v0.1.0` release candidate is not
+registered, and its API may change in later `0.x` releases.
 
 From the repository root:
 

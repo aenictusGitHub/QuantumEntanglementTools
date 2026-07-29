@@ -165,6 +165,7 @@ function coherence_rank(
     else
         basis isa AbstractMatrix{<:Number} ||
             throw(ArgumentError("basis must be a numeric matrix or `nothing`"))
+        Base.require_one_based_indexing(basis)
         size(basis) == (length(state), length(state)) || throw(
             DimensionMismatch(
                 "basis has size $(size(basis)); expected " *

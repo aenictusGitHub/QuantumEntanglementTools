@@ -1,12 +1,13 @@
 # QuantumEntanglementTools.jl
 
-`QuantumEntanglementTools` is a pre-alpha, independent Julia package under
-development for quantum-information and entanglement calculations.
+`QuantumEntanglementTools` is an independent Julia package for
+quantum-information and entanglement calculations. The experimental `v0.1.0`
+release candidate exposes a scoped, certificate-aware API.
 
 !!! warning "No completeness claim"
-    The public numerical API, QETLAB inventory, validation matrix, and benchmark
-    baseline are incomplete. A page describing an intended capability is not
-    evidence that the capability is implemented.
+    The QETLAB inventory, validation matrix, and benchmark baseline are not
+    complete. The release candidate covers only functions whose provenance,
+    documentation, and tests are recorded; it does not claim QETLAB parity.
 
 The architecture centers on ordinary Julia arrays, explicit subsystem
 conventions, generic numeric types, sparse-aware algorithms, structured
@@ -19,8 +20,8 @@ diagnostic and certification results, and optional package extensions.
 - [Entanglement example code generator](code_generator.md) builds bounded,
   certificate-aware Julia scripts locally in the browser from curated state
   families and analysis routes.
-- [Conventions](conventions.md) separates accepted Tier A choices from future
-  choices that still need tests.
+- [Conventions](conventions.md) records the tested subsystem, indexing, and
+  channel-representation choices.
 - [Separability by example](separability_examples.md) constructs pure and mixed
   product-state examples and explains certified versus inconclusive outcomes.
 - [Symmetric SAPPT states and witnesses](paper_symmetric_separability.md)

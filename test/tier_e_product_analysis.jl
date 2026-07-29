@@ -4,6 +4,37 @@ using SparseArrays
 
 const QETProduct = QuantumEntanglementTools
 
+struct _TierEProductZeroBasedVector{T,V<:AbstractVector{T}} <: AbstractVector{T}
+    storage::V
+end
+
+Base.size(vector::_TierEProductZeroBasedVector) = size(vector.storage)
+Base.axes(vector::_TierEProductZeroBasedVector) = (0:(length(vector.storage) - 1),)
+Base.IndexStyle(::Type{<:_TierEProductZeroBasedVector}) = IndexLinear()
+Base.getindex(vector::_TierEProductZeroBasedVector, index::Int) = vector.storage[index + 1]
+
+struct _TierEProductZeroBasedMatrix{T,M<:AbstractMatrix{T}} <: AbstractMatrix{T}
+    storage::M
+end
+
+Base.size(matrix::_TierEProductZeroBasedMatrix) = size(matrix.storage)
+function Base.axes(matrix::_TierEProductZeroBasedMatrix)
+    return (0:(size(matrix.storage, 1) - 1), 0:(size(matrix.storage, 2) - 1))
+end
+Base.IndexStyle(::Type{<:_TierEProductZeroBasedMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_TierEProductZeroBasedMatrix, row::Int, column::Int)
+    return matrix.storage[row + 1, column + 1]
+end
+
+@testset "Tier E product-analysis array axes validation" begin
+    vector = _TierEProductZeroBasedVector([1.0, 0.0, 0.0, 0.0])
+    operator = _TierEProductZeroBasedMatrix(Matrix{Float64}(I, 4, 4))
+    @test_throws ArgumentError QETProduct.is_product_vector(vector, (2, 2))
+    @test_throws ArgumentError QETProduct.operator_schmidt_decomposition(operator, (2, 2))
+    @test_throws ArgumentError QETProduct.is_product_operator(operator, (2, 2))
+    @test_throws ArgumentError QETProduct.entanglement_of_formation(vector, (2, 2))
+end
+
 @testset "Tier E operator Schmidt analysis" begin
     left = ComplexF64[
         1 2im -1

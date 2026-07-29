@@ -3,16 +3,21 @@
 All notable changes to this project will be documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and released versions will follow [Semantic Versioning](https://semver.org/) once
-a stable public API exists.
+and versions follow [Semantic Versioning](https://semver.org/) together with
+Julia's pre-`1.0` compatibility convention: breaking public-API changes require
+a minor-version increment.
 
 ## [Unreleased]
+
+No user-visible changes yet.
+
+## [0.1.0] - 2026-07-29
 
 ### Added
 
 - Initial Julia package shell.
 - Documentation, governance, legal, citation, and CI scaffolding.
-- Explicit pre-alpha status and milestone ledgers.
+- Explicit experimental status and milestone ledgers.
 - Tier A subsystem/indexing, tensor, permutation, partial trace/transpose,
   realignment, projector/basis, reusable-plan, and MATLAB-compatibility APIs.
 - Tier B Pauli, generalized Pauli, Gell-Mann, generalized Gell-Mann, Fourier,
@@ -41,11 +46,11 @@ a stable public API exists.
   positive, and totally nonsingular matrix predicates, including witnesses,
   three-valued numerical-boundary results, exact arithmetic, explicit sparse
   densification, combinatorial guards, and four compatibility entry points.
-  Their focused suites pass 166 native and 37 compatibility assertions; no
+  Their focused suites pass 170 native and 37 compatibility assertions; no
   MATLAB-family predicate oracle has been run. The `IsPSD` mapping remains
   partial because the pinned CVX symbolic branch is omitted.
-- A 2,318-assertion full package suite passing locally on Julia 1.12.6 and
-  Julia 1.10.11, comprising 2,270 core assertions and 48 executable-tutorial
+- A 2,417-assertion full package suite passing locally on Julia 1.12.6 and
+  Julia 1.10.11, comprising 2,369 core assertions and 48 executable-tutorial
   assertions, plus consistency checks over 214 public bindings and 76 manually
   reviewed inventory rows.
 - Five deterministic executable tutorials for subsystem reductions, local
@@ -66,6 +71,15 @@ a stable public API exists.
   as uncertified evidence, and contains backend failures as `:unknown` reports.
   Its 125 focused assertions cover load order, caller-state isolation, bounded
   termination, malformed IPC, and post-launch output-capture failure cleanup.
+- A development disclosure recording substantial OpenAI Codex assistance
+  without treating that disclosure as evidence of the maintainer's required
+  human review.
+- Release-safety guards for non-one-based caller arrays, immutable subsystem
+  plan lookups and Kraus collections, validated internal construction paths,
+  and combinatorial Brauer-state generation.
+- Exact-archive release preflights, immutable GitHub Action pins, strict
+  Codecov failure handling, and a documented private-versus-General release
+  checklist.
 
 ### Changed
 
@@ -78,3 +92,6 @@ a stable public API exists.
 ### Security
 
 - Added a private vulnerability-reporting policy.
+
+[Unreleased]: https://github.com/aenictusGitHub/QuantumEntanglementTools/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/aenictusGitHub/QuantumEntanglementTools/releases/tag/v0.1.0

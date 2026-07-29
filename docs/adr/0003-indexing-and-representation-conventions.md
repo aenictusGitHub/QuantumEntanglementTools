@@ -1,6 +1,6 @@
 # ADR 0003: indexing and representation conventions
 
-- Status: Accepted for Tier A; channel portion prospective until M3 tests
+- Status: Accepted
 - Date: 2026-07-28
 
 ## Context
@@ -30,7 +30,7 @@ For dimensions `(d₁, …, dₙ)`:
 The all-subsystem `1 × 1` shape and the Tier A indexing decisions have local
 executable coverage. Cross-platform and differential validation remain pending.
 
-For the future channel layer, use the prospective unnormalized Choi convention
+The channel layer uses the unnormalized Choi convention
 
 ```math
 J(\Phi) = \sum_{i,j} |i\rangle\langle j| \otimes
@@ -38,13 +38,14 @@ J(\Phi) = \sum_{i,j} |i\rangle\langle j| \otimes
 ```
 
 with input factor first and output factor second. Then trace preservation means
-`tr_output(J) = I_input` and `tr(J) = d_input`. This channel decision is not
-considered verified until Choi/Kraus/superoperator round-trip and physicality
-tests pass in M3.
+`tr_output(J) = I_input` and `tr(J) = d_input`. Choi/Kraus/superoperator
+round-trip and physicality tests now cover this decision for the implemented
+Tier C scope.
 
 The default maximally entangled state is normalized. Normalizations and ordering
-for Pauli, generalized Pauli, Gell-Mann, spin, Bell, and named-state families
-remain unresolved until their inventory slices are implemented and tested.
+for the implemented Pauli, generalized Pauli, Gell-Mann, spin, Bell, and named
+state families are documented and tested; families outside the reviewed
+inventory scope remain unresolved.
 
 ## Consequences
 

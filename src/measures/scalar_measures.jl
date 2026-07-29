@@ -73,6 +73,7 @@ function _tierd_require_pure_state_eltype(array, operation::AbstractString)
 end
 
 function _tierd_require_finite(array, name::AbstractString)
+    Base.require_one_based_indexing(array)
     all(isfinite, array) || throw(ArgumentError("$name must contain only finite entries"))
     return nothing
 end

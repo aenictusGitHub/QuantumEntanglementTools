@@ -3,6 +3,19 @@ using SparseArrays
 
 const QETCoherence = QuantumEntanglementTools
 
+struct _TierECoherenceZeroBasedMatrix{T,M<:AbstractMatrix{T}} <: AbstractMatrix{T}
+    storage::M
+end
+
+Base.size(matrix::_TierECoherenceZeroBasedMatrix) = size(matrix.storage)
+function Base.axes(matrix::_TierECoherenceZeroBasedMatrix)
+    return (0:(size(matrix.storage, 1) - 1), 0:(size(matrix.storage, 2) - 1))
+end
+Base.IndexStyle(::Type{<:_TierECoherenceZeroBasedMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_TierECoherenceZeroBasedMatrix, row::Int, column::Int)
+    return matrix.storage[row + 1, column + 1]
+end
+
 @testset "Tier E coherence measures" begin
     @testset "l1 coherence" begin
         basis_state = ComplexF64[1, 0, 0, 0]
@@ -93,6 +106,9 @@ const QETCoherence = QuantumEntanglementTools
         @test_throws ArgumentError QETCoherence.coherence_rank(
             basis_state; basis=ones(2, 2)
         )
+        @test_throws ArgumentError QETCoherence.coherence_rank(
+            basis_state; basis=_TierECoherenceZeroBasedMatrix(hadamard)
+        )
         @test_throws ArgumentError QETCoherence.coherence_rank(0.5basis_state)
         @test_throws ArgumentError QETCoherence.coherence_rank(basis_state; atol=-1)
     end
@@ -120,5 +136,8 @@ const QETCoherence = QuantumEntanglementTools
         )
         @test_throws ArgumentError QETCoherence.MATLABCompat.CoherenceRank(plus, -1)
         @test_throws ArgumentError QETCoherence.MATLABCompat.RelEntCoherence(0.9plus)
+        @test_throws ArgumentError QETCoherence.MATLABCompat.L1NormCoherence(
+            _TierECoherenceZeroBasedMatrix(plus_row)
+        )
     end
 end

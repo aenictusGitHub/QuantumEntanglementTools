@@ -38,13 +38,96 @@ struct RealignmentPlan{
     row_b_layout::RBL
     column_a_layout::CAL
     column_b_layout::CBL
-    row_a_index::Vector{Int}
-    row_b_index::Vector{Int}
-    column_a_index::Vector{Int}
-    column_b_index::Vector{Int}
-    row_from_groups::Matrix{Int}
-    column_from_groups::Matrix{Int}
+    row_a_index::_ReadOnlyPlanVector
+    row_b_index::_ReadOnlyPlanVector
+    column_a_index::_ReadOnlyPlanVector
+    column_b_index::_ReadOnlyPlanVector
+    row_from_groups::_ReadOnlyPlanMatrix
+    column_from_groups::_ReadOnlyPlanMatrix
     output_size::Tuple{Int,Int}
+
+    function RealignmentPlan(
+        token::_ValidatedConstructorToken,
+        row_layout::R,
+        column_layout::C,
+        systems::A,
+        complement::B,
+        row_a_layout::RAL,
+        row_b_layout::RBL,
+        column_a_layout::CAL,
+        column_b_layout::CBL,
+        row_a_index::Vector{Int},
+        row_b_index::Vector{Int},
+        column_a_index::Vector{Int},
+        column_b_index::Vector{Int},
+        row_from_groups::Matrix{Int},
+        column_from_groups::Matrix{Int},
+        output_size::Tuple{Int,Int},
+    ) where {
+        R<:SubsystemLayout,
+        C<:SubsystemLayout,
+        A<:Tuple,
+        B<:Tuple,
+        RAL<:SubsystemLayout,
+        RBL<:SubsystemLayout,
+        CAL<:SubsystemLayout,
+        CBL<:SubsystemLayout,
+    }
+        _require_validated_constructor_token(token)
+        length(row_a_index) == row_layout.total_dimension ||
+            throw(ArgumentError("validated row-A lookup length is inconsistent"))
+        length(row_b_index) == row_layout.total_dimension ||
+            throw(ArgumentError("validated row-B lookup length is inconsistent"))
+        length(column_a_index) == column_layout.total_dimension ||
+            throw(ArgumentError("validated column-A lookup length is inconsistent"))
+        length(column_b_index) == column_layout.total_dimension ||
+            throw(ArgumentError("validated column-B lookup length is inconsistent"))
+        size(row_from_groups) ==
+        (row_a_layout.total_dimension, row_b_layout.total_dimension) ||
+            throw(ArgumentError("validated inverse row lookup shape is inconsistent"))
+        size(column_from_groups) ==
+        (column_a_layout.total_dimension, column_b_layout.total_dimension) ||
+            throw(ArgumentError("validated inverse column lookup shape is inconsistent"))
+        all(index -> 1 <= index <= row_a_layout.total_dimension, row_a_index) ||
+            throw(ArgumentError("validated row-A lookup is out of bounds"))
+        all(index -> 1 <= index <= row_b_layout.total_dimension, row_b_index) ||
+            throw(ArgumentError("validated row-B lookup is out of bounds"))
+        all(index -> 1 <= index <= column_a_layout.total_dimension, column_a_index) ||
+            throw(ArgumentError("validated column-A lookup is out of bounds"))
+        all(index -> 1 <= index <= column_b_layout.total_dimension, column_b_index) ||
+            throw(ArgumentError("validated column-B lookup is out of bounds"))
+        for row in 1:row_layout.total_dimension
+            row_from_groups[row_a_index[row], row_b_index[row]] == row ||
+                throw(ArgumentError("validated inverse row lookup is inconsistent"))
+        end
+        for column in 1:column_layout.total_dimension
+            column_from_groups[column_a_index[column], column_b_index[column]] == column ||
+                throw(ArgumentError("validated inverse column lookup is inconsistent"))
+        end
+        expected_output_size = (
+            Base.checked_mul(row_a_layout.total_dimension, column_a_layout.total_dimension),
+            Base.checked_mul(row_b_layout.total_dimension, column_b_layout.total_dimension),
+        )
+        output_size == expected_output_size ||
+            throw(ArgumentError("validated realignment output size is inconsistent"))
+        return new{R,C,A,B,RAL,RBL,CAL,CBL}(
+            row_layout,
+            column_layout,
+            systems,
+            complement,
+            row_a_layout,
+            row_b_layout,
+            column_a_layout,
+            column_b_layout,
+            _read_only_plan_array(row_a_index),
+            _read_only_plan_array(row_b_index),
+            _read_only_plan_array(column_a_index),
+            _read_only_plan_array(column_b_index),
+            _read_only_plan_array(row_from_groups),
+            _read_only_plan_array(column_from_groups),
+            output_size,
+        )
+    end
 end
 
 function RealignmentPlan(dims; systems=(1,))
@@ -89,6 +172,7 @@ function RealignmentPlan(row_dims, column_dims; systems=(1,))
         Base.checked_mul(row_b_layout.total_dimension, column_b_layout.total_dimension),
     )
     return RealignmentPlan(
+        _VALIDATED_CONSTRUCTOR_TOKEN,
         row_layout,
         column_layout,
         selected,
@@ -141,6 +225,7 @@ function _realign(matrix::SparseMatrixCSC, plan::RealignmentPlan)
 end
 
 function _inverse_realign(matrix::AbstractMatrix, plan::RealignmentPlan)
+    Base.require_one_based_indexing(matrix)
     size(matrix) == plan.output_size || throw(
         DimensionMismatch(
             "realigned matrix size $(size(matrix)) must be $(plan.output_size) for this plan",
@@ -161,6 +246,7 @@ function _inverse_realign(matrix::AbstractMatrix, plan::RealignmentPlan)
 end
 
 function _inverse_realign(matrix::SparseMatrixCSC, plan::RealignmentPlan)
+    Base.require_one_based_indexing(matrix)
     size(matrix) == plan.output_size || throw(
         DimensionMismatch(
             "realigned matrix size $(size(matrix)) must be $(plan.output_size) for this plan",

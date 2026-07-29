@@ -135,6 +135,7 @@ after launch. The core pipeline suite separately checks dependency absence and
 the actionable error path. Independent smoke calls also covered `Float32`,
 `Float64`, `ComplexF32`, `ComplexF64`, and multipartite input.
 
-A Julia 1.11/1.12 Linux/macOS/Windows workflow is configured but has not run
-remotely. The local evidence does not make backend candidates certificates or
-make `Serialization` an adversarial isolation boundary.
+The six-job Julia 1.11/1.12 Linux/macOS/Windows workflow passed at predecessor
+commit `6bf8d61`; an exact release-candidate rerun remains required. That
+platform evidence does not make backend candidates certificates or make
+`Serialization` an adversarial isolation boundary.

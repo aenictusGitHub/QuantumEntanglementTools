@@ -1,7 +1,28 @@
 using LinearAlgebra
 using SparseArrays
 
+struct _TierEMatrixPredicateZeroBasedMatrix{T,M<:AbstractMatrix{T}} <: AbstractMatrix{T}
+    storage::M
+end
+
+Base.size(matrix::_TierEMatrixPredicateZeroBasedMatrix) = size(matrix.storage)
+function Base.axes(matrix::_TierEMatrixPredicateZeroBasedMatrix)
+    return (0:(size(matrix.storage, 1) - 1), 0:(size(matrix.storage, 2) - 1))
+end
+Base.IndexStyle(::Type{<:_TierEMatrixPredicateZeroBasedMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_TierEMatrixPredicateZeroBasedMatrix, row::Int, column::Int)
+    return matrix.storage[row + 1, column + 1]
+end
+
 @testset "Tier E native matrix predicates" begin
+    @testset "array axes validation" begin
+        matrix = _TierEMatrixPredicateZeroBasedMatrix([1.0 0.0; 0.0 2.0])
+        @test_throws ArgumentError is_positive_semidefinite(matrix)
+        @test_throws ArgumentError is_locally_positive_semidefinite(matrix, 1)
+        @test_throws ArgumentError is_totally_positive(matrix)
+        @test_throws ArgumentError is_totally_nonsingular(matrix)
+    end
+
     @testset "structured result vocabulary" begin
         result = is_positive_semidefinite([1.0 0.0; 0.0 2.0])
         @test result isa MatrixPredicateResult

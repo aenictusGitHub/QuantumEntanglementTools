@@ -4,19 +4,19 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "v*"
     paths:
       - ".github/workflows/extensions.yml"
       - "ext/**"
-      - "src/QuantumEntanglementTools.jl"
-      - "src/entanglement/backend_interface.jl"
+      - "src/**"
       - "test/extensions/**"
       - "Project.toml"
   pull_request:
     paths:
       - ".github/workflows/extensions.yml"
       - "ext/**"
-      - "src/QuantumEntanglementTools.jl"
-      - "src/entanglement/backend_interface.jl"
+      - "src/**"
       - "test/extensions/**"
       - "Project.toml"
   workflow_dispatch:
@@ -53,13 +53,15 @@ jobs:
       JULIA_NUM_THREADS: "1"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
       - name: Install Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v3
         with:
           version: ${{ matrix.julia-version }}
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@v2
+        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
       - name: Show environment
         run: >-
           julia --startup-file=no -e

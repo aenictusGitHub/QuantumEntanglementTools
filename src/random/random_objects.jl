@@ -38,6 +38,7 @@ function _random_dimension_tuple(dimension)
         checked = _positive_int(dimension, "dimension")
         return (checked,)
     elseif dimension isa Tuple || dimension isa AbstractVector
+        dimension isa AbstractVector && Base.require_one_based_indexing(dimension)
         length(dimension) == 2 || throw(
             DimensionMismatch("a bipartite dimension must contain exactly two entries")
         )

@@ -20,10 +20,59 @@ struct PartialTransposePlan{
     systems::S
     output_row_layout::OR
     output_column_layout::OC
-    row_to_row::Vector{Int}
-    row_to_column::Vector{Int}
-    column_to_row::Vector{Int}
-    column_to_column::Vector{Int}
+    row_to_row::_ReadOnlyPlanVector
+    row_to_column::_ReadOnlyPlanVector
+    column_to_row::_ReadOnlyPlanVector
+    column_to_column::_ReadOnlyPlanVector
+
+    function PartialTransposePlan(
+        token::_ValidatedConstructorToken,
+        row_layout::R,
+        column_layout::C,
+        systems::S,
+        output_row_layout::OR,
+        output_column_layout::OC,
+        row_to_row::Vector{Int},
+        row_to_column::Vector{Int},
+        column_to_row::Vector{Int},
+        column_to_column::Vector{Int},
+    ) where {
+        R<:SubsystemLayout,
+        C<:SubsystemLayout,
+        S<:Tuple,
+        OR<:SubsystemLayout,
+        OC<:SubsystemLayout,
+    }
+        _require_validated_constructor_token(token)
+        length(row_to_row) == row_layout.total_dimension ||
+            throw(ArgumentError("validated row lookup length is inconsistent"))
+        length(row_to_column) == row_layout.total_dimension ||
+            throw(ArgumentError("validated row-column lookup length is inconsistent"))
+        length(column_to_row) == column_layout.total_dimension ||
+            throw(ArgumentError("validated column-row lookup length is inconsistent"))
+        length(column_to_column) == column_layout.total_dimension ||
+            throw(ArgumentError("validated column lookup length is inconsistent"))
+        minimum(row_to_row) >= 0 &&
+        minimum(column_to_row) >= 0 &&
+        maximum(row_to_row) + maximum(column_to_row) < output_row_layout.total_dimension ||
+            throw(ArgumentError("validated output-row lookups are out of bounds"))
+        minimum(row_to_column) >= 0 &&
+        minimum(column_to_column) >= 0 &&
+        maximum(row_to_column) + maximum(column_to_column) <
+        output_column_layout.total_dimension ||
+            throw(ArgumentError("validated output-column lookups are out of bounds"))
+        return new{R,C,S,OR,OC}(
+            row_layout,
+            column_layout,
+            systems,
+            output_row_layout,
+            output_column_layout,
+            _read_only_plan_array(row_to_row),
+            _read_only_plan_array(row_to_column),
+            _read_only_plan_array(column_to_row),
+            _read_only_plan_array(column_to_column),
+        )
+    end
 end
 
 PartialTransposePlan(dims, systems) = PartialTransposePlan(dims, dims, systems)
@@ -85,6 +134,7 @@ function PartialTransposePlan(row_dims, column_dims, systems)
     end
 
     return PartialTransposePlan(
+        _VALIDATED_CONSTRUCTOR_TOKEN,
         row_layout,
         column_layout,
         selected,

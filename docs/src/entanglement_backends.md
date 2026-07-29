@@ -71,7 +71,7 @@ rather than collapsing a numerical-boundary case to a Boolean.
 
 The native pipeline passes 68 focused assertions. The underlying scalar
 measures and criteria, including all 11 Tier D compatibility wrappers, pass
-162 focused assertions. The Tier D supplemental Octave/QETLAB artifact has 13
+168 focused assertions. The Tier D supplemental Octave/QETLAB artifact has 13
 fixtures and 34 passing comparisons; its SHA-256 is
 `ad0cdc45077390fc1eb736fc7c7ff1ec41696c796a508b536774cb6e0020160a`.
 This evidence does not establish complete QETLAB parity or supported-platform
@@ -107,8 +107,9 @@ real-to-complex representation conversion, caller-state preservation, bounded
 TERM-to-KILL escalation, interrupt cleanup, response validation, and
 output/read limits. The core pipeline suite separately checks dependency
 absence. EntanglementDetection 0.2.2 currently resolves only on Julia 1.11 or
-later because of Ket 0.9 registry compatibility. The configured Julia
-1.11/1.12 Linux/macOS/Windows workflow has not run remotely.
+later because of Ket 0.9 registry compatibility. The six-job Julia 1.11/1.12
+Linux/macOS/Windows workflow passed at predecessor commit `6bf8d61`; an exact
+release-candidate rerun remains required.
 
 See [EntanglementDetection.jl extension](entanglement_detection_extension.md)
 for installation, execution, failure semantics, IPC trust boundaries, and

@@ -1,9 +1,10 @@
 # Mathematical conventions
 
-Status: Tier A decisions below have executable local coverage in the 301-test
-subsystem suite. Cross-platform and MATLAB differential validation remain
-pending. Channel conventions are prospective until M3. Named-basis
-normalizations not listed below remain unresolved.
+Status: Tier A decisions below have executable local coverage in the 345-test
+subsystem suite. Channel conventions have Kraus/Choi/superoperator round-trip
+and physicality coverage in the 177-test Tier C suite. Exact-candidate
+cross-platform and authoritative MATLAB validation remain pending.
+Named-basis normalizations not listed below remain unresolved.
 
 ## Subsystems and indices
 
@@ -25,6 +26,11 @@ Dimension entries must be positive integers whose product matches the relevant
 vector length or matrix dimension. Repeated, zero, negative, or out-of-range
 subsystem labels are errors. Whether an API canonicalizes unsorted unique labels
 or preserves their order must be documented per operation.
+
+Native positional kernels require axes that begin at one. Offset or otherwise
+non-one-based arrays are rejected explicitly before subsystem, channel, state,
+random-object, or matrix-analysis indexing begins. Compatibility methods that
+only copy a caller's array may preserve its axes without indexing it.
 
 ## Tensor products and vectorization
 
@@ -63,9 +69,9 @@ Use `adjoint` (`'`) for bra/ket and Hermitian-conjugation operations. Use
 the selected-index operation above. Complex inputs make this distinction
 observable and therefore mandatory in tests.
 
-## Choi matrices: prospective M3 convention
+## Choi matrices
 
-The proposed unnormalized Choi representation is
+The unnormalized Choi representation is
 
 ```math
 J(\Phi) = \sum_{i,j} |i\rangle\langle j| \otimes
@@ -78,8 +84,8 @@ with input factor first and output factor second. Under this convention:
 - `tr(J) = d_input` for a trace-preserving channel;
 - conversions must state input and output dimensions explicitly.
 
-This is not a verified public channel contract until Kraus, Choi, and
-superoperator round-trip and physicality tests pass.
+Kraus, Choi, and superoperator round-trip and physicality tests exercise this
+public contract for the implemented Tier C scope.
 
 ## Normalization and tolerance
 

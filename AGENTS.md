@@ -7,10 +7,12 @@ in this repository. Read it together with
 
 ## Project state
 
-`QuantumEntanglementTools` is a pre-alpha Julia package intended to become an
-idiomatic, independently maintained successor to selected QETLAB functionality.
-The public API, upstream inventory, and validation baseline are not complete.
-Never infer completeness from a file existing or a symbol being exported.
+`QuantumEntanglementTools` is preparing an experimental `v0.1.0` release of a
+scoped Julia API for selected quantum-information and entanglement operations.
+The upstream inventory and QETLAB parity sweep are not complete. Never infer
+completeness from a file existing or a symbol being exported, and do not widen
+the release scope beyond functions backed by the provenance, test, and
+documentation ledgers.
 
 The package name is provisional. It is intentionally neutral and must not be
 described as an official QETLAB project.
@@ -72,6 +74,7 @@ Run the smallest relevant test while iterating, then the full applicable checks:
 ```sh
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 julia --startup-file=no --project=. tutorials/runtests.jl
+julia --startup-file=no --project=. scripts/check_release.jl
 julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 julia --project=docs docs/make.jl
 julia --project=benchmark benchmark/benchmarks.jl --quick --no-save

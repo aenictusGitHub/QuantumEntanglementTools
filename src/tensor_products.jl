@@ -21,6 +21,10 @@ function tensor_product(
     remaining_factors::Union{AbstractVector,AbstractMatrix}...;
     copies=nothing,
 )
+    Base.require_one_based_indexing(first_factor)
+    for factor in remaining_factors
+        Base.require_one_based_indexing(factor)
+    end
     if copies !== nothing
         isempty(remaining_factors) || throw(
             ArgumentError(
@@ -46,6 +50,7 @@ scalar multiplicative identity of `eltype(A)`, matching the empty tensor
 product convention.
 """
 function tensor_power(factor::Union{AbstractVector,AbstractMatrix}, copies::Integer)
+    Base.require_one_based_indexing(factor)
     count = _nonnegative_int(copies, "copies")
     count == 0 && return one(eltype(factor))
     result = copy(factor)
@@ -94,6 +99,7 @@ function kronecker_sum(
     end
 
     for (position, factor) in pairs(factors)
+        Base.require_one_based_indexing(factor)
         size(factor, 1) == size(factor, 2) || throw(
             DimensionMismatch(
                 "Kronecker-sum factor $position has size $(size(factor)); every factor must be square",
@@ -124,14 +130,20 @@ end
 
 function _tensor_sum_term_count(factor, position::Int)
     if factor isa AbstractMatrix
+        Base.require_one_based_indexing(factor)
         return size(factor, 2)
     elseif factor isa AbstractVector{<:Number}
+        Base.require_one_based_indexing(factor)
         return 1
     elseif factor isa Tuple || (factor isa AbstractVector && !(eltype(factor) <: Number))
+        factor isa AbstractVector && Base.require_one_based_indexing(factor)
         isempty(factor) &&
             throw(ArgumentError("factor $position contains no decomposition terms"))
         all(term -> term isa AbstractVector || term isa AbstractMatrix, factor) ||
             throw(ArgumentError("factor $position must contain only vectors or matrices"))
+        for term in factor
+            Base.require_one_based_indexing(term)
+        end
         return length(factor)
     end
     return throw(
@@ -163,6 +175,7 @@ function _tensor_sum_weights(weights, term_count::Int)
         )
         return (weights,)
     elseif weights isa Tuple || weights isa AbstractVector
+        weights isa AbstractVector && Base.require_one_based_indexing(weights)
         length(weights) == term_count || throw(
             DimensionMismatch(
                 "weights has length $(length(weights)); expected $term_count"

@@ -18,7 +18,28 @@ struct SubsystemPermutationPlan{L<:SubsystemLayout,P<:Tuple,O<:SubsystemLayout}
     layout::L
     permutation::P
     output_layout::O
-    forward::Vector{Int}
+    forward::_ReadOnlyPlanVector
+
+    function SubsystemPermutationPlan(
+        token::_ValidatedConstructorToken,
+        layout::L,
+        permutation::P,
+        output_layout::O,
+        forward::Vector{Int},
+    ) where {L<:SubsystemLayout,P<:Tuple,O<:SubsystemLayout}
+        _require_validated_constructor_token(token)
+        length(permutation) == length(layout) ||
+            throw(ArgumentError("validated permutation length is inconsistent"))
+        output_layout.dims == Tuple(layout.dims[system] for system in permutation) ||
+            throw(ArgumentError("validated permutation output layout is inconsistent"))
+        length(forward) == layout.total_dimension ||
+            throw(ArgumentError("validated permutation lookup length is inconsistent"))
+        sort(forward) == collect(1:output_layout.total_dimension) ||
+            throw(ArgumentError("validated permutation lookup is not a bijection"))
+        return new{L,P,O}(
+            layout, permutation, output_layout, _read_only_plan_array(forward)
+        )
+    end
 end
 
 function SubsystemPermutationPlan(dims, permutation; inverse::Bool=false)
@@ -38,7 +59,9 @@ function SubsystemPermutationPlan(dims, permutation; inverse::Bool=false)
         )
         forward[old_index] = basis_to_linear(new_basis, output_layout)
     end
-    return SubsystemPermutationPlan(layout, checked_permutation, output_layout, forward)
+    return SubsystemPermutationPlan(
+        _VALIDATED_CONSTRUCTOR_TOKEN, layout, checked_permutation, output_layout, forward
+    )
 end
 
 function _permute_vector(vector::AbstractVector, plan::SubsystemPermutationPlan)
@@ -59,6 +82,7 @@ function _permute_vector(
 end
 
 function _permute_matrix_rows(matrix::AbstractMatrix, row_plan::SubsystemPermutationPlan)
+    Base.require_one_based_indexing(matrix)
     size(matrix, 1) == row_plan.layout.total_dimension || throw(
         DimensionMismatch(
             "matrix has $(size(matrix, 1)) rows; expected $(row_plan.layout.total_dimension) for row dims=$(row_plan.layout.dims)",
@@ -72,6 +96,7 @@ function _permute_matrix_rows(matrix::AbstractMatrix, row_plan::SubsystemPermuta
 end
 
 function _permute_matrix_rows(matrix::SparseMatrixCSC, row_plan::SubsystemPermutationPlan)
+    Base.require_one_based_indexing(matrix)
     size(matrix, 1) == row_plan.layout.total_dimension || throw(
         DimensionMismatch(
             "matrix has $(size(matrix, 1)) rows; expected $(row_plan.layout.total_dimension) for row dims=$(row_plan.layout.dims)",

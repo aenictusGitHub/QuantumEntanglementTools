@@ -9,15 +9,15 @@ production-backend claim.
 
 ## Summary
 
-The Tier A subsystem kernel passes 304/304 tests and the Tier B
-operators/states/random slice passes 941/941 tests locally on Julia 1.12.6.
-The Tier C channels/maps slice passes 154/154 focused package assertions, the
-Tier D measures/criteria slice passes 162/162, and the project-native
-entanglement pipeline passes 68/68. Tier E coherence passes 52/52, product
-analysis passes 175/175 native plus 52/52 compatibility assertions, matrix
-analysis passes 127/127 native plus 32/32 compatibility assertions, and matrix
-predicates pass 166/166 native plus 37/37 compatibility assertions. The
-integrated 2,318-assertion package corpus, comprising 2,270 core assertions
+The Tier A subsystem kernel passes 345/345 tests and the Tier B
+operators/states/random slice passes 954/954 tests locally on Julia 1.12.6.
+The Tier C channels/maps slice passes 177/177 focused package assertions, the
+Tier D measures/criteria slice passes 168/168, and the project-native
+entanglement pipeline passes 68/68. Tier E coherence passes 54/54, product
+analysis passes 179/179 native plus 52/52 compatibility assertions, matrix
+analysis passes 131/131 native plus 34/34 compatibility assertions, and matrix
+predicates pass 170/170 native plus 37/37 compatibility assertions. The
+integrated 2,417-assertion package corpus, comprising 2,369 core assertions
 plus 48 executable-tutorial assertions, passes on Julia 1.12.6 and the minimum
 supported Julia 1.10.11. The standalone tutorial runner also passes 48/48 on
 both Julia versions, and the public-API/provenance gate passes over 214 public
@@ -28,14 +28,17 @@ Julia 1.12.6. Its isolated dependency environment has an effective Julia 1.11
 resolver floor because compatible Ket 0.9 releases require Julia 1.11; this
 does not raise the core package's Julia 1.10 minimum. Every upstream candidate
 conclusion remains `unknown` and uncertified at the package boundary. This
-establishes a local development baseline, not complete QETLAB parity or a
-supported release. Remote core and optional-extension matrices have not yet
-produced cited evidence. MATLAB is absent.
+establishes an experimental release-candidate baseline, not complete QETLAB
+parity or a production-support claim. The predecessor core and documentation
+workflows passed at `485b6a3`, and the six-job optional-extension matrix passed
+at `6bf8d61`. Those runs do not validate the unpushed release-candidate tree;
+exact-candidate remote evidence and accepted Codecov ingestion remain pending.
+MATLAB is absent.
 
 | Validation class | Current evidence |
 |---|---|
 | Package load | Passed as part of `Pkg.test()` |
-| Core unit tests | Tier A 304/304, Tier B 941/941, Tier C 154/154, Tier D measures/criteria 162/162, native pipeline 68/68, Tier E coherence 52/52, product analysis 175/175 native plus 52/52 compatibility, matrix analysis 127/127 native plus 32/32 compatibility, and matrix predicates 166/166 native plus 37/37 compatibility pass locally; these 2,270 core assertions plus 48 tutorial assertions give an integrated total of 2,318/2,318 on Julia 1.12.6 and 1.10.11 |
+| Core unit tests | Tier A 345/345, Tier B 954/954, Tier C 177/177, Tier D measures/criteria 168/168, native pipeline 68/68, Tier E coherence 54/54, product analysis 179/179 native plus 52/52 compatibility, matrix analysis 131/131 native plus 34/34 compatibility, and matrix predicates 170/170 native plus 37/37 compatibility pass locally; these 2,369 core assertions plus 48 tutorial assertions give an integrated total of 2,417/2,417 on Julia 1.12.6 and 1.10.11 |
 | Executable tutorials | Five repository-native scripts run standalone, through a 48-assertion tutorial gate, from `Pkg.test()`, and as live Documenter examples; the standalone gate passes 48/48 on Julia 1.12.6 and 1.10.11 |
 | Tier A analytic tests | Bell reduction/PT spectrum, exact bases/projectors, tensor identities |
 | Tier B analytic tests | Operator-basis identities, named-state support/normalization, mixed-state PSD/trace/PPT properties |
@@ -54,35 +57,36 @@ produced cited evidence. MATLAB is absent.
 | Explicit RNG safety | Six Tier B native/wrapper random constructors and the compatibility random `PauliChannel(rng, Q)` form are seeded/property tested; regressions verify the global stream is unchanged |
 | MATLAB compatibility wrappers | Tier A, Tier B, supported Tier C, all 11 Tier D wrappers, six Tier E product entry points, four Tier E matrix entry points, and four structured matrix-predicate entry points pass locally; explicit partial statuses and structured-result differences remain documented |
 | Benchmark smoke | 42 quick cases ran locally, including three product-analysis and three matrix-analysis cases; no regression threshold or comparative performance claim |
-| Optional extension/load order | EntanglementDetection.jl 0.2.2 is integrated through a weak-dependency extension and an isolated child process; 125/125 focused assertions pass on Julia 1.12.6, including load order, lifecycle, failure, caller-state, timeout, IPC, and conservative-result checks. The compatible dependency graph resolves on Julia 1.11+; remote platform evidence is pending |
+| Optional extension/load order | EntanglementDetection.jl 0.2.2 is integrated through a weak-dependency extension and an isolated child process; 125/125 focused assertions pass on Julia 1.12.6, including load order, lifecycle, failure, caller-state, timeout, IPC, and conservative-result checks. The compatible dependency graph resolves on Julia 1.11+; the six-job Julia 1.11/1.12 Linux/macOS/Windows matrix passed at predecessor commit `6bf8d61`, with an exact-candidate rerun pending |
 | Optimization statuses | Pending |
 | Quality and API consistency | Aqua passes 11/11, all 25 representative JET probes pass, and the provenance consistency gate passes over 214 public bindings; the JET set does not cover matrix predicates |
-| Doctests/docs build | Strict Documenter build and live tutorial examples passed locally on Julia 1.12.6 and 1.10.11 |
-| Julia 1.10/stable/nightly CI | Local Julia 1.10.11 and 1.12.6 core suites pass; workflows are scaffolded, but no remote CI run or nightly result is cited. The optional extension's effective floor is Julia 1.11 |
-| Linux/macOS/Windows CI | Core and Julia 1.11/1.12 optional-extension workflows are scaffolded; no remote run is cited |
+| Doctests/docs build | Strict Documenter builds and live tutorial examples passed locally on Julia 1.12.6 and 1.10.11; the split native reference is about 157 KiB, below the 200 KiB hard limit, and a Julia 1.12.6 CI-mode pretty-URL build passed |
+| Julia 1.10/stable/nightly CI | Local Julia 1.10.11 and 1.12.6 core suites pass. The predecessor core workflow passed at `485b6a3`; the hardened exact-candidate workflow and nightly schedule still require remote runs. The optional extension's effective floor is Julia 1.11 |
+| Linux/macOS/Windows CI | The optional Julia 1.11/1.12 six-job platform matrix passed at `6bf8d61`. The expanded core Julia 1.10 macOS/Windows jobs and all exact-candidate workflows remain pending |
 
 ## Commands and results
 
 The historical 2,270-assertion core baseline was run on the exact staged source
 tree committed as implementation milestone
-`9b0d0d3b8177eded5b8743d250044d5428625b1b`. The 2026-07-29 symmetric-SAPPT
-example evidence was recorded on the integration worktree based on
-`3774e3db477352419b3bc0198047fc0834e51ccc`; the current corpus adds a fifth
-executable tutorial and 12 independently reported tutorial assertions without
-changing the historical core or oracle artifacts.
-The environment is recorded in `BUILD_ENVIRONMENT.md`:
+`9b0d0d3b8177eded5b8743d250044d5428625b1b`. The release audit is based on
+`485b6a3` and adds 99 regression assertions: 81 for constructor integrity,
+post-construction plan/Kraus storage safety, and non-one-based-array rejection;
+12 for the Brauer-state capped pre-allocation guards and compatibility
+keywords; and six for post-construction channel-representation invariants.
+It does not change the committed oracle artifacts. The environment is recorded
+in `BUILD_ENVIRONMENT.md`:
 
 ```sh
 julia --startup-file=no --project=. -e 'using Pkg; Pkg.test()'
 ```
 
 Results on Julia 1.12.6 and Julia 1.10.11: every package testset passed. The
-core corpus comprises Tier A `304`, Tier B `577 + 205 + 132 + 27 = 941`,
-Tier C `154`, Tier D measures/criteria
-`25 + 30 + 11 + 15 + 11 + 38 + 32 = 162`, the native pipeline `68`,
-coherence `52`, product `175 + 52`, matrix analysis `127 + 32`, and matrix
-predicates `166 + 37`, for `2,270 / 2,270`. The executable tutorial gate adds
-`48 / 48`, giving the integrated package result `2,318 / 2,318`.
+core corpus comprises Tier A `345`, Tier B `577 + 214 + 133 + 30 = 954`,
+Tier C `177`, Tier D measures/criteria
+`6 + 25 + 30 + 11 + 15 + 11 + 38 + 32 = 168`, the native pipeline `68`,
+coherence `54`, product `179 + 52`, matrix analysis `131 + 34`, and matrix
+predicates `170 + 37`, for `2,369 / 2,369`. The executable tutorial gate adds
+`48 / 48`, giving the integrated package result `2,417 / 2,417`.
 The Julia 1.10 invocation warned that the ignored development
 `Manifest.toml` had been resolved by Julia 1.12 and that project compatibility
 had changed; `Pkg.test()` still resolved its temporary test environment and
@@ -150,9 +154,9 @@ The adapter exposes backend output only as candidate evidence. Whether
 EntanglementDetection.jl suggests entangled, separable, or inconclusive, the
 package-owned report remains `status = :unknown` and `certified = false`.
 The isolated environment's compatible Ket 0.9 dependency makes Julia 1.11 the
-effective resolver floor. This report cites the Julia 1.12.6 focused run only;
-the configured Julia 1.11/1.12 Linux/macOS/Windows extension matrix has not yet
-run remotely.
+effective resolver floor. This report cites the Julia 1.12.6 focused local run;
+the Julia 1.11/1.12 Linux/macOS/Windows matrix passed at predecessor commit
+`6bf8d61`, while an exact release-candidate rerun remains required.
 
 The Tier C slice was also run directly through the package test environment:
 
@@ -161,7 +165,7 @@ julia --startup-file=no --project=. -e \
   'using Test, QuantumEntanglementTools; include("test/tier_c_channels_maps.jl")'
 ```
 
-Result: `Tier C channel/map representations | 154 passed / 154 total`.
+Result: `Tier C channel/map representations | 177 passed / 177 total`.
 Coverage includes the 24 native public map bindings/types and all 11 Tier C
 `MATLABCompat` wrappers. The supported native representation model permits
 unequal input/output Hilbert-space dimensions, but the compatibility layer
@@ -234,7 +238,7 @@ julia --startup-file=no --project=. -e \
   'using Test, QuantumEntanglementTools; include("test/tier_d_entanglement_pipeline.jl")'
 ```
 
-Results: `Tier D scalar measures and criteria | 162 passed / 162 total` and
+Results: `Tier D scalar measures and criteria | 168 passed / 168 total` and
 `Tier D entanglement pipeline | 68 passed / 68 total`. The first count includes
 all 11 Tier D `MATLABCompat` entry points. The pipeline treats PPT, realignment,
 and reduction passes as inconclusive unless a separately stated theorem is
@@ -284,15 +288,15 @@ julia --project=test/oracle test/oracle/compare_tier_e_matrix_analysis_oracle.jl
   test/oracle/fixtures/tier_e_matrix_analysis_octave_11_3_qetlab_d858961.json
 ```
 
-Product analysis passes 175/175 native and 52/52 compatibility assertions.
+Product analysis passes 179/179 native and 52/52 compatibility assertions.
 Its 14-fixture artifact passes 68/68 with SHA-256
 `ab6414c1a684141db74782616d4c18e79c8e6039aad53a695d8c723eed598d85`.
-Matrix analysis passes 127/127 native and 32/32 compatibility assertions. Its
+Matrix analysis passes 131/131 native and 34/34 compatibility assertions. Its
 22-fixture artifact passes 59/59 with SHA-256
 `e37685c262ce5982d10dd705cef8c172d49d9c55c89a0a67d4de729a5068f540`;
 17 fixtures are agreements and five preserve reviewed QETLAB discrepancies
 without turning them into native expected values. The earlier Tier E coherence
-slice passes 52/52 locally and 25/25 against six fixtures (SHA-256
+slice passes 54/54 locally and 25/25 against six fixtures (SHA-256
 `11bcaaee88fac8a595e9a4eff164432dbaa4e141cdd26554da2522e22981811a`).
 MATLAB was not run.
 
@@ -305,7 +309,7 @@ julia --startup-file=no --project=. -e \
 julia --startup-file=no --project=. scripts/validate_matrix_predicates.jl
 ```
 
-Results: 166/166 native and 37/37 compatibility assertions. An independent
+Results: 170/170 native and 37/37 compatibility assertions. An independent
 randomized check compared PSD outcomes with eigenspectra and all-minor outcomes
 with compound-matrix determinants for 130/130 assertions. Exact
 integer/rational, `Float32`, `Float64`, `BigFloat`, complex nonsingularity,
@@ -349,8 +353,27 @@ julia --project=docs docs/make.jl
 
 Results on Julia 1.12.6 and Julia 1.10.11: Documenter completed doctests,
 cross-references, strict exported-doc checks, live tutorial examples, and HTML
-rendering without errors. It emitted a non-failing size warning for the
-generated API page (about 179.4 KiB versus the 100 KiB warning threshold).
+rendering without errors. The API reference is split into native and
+compatibility pages; the native page is about 157 KiB, below the 200 KiB hard
+limit, and emits only a non-failing size warning. A Julia 1.12.6 CI-mode build
+also produced the expected pretty URLs and local code-generator assets.
+
+Release-specific local gates were also run:
+
+```sh
+julia --startup-file=no --project=. scripts/check_release.jl --allow-dirty
+julia +1.10 --startup-file=no --project=. scripts/check_release.jl --allow-dirty
+julia --startup-file=no --project=quality quality/format.jl
+julia --startup-file=no --project=. scripts/build_upstream_inventory.jl --check
+julia --startup-file=no --project=. scripts/check_public_api.jl
+```
+
+The dirty-worktree release preflight passed on Julia 1.12.6 and Julia 1.10.11.
+CFFConvert 2.0.0 validated `CITATION.cff` against schema 1.2.0; the offline
+upstream audit passed 10/10 pin and license checks; the inventory remained at
+163 files, 503 edges, and zero detected cycles; and the public API remained at
+214 provenance-covered bindings. Exact committed-archive and fresh-depot smoke
+checks are recorded only after the candidate commit exists.
 
 ## Acceptance rule
 

@@ -2,6 +2,28 @@ using LinearAlgebra
 using Random
 using SparseArrays
 
+struct _ZeroBasedVector{T,V<:AbstractVector{T}} <: AbstractVector{T}
+    storage::V
+end
+
+Base.size(vector::_ZeroBasedVector) = size(vector.storage)
+Base.axes(vector::_ZeroBasedVector) = (0:(length(vector.storage) - 1),)
+Base.IndexStyle(::Type{<:_ZeroBasedVector}) = IndexLinear()
+Base.getindex(vector::_ZeroBasedVector, index::Int) = vector.storage[index + 1]
+
+struct _ZeroBasedMatrix{T,M<:AbstractMatrix{T}} <: AbstractMatrix{T}
+    storage::M
+end
+
+Base.size(matrix::_ZeroBasedMatrix) = size(matrix.storage)
+function Base.axes(matrix::_ZeroBasedMatrix)
+    return (0:(size(matrix.storage, 1) - 1), 0:(size(matrix.storage, 2) - 1))
+end
+Base.IndexStyle(::Type{<:_ZeroBasedMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_ZeroBasedMatrix, row::Int, column::Int)
+    return matrix.storage[row + 1, column + 1]
+end
+
 function _direct_basis(index::Int, dims::Tuple)
     zero_based = index - 1
     return ntuple(length(dims)) do system
@@ -88,6 +110,10 @@ end
         @test_throws ArgumentError SubsystemLayout((2, true))
         @test_throws ArgumentError SubsystemLayout((2, 1.5))
         @test_throws ArgumentError SubsystemLayout((typemax(Int), 2))
+        @test_throws MethodError SubsystemLayout((2, 2), (2, 1), 4)
+        @test_throws MethodError SubsystemLayout(Val(:validated), (2, 2), (2, 1), 4)
+        forged_token = QuantumEntanglementTools._ValidatedConstructorToken()
+        @test_throws ArgumentError SubsystemLayout(forged_token, (2, 2), (2, 1), 4)
         @test_throws DimensionMismatch basis_to_linear((1,), (2, 3))
         @test_throws ArgumentError basis_to_linear((3, 1), (2, 3))
         @test_throws ArgumentError linear_to_basis(0, (2, 3))
@@ -141,6 +167,25 @@ end
         plan = SubsystemPermutationPlan(dims, permutation)
         permuted = permute_subsystems(vector, plan)
         @test plan.output_layout.dims == (2, 2, 3)
+        @test_throws Base.CanonicalIndexError setindex!(plan.forward, 1, 1)
+        @test permute_subsystems(vector, plan) == permuted
+        @test_throws MethodError SubsystemPermutationPlan(
+            plan.layout, plan.permutation, plan.output_layout, copy(plan.forward)
+        )
+        @test_throws MethodError SubsystemPermutationPlan(
+            Val(:validated),
+            plan.layout,
+            plan.permutation,
+            plan.output_layout,
+            fill(1, length(plan.forward)),
+        )
+        @test_throws ArgumentError SubsystemPermutationPlan(
+            QuantumEntanglementTools._ValidatedConstructorToken(),
+            plan.layout,
+            plan.permutation,
+            plan.output_layout,
+            fill(1, length(plan.forward)),
+        )
         for old_index in eachindex(vector)
             old_basis = linear_to_basis(old_index, dims)
             new_basis = Tuple(old_basis[system] for system in permutation)
@@ -233,7 +278,40 @@ end
         reduced = partial_trace(operator, plan)
         @test size(reduced) == (3, 3)
         @test tr(reduced) ≈ tr(operator)
+        @test_throws Base.CanonicalIndexError setindex!(plan.keep_index, 1, 1)
         @test partial_trace(operator, plan) == reduced
+        @test_throws MethodError PartialTracePlan(
+            plan.layout,
+            plan.trace_out,
+            plan.keep,
+            plan.output_layout,
+            copy(plan.keep_index),
+            copy(plan.trace_index),
+            plan.trace_dimension,
+            copy(plan.source_indices),
+        )
+        @test_throws MethodError PartialTracePlan(
+            Val(:validated),
+            plan.layout,
+            plan.trace_out,
+            plan.keep,
+            plan.output_layout,
+            fill(0, length(plan.keep_index)),
+            copy(plan.trace_index),
+            plan.trace_dimension,
+            copy(plan.source_indices),
+        )
+        @test_throws ArgumentError PartialTracePlan(
+            QuantumEntanglementTools._ValidatedConstructorToken(),
+            plan.layout,
+            plan.trace_out,
+            plan.keep,
+            plan.output_layout,
+            fill(0, length(plan.keep_index)),
+            copy(plan.trace_index),
+            plan.trace_dimension,
+            copy(plan.source_indices),
+        )
         exact_operator = reshape(collect(1:(prod(dims) ^ 2)), prod(dims), prod(dims))
         @test partial_trace(exact_operator, plan) ==
             _direct_partial_trace(exact_operator, dims, (1, 3))
@@ -277,6 +355,42 @@ end
         dims = (2, 3, 2)
         exact_matrix = reshape(collect(1:(prod(dims) ^ 2)), prod(dims), prod(dims))
         plan = PartialTransposePlan(dims, (3, 1))
+        @test_throws Base.CanonicalIndexError setindex!(plan.row_to_row, 1, 1)
+        @test_throws MethodError PartialTransposePlan(
+            plan.row_layout,
+            plan.column_layout,
+            plan.systems,
+            plan.output_row_layout,
+            plan.output_column_layout,
+            copy(plan.row_to_row),
+            copy(plan.row_to_column),
+            copy(plan.column_to_row),
+            copy(plan.column_to_column),
+        )
+        @test_throws MethodError PartialTransposePlan(
+            Val(:validated),
+            plan.row_layout,
+            plan.column_layout,
+            plan.systems,
+            plan.output_row_layout,
+            plan.output_column_layout,
+            fill(-1, length(plan.row_to_row)),
+            copy(plan.row_to_column),
+            copy(plan.column_to_row),
+            copy(plan.column_to_column),
+        )
+        @test_throws ArgumentError PartialTransposePlan(
+            QuantumEntanglementTools._ValidatedConstructorToken(),
+            plan.row_layout,
+            plan.column_layout,
+            plan.systems,
+            plan.output_row_layout,
+            plan.output_column_layout,
+            fill(-1, length(plan.row_to_row)),
+            copy(plan.row_to_column),
+            copy(plan.column_to_row),
+            copy(plan.column_to_column),
+        )
         twice = partial_transpose(partial_transpose(exact_matrix, plan), plan)
         @test twice == exact_matrix
         @test partial_transpose(exact_matrix, plan) ==
@@ -323,6 +437,60 @@ end
         matrix = reshape(Rational{Int}.(1:(prod(dims) ^ 2)), prod(dims), prod(dims))
         for systems in ((1,), (2, 1))
             plan = RealignmentPlan(dims; systems=systems)
+            @test_throws Base.CanonicalIndexError setindex!(plan.row_a_index, 1, 1)
+            @test_throws MethodError RealignmentPlan(
+                plan.row_layout,
+                plan.column_layout,
+                plan.systems,
+                plan.complement,
+                plan.row_a_layout,
+                plan.row_b_layout,
+                plan.column_a_layout,
+                plan.column_b_layout,
+                copy(plan.row_a_index),
+                copy(plan.row_b_index),
+                copy(plan.column_a_index),
+                copy(plan.column_b_index),
+                copy(plan.row_from_groups),
+                copy(plan.column_from_groups),
+                plan.output_size,
+            )
+            @test_throws MethodError RealignmentPlan(
+                Val(:validated),
+                plan.row_layout,
+                plan.column_layout,
+                plan.systems,
+                plan.complement,
+                plan.row_a_layout,
+                plan.row_b_layout,
+                plan.column_a_layout,
+                plan.column_b_layout,
+                fill(0, length(plan.row_a_index)),
+                copy(plan.row_b_index),
+                copy(plan.column_a_index),
+                copy(plan.column_b_index),
+                copy(plan.row_from_groups),
+                copy(plan.column_from_groups),
+                plan.output_size,
+            )
+            @test_throws ArgumentError RealignmentPlan(
+                QuantumEntanglementTools._ValidatedConstructorToken(),
+                plan.row_layout,
+                plan.column_layout,
+                plan.systems,
+                plan.complement,
+                plan.row_a_layout,
+                plan.row_b_layout,
+                plan.column_a_layout,
+                plan.column_b_layout,
+                fill(0, length(plan.row_a_index)),
+                copy(plan.row_b_index),
+                copy(plan.column_a_index),
+                copy(plan.column_b_index),
+                copy(plan.row_from_groups),
+                copy(plan.column_from_groups),
+                plan.output_size,
+            )
             aligned = realign(matrix, plan)
             @test inverse_realign(aligned, plan) == matrix
             @test inverse_realignment(aligned, plan) == matrix
@@ -348,6 +516,36 @@ end
         @test_throws ArgumentError RealignmentPlan((2, 3); systems=(1, 2))
         @test_throws ArgumentError RealignmentPlan((2, 3); systems=(1, 1))
         @test_throws DimensionMismatch inverse_realign(ones(3, 3), RealignmentPlan((2, 2)))
+    end
+
+    @testset "plan invariants and array axes" begin
+        vector = _ZeroBasedVector(collect(1:4))
+        matrix = _ZeroBasedMatrix(reshape(collect(1:16), 4, 4))
+        permutation_plan = SubsystemPermutationPlan((2, 2), (2, 1))
+        trace_plan = PartialTracePlan((2, 2), (2,))
+        transpose_plan = PartialTransposePlan((2, 2), (2,))
+        realignment_plan = RealignmentPlan((2, 2))
+
+        @test_throws ArgumentError permute_subsystems(vector, permutation_plan)
+        @test_throws ArgumentError permute_subsystems(matrix, permutation_plan)
+        @test_throws ArgumentError permute_subsystems(
+            matrix, permutation_plan; rows_only=true
+        )
+        @test_throws ArgumentError partial_trace(vector, trace_plan)
+        @test_throws ArgumentError partial_trace(matrix, trace_plan)
+        @test_throws ArgumentError partial_transpose(matrix, transpose_plan)
+        @test_throws ArgumentError realign(matrix, realignment_plan)
+        @test_throws ArgumentError inverse_realign(matrix, realignment_plan)
+        @test_throws ArgumentError tensor_product(vector, ones(2))
+        @test_throws ArgumentError tensor_power(vector, 2)
+        @test_throws ArgumentError kronecker_sum(matrix)
+        @test_throws ArgumentError tensor_sum(matrix, ones(2, 2))
+        @test_throws ArgumentError tensor_sum(
+            ones(2, 2), ones(2, 2); weights=_ZeroBasedVector([1, 1])
+        )
+        @test_throws ArgumentError tensor_sum(
+            _ZeroBasedVector([[1, 0], [0, 1]]), ([1, 0], [0, 1])
+        )
     end
 
     @testset "symmetric and antisymmetric projectors" begin
@@ -403,6 +601,9 @@ end
         @test MATLABCompat.TensorSum(columns, columns) == tensor_sum(columns, columns)
         @test MATLABCompat.TensorSum([2, -1], columns, columns) ==
             tensor_sum(columns, columns; weights=[2, -1])
+        @test_throws ArgumentError MATLABCompat.TensorSum(
+            _ZeroBasedVector([2, -1]), columns, columns
+        )
         @test MATLABCompat.KroneckerSum(A, B) == kronecker_sum(A, B)
         @test MATLABCompat.KroneckerSum(A, 2) == kronecker_sum(A; copies=2)
 
@@ -416,6 +617,9 @@ end
         @test MATLABCompat.PermuteSystems(rectangular, (2, 1), dim_matrix, 1) ==
             permute_subsystems(
             rectangular, SubsystemPermutationPlan((2, 3), (2, 1)); rows_only=true
+        )
+        @test_throws ArgumentError MATLABCompat.PermuteSystems(
+            rectangular, (2, 1), _ZeroBasedMatrix(dim_matrix), 1
         )
         @test MATLABCompat.Swap(vector, (1, 2), (2, 3)) ==
             swap_subsystems(vector, (2, 3), 1, 2)
@@ -444,6 +648,9 @@ end
         bell_row = transpose(bell)
         @test MATLABCompat.PartialTrace(bell_row, 2, (2, 2), -1) ≈
             partial_trace(bell, (2, 2); trace_out=2)
+        @test_throws ArgumentError MATLABCompat.PartialTrace(
+            _ZeroBasedMatrix(reshape(bell, 1, :)), 2, (2, 2), -1
+        )
         @test MATLABCompat.PartialTranspose(bell_density, 2, (2, 2)) ==
             partial_transpose(bell_density, (2, 2); systems=2)
         rectangular_pt = MATLABCompat.PartialTranspose(rectangular, 1, dim_matrix)

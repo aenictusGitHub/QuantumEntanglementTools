@@ -5,6 +5,53 @@ using SparseArrays
 const QET = QuantumEntanglementTools
 const CompatC = QuantumEntanglementTools.MATLABCompat
 
+struct _TierCZeroBasedVector{T,V<:AbstractVector{T}} <: AbstractVector{T}
+    storage::V
+end
+
+Base.size(vector::_TierCZeroBasedVector) = size(vector.storage)
+Base.axes(vector::_TierCZeroBasedVector) = (0:(length(vector.storage) - 1),)
+Base.IndexStyle(::Type{<:_TierCZeroBasedVector}) = IndexLinear()
+Base.getindex(vector::_TierCZeroBasedVector, index::Int) = vector.storage[index + 1]
+
+struct _TierCZeroBasedMatrix{T,M<:AbstractMatrix{T}} <: AbstractMatrix{T}
+    storage::M
+end
+
+Base.size(matrix::_TierCZeroBasedMatrix) = size(matrix.storage)
+function Base.axes(matrix::_TierCZeroBasedMatrix)
+    return (0:(size(matrix.storage, 1) - 1), 0:(size(matrix.storage, 2) - 1))
+end
+Base.IndexStyle(::Type{<:_TierCZeroBasedMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_TierCZeroBasedMatrix, row::Int, column::Int)
+    return matrix.storage[row + 1, column + 1]
+end
+
+mutable struct _TierCMutableMatrix{T} <: AbstractMatrix{T}
+    storage::Matrix{T}
+    rows::Int
+    columns::Int
+    one_based::Bool
+end
+
+Base.size(matrix::_TierCMutableMatrix) = (matrix.rows, matrix.columns)
+function Base.axes(matrix::_TierCMutableMatrix)
+    if matrix.one_based
+        return (Base.OneTo(matrix.rows), Base.OneTo(matrix.columns))
+    end
+    return (0:(matrix.rows - 1), 0:(matrix.columns - 1))
+end
+Base.IndexStyle(::Type{<:_TierCMutableMatrix}) = IndexCartesian()
+function Base.getindex(matrix::_TierCMutableMatrix, row::Int, column::Int)
+    shift = matrix.one_based ? 0 : 1
+    return matrix.storage[row + shift, column + shift]
+end
+function Base.copy(matrix::_TierCMutableMatrix)
+    return _TierCMutableMatrix(
+        copy(matrix.storage), matrix.rows, matrix.columns, matrix.one_based
+    )
+end
+
 @testset "Tier C channel/map representations" begin
     @testset "validated representation constructors" begin
         identity_kraus = QET.KrausRepresentation([[1.0 0.0; 0.0 1.0]])
@@ -16,6 +63,9 @@ const CompatC = QuantumEntanglementTools.MATLABCompat
         copied = QET.KrausRepresentation([source])
         source[1, 1] = 7
         @test copied.operators[1][1, 1] == 1
+        @test_throws Base.CanonicalIndexError setindex!(copied.operators, ones(1, 1), 1)
+        @test size(copied.operators[1]) == (2, 2)
+        @test QET.output_dimension(QET.complementary_channel(copied)) == 1
 
         sparse_kraus = QET.KrausRepresentation([sparse([1.0 0.0; 0.0 1.0])])
         @test issparse(sparse_kraus.operators[1])
@@ -36,9 +86,71 @@ const CompatC = QuantumEntanglementTools.MATLABCompat
         @test_throws DimensionMismatch QET.SuperoperatorRepresentation(ones(4, 9), 2, 2)
         @test_throws ArgumentError QET.SuperoperatorRepresentation(ones(3, 4))
 
+        forged_token = QET._ValidatedConstructorToken()
+        invalid_kraus = [ones(1, 1)]
+        @test_throws MethodError QET.KrausRepresentation{Float64,typeof(invalid_kraus)}(
+            Val(:validated), invalid_kraus, 2, 2
+        )
+        @test_throws ArgumentError QET.KrausRepresentation{Float64,typeof(invalid_kraus)}(
+            forged_token, invalid_kraus, 2, 2
+        )
+        invalid_matrix = ones(1, 1)
+        @test_throws MethodError QET.ChoiRepresentation{Float64,typeof(invalid_matrix)}(
+            Val(:validated), invalid_matrix, 2, 2
+        )
+        @test_throws ArgumentError QET.ChoiRepresentation{Float64,typeof(invalid_matrix)}(
+            forged_token, invalid_matrix, 2, 2
+        )
+        @test_throws MethodError QET.SuperoperatorRepresentation{
+            Float64,typeof(invalid_matrix)
+        }(
+            Val(:validated), invalid_matrix, 2, 2
+        )
+        @test_throws ArgumentError QET.SuperoperatorRepresentation{
+            Float64,typeof(invalid_matrix)
+        }(
+            forged_token, invalid_matrix, 2, 2
+        )
+
+        zero_based_matrix = _TierCZeroBasedMatrix(Matrix{Float64}(I, 4, 4))
+        @test_throws ArgumentError QET.ChoiRepresentation(zero_based_matrix)
+        @test_throws ArgumentError QET.SuperoperatorRepresentation(zero_based_matrix)
+        @test_throws ArgumentError QET.KrausRepresentation([
+            _TierCZeroBasedMatrix(Matrix{Float64}(I, 2, 2))
+        ])
+
         rectangular_super = QET.SuperoperatorRepresentation(zeros(9, 4))
         @test QET.input_dimension(rectangular_super) == 2
         @test QET.output_dimension(rectangular_super) == 3
+
+        mutable_choi = QET.ChoiRepresentation(
+            _TierCMutableMatrix(Matrix{Float64}(I, 4, 4), 4, 4, true)
+        )
+        mutable_choi.matrix.rows = 3
+        @test_throws DimensionMismatch QET.superoperator_representation(mutable_choi)
+
+        mutable_superoperator = QET.SuperoperatorRepresentation(
+            _TierCMutableMatrix(Matrix{Float64}(I, 4, 4), 4, 4, true)
+        )
+        mutable_superoperator.matrix.one_based = false
+        @test_throws ArgumentError QET.choi_representation(mutable_superoperator)
+
+        mutable_kraus = QET.KrausRepresentation([
+            _TierCMutableMatrix(Matrix{Float64}(I, 2, 2), 2, 2, true)
+        ])
+        mutable_kraus.operators[1].one_based = false
+        @test_throws ArgumentError QET.apply_channel(
+            Matrix{Float64}(I, 2, 2), mutable_kraus
+        )
+        @test_throws ArgumentError QET.is_completely_positive(mutable_kraus)
+
+        nonfinite_choi = QET.ChoiRepresentation(Matrix{Float64}(I, 4, 4))
+        nonfinite_choi.matrix[1, 1] = NaN
+        @test_throws ArgumentError QET.superoperator_representation(nonfinite_choi)
+
+        nonfinite_kraus = QET.KrausRepresentation([Matrix{Float64}(I, 2, 2)])
+        nonfinite_kraus.operators[1][1, 1] = NaN
+        @test_throws ArgumentError QET.is_completely_positive(nonfinite_kraus)
     end
 
     @testset "Kraus, Choi, and superoperator round trips" begin
@@ -81,6 +193,9 @@ const CompatC = QuantumEntanglementTools.MATLABCompat
 
         @test_throws DimensionMismatch QET.apply_channel(ones(3, 3), kraus)
         @test_throws ArgumentError QET.apply_channel(fill(NaN, 2, 2), kraus)
+        @test_throws ArgumentError QET.apply_channel(
+            _TierCZeroBasedMatrix(Matrix{Float64}(I, 2, 2)), kraus
+        )
 
         zero_map = QET.ChoiRepresentation(zeros(4, 4))
         zero_kraus = QET.kraus_representation(zero_map)
@@ -207,6 +322,9 @@ const CompatC = QuantumEntanglementTools.MATLABCompat
         @test_throws ArgumentError QET.pauli_channel([0.5, 0.5, 0.0, NaN])
         @test QET.is_trace_preserving(QET.pauli_channel(Real[1.0, 0.0, 0.0, 0.0]))
         @test_throws ArgumentError QET.pauli_channel(ComplexF64[1, 0, 0, 0])
+        @test_throws ArgumentError QET.pauli_channel(
+            _TierCZeroBasedVector([1.0, 0.0, 0.0, 0.0])
+        )
     end
 
     @testset "dual, complementary, and partial maps" begin
@@ -370,5 +488,14 @@ const CompatC = QuantumEntanglementTools.MATLABCompat
             CompatC.ChoiMatrix(rectangular), (2, 2)
         )
         @test_throws ArgumentError CompatC.PartialMap(product, raw_dephasing, 2, [2 2; 1 4])
+        @test_throws ArgumentError CompatC.KrausOperators(
+            raw_choi, _TierCZeroBasedMatrix([2 2; 2 2])
+        )
+        @test_throws ArgumentError CompatC.PartialMap(
+            product, raw_dephasing, 2, _TierCZeroBasedMatrix([2 2; 2 2])
+        )
+        @test_throws ArgumentError CompatC.PauliChannel(
+            _TierCZeroBasedVector([1.0, 0.0, 0.0, 0.0])
+        )
     end
 end

@@ -21,15 +21,14 @@ DocMeta.setdocmeta!(
 makedocs(;
     sitename="QuantumEntanglementTools.jl",
     modules=[QuantumEntanglementTools],
-    remotes=nothing,
+    repo=Documenter.Remotes.GitHub("aenictusGitHub", "QuantumEntanglementTools"),
     checkdocs=:exports,
     doctest=true,
     warnonly=false,
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
         collapselevel=1,
-        edit_link=nothing,
-        repolink=nothing,
+        edit_link="main",
         assets=[
             Documenter.asset("assets/qet_code_generator.css"; class=:css, islocal=true),
             Documenter.asset(
@@ -69,6 +68,10 @@ makedocs(;
         "External integrations" => "integrating_external_packages.md",
         "Maintaining upstream parity" => "maintaining_upstream_parity.md",
         "Executable tutorials" => "tutorials.md",
-        "API reference" => "api/index.md",
+        "API reference" => [
+            "Overview" => "api/index.md",
+            "Julia-native exports" => "api/native.md",
+            "MATLAB compatibility" => "api/matlab_compat.md",
+        ],
     ],
 )

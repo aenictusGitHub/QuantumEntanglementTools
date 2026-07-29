@@ -34,8 +34,8 @@ an ambiguous convention in an earlier layer.
 The architecture decision records are maintained in `docs/adr/`. In particular:
 
 - ADR 0002 selects standard arrays and one top-level module.
-- ADR 0003 fixes Tier A subsystem/indexing behavior and records prospective
-  channel conventions.
+- ADR 0003 fixes subsystem/indexing and implemented channel-representation
+  conventions.
 - ADR 0004 defines the optional-extension boundary.
 - ADR 0005 deliberately leaves the optimization modeling layer proposed until
   representative prototypes are evaluated.

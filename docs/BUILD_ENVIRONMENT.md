@@ -25,7 +25,7 @@ that every tool below has successfully built, tested, or validated the package.
 | Julia threads | 1 default, 1 interactive, 1 GC |
 | BLAS configuration | `LBTConfig([ILP64] libopenblas64_.dylib)` |
 
-The core project policy minimum is Julia 1.10. The full 2,318-assertion local
+The core project policy minimum is Julia 1.10. The full 2,417-assertion local
 package corpus passes on Julia 1.12.6 and Julia 1.10.11, but these two local
 versions do not substitute for remote CI on supported platforms or multiple
 thread counts.
@@ -46,7 +46,7 @@ Julia 1.10.
 | Graphviz `dot` | 12.2.1 | Present; docs diagrams not yet validated |
 | GNU Octave | 11.3.0, x86_64 build | Present; not accepted as a QETLAB oracle by default |
 | MATLAB | — | Not found on `PATH` |
-| EntanglementDetection.jl | Exact 0.2.2 in an isolated test environment | 125/125 focused assertions pass on Julia 1.12.6; remote Julia 1.11/1.12 platform matrix pending |
+| EntanglementDetection.jl | Exact 0.2.2 in an isolated test environment | 125/125 focused assertions pass on Julia 1.12.6; the remote Julia 1.11/1.12 Linux/macOS/Windows matrix passed at `6bf8d61`, and an exact release-candidate rerun is pending |
 | GLPK/`glpsol` | 5.0 | Present; not an SDP solver and not validated for package APIs |
 | Other solver executables checked | SCS, CSDP, SDPA, Mosek, Gurobi, CBC, HiGHS, Ipopt | Not found on `PATH` |
 
@@ -60,7 +60,7 @@ test environment.
 
 ## Local checks recorded
 
-- Package: the integrated 2,318-assertion corpus, comprising 2,270 core
+- Package: the integrated 2,417-assertion corpus, comprising 2,369 core
   assertions plus 48 executable-tutorial assertions, passed under Julia 1.12.6
   and Julia 1.10.11.
 - Executable tutorials: the standalone 48-assertion runner passed under Julia
@@ -69,16 +69,30 @@ test environment.
 - Optional integration: the exact EntanglementDetection.jl 0.2.2 focused suite
   passed 125/125 on Julia 1.12.6. Searches use child-process isolation, bounded
   reads, and explicit cleanup; backend candidates always remain `unknown` and
-  uncertified. The configured remote platform matrix has not run.
+  uncertified. The configured six-job remote platform matrix passed at
+  predecessor commit `6bf8d61`; the exact release-candidate SHA still needs a
+  remote rerun.
 - Documentation: strict Documenter build, doctests, and live tutorial examples
-  passed on Julia 1.12.6 and Julia 1.10.11 with Documenter 1.17.0; the generated
-  API page emitted only a non-failing size warning.
+  passed on Julia 1.12.6 and Julia 1.10.11 with Documenter 1.17.0. The API
+  reference is split into native and compatibility pages; the 157 KiB native
+  page remains below the 200 KiB hard limit and emits only a non-failing size
+  warning. A Julia 1.12.6 CI-mode build also produced the expected pretty-URL
+  generator page and local assets.
+- Code generator: JavaScriptCore passed 71 deterministic assertions and emitted
+  a generated Julia smoke program whose nine state-family branches passed on
+  Julia 1.12.6 and Julia 1.10.11.
 - Quality: Aqua passed 11/11 and 25 representative JET probes passed. Those
   probes do not yet include the matrix-predicate slice.
 - API consistency: the public-API/provenance gate passed over 214 public
   bindings.
 - Benchmark smoke: all 42 cases ran with BenchmarkTools 1.8.0; see
   `BENCHMARK_REPORT.md`. This is not a comparative or release baseline.
+- Release integrity: the working-tree preflight passed on Julia 1.12.6 and
+  Julia 1.10.11; exact committed-archive smoke remains pending until the local
+  candidate commit exists. CFFConvert 2.0.0 validates `CITATION.cff` against
+  schema 1.2.0. The offline upstream audit reports 10/10 pin/license checks
+  clean, and a scoped history scan found no common token or private-key
+  signatures.
 
 ## Reproduction metadata to capture
 

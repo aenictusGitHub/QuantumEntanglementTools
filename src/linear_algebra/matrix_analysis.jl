@@ -42,6 +42,7 @@ function _reject_sparse_matrix_analysis_input(array, function_name::AbstractStri
 end
 
 function _majorization_values(vector::AbstractVector)
+    Base.require_one_based_indexing(vector)
     _reject_sparse_matrix_analysis_input(vector, "majorizes")
     values = collect(vector)
     for (index, value) in pairs(values)
@@ -57,6 +58,7 @@ function _majorization_values(vector::AbstractVector)
 end
 
 function _majorization_values(matrix::AbstractMatrix)
+    Base.require_one_based_indexing(matrix)
     _reject_sparse_matrix_analysis_input(matrix, "majorizes")
     for (index, value) in pairs(matrix)
         value isa Number ||
@@ -197,6 +199,7 @@ function _matrix_analysis_numeric_type(array)
 end
 
 function _matrix_analysis_require_finite(array, operation::AbstractString)
+    Base.require_one_based_indexing(array)
     for (index, value) in pairs(array)
         value isa Number || throw(
             ArgumentError("$operation entry $index must be numeric; got $(repr(value))")

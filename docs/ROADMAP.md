@@ -41,9 +41,10 @@ solver extensions.
 Maintain the exact-version, load-order-safe adapter through a fresh child
 process. The local 0.2.2 gate now covers caller RNG, stdout/logger, BLAS state,
 timeouts, forced termination, interrupts, malformed responses, and conservative
-candidate translation. Completion still requires the configured Julia
-1.11/1.12 Linux/macOS/Windows workflow to pass remotely; every future backend
-version must be re-audited before widening compatibility.
+candidate translation. The Julia 1.11/1.12 Linux/macOS/Windows matrix passed at
+predecessor commit `6bf8d61`; completion still requires an exact-candidate
+rerun. Every future backend version must be re-audited before widening
+compatibility.
 
 ## M7 — QETLAB completeness sweep
 
