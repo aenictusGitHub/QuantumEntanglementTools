@@ -5,6 +5,16 @@ EntanglementDetection.jl adapter is available for exact version 0.2.2 as a
 locally validated heuristic candidate generator; it is not a source of
 package-certified conclusions.
 
+At pinned QETLAB revision
+`d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
+checker records 127/127 public rows with final `verified` status, 36/36 internal
+helpers with terminal dispositions, no queued rows, and 458 exported bindings
+with matching provenance entries. The direct local full corpus passes
+8,117/8,117 assertions, including 48 executable-tutorial assertions, on Julia
+1.12.6 and the installed Julia 1.10.0. This evidence does not establish
+MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,
+API stability, release approval, or human review.
+
 ## Result semantics
 
 High-level analysis uses package-owned `EntanglementReport` values, with one
@@ -27,9 +37,12 @@ boundary, numerical tolerance, and optional witness. A satisfied necessary
 condition is not silently relabeled `separable`.
 
 For practical constructions and complete output examples, start with
-[Separability by example](separability_examples.md). There is intentionally no
-general Boolean `is_separable`; use the structured status and certification
-fields instead.
+[Separability by example](separability_examples.md). The general density-matrix
+entry point `is_separable(rho, dims; ...)` is certificate-first: it always
+returns an `EntanglementReport` and never an unchecked Boolean. Use its
+structured status, certification flag, evidence, and ordered attempt history.
+The full strategy and resource contract is documented in
+[Separability and local discrimination](separability_optimization.md).
 
 ## Native pipeline
 
@@ -58,24 +71,32 @@ entanglement. Separability is certified only when the computed trailing
 coefficients are exactly zero; a tolerance-defined rank-one result with
 nonzero trailing coefficients remains `unknown`.
 
-The pipeline does not call `in_separable_ball`. That function is a separate
-sufficient test with its own `SeparableBallResult` statuses; invoke it
+The lower-level pipeline does not call `in_separable_ball`. That function is a
+separate sufficient test with its own `SeparableBallResult` statuses; invoke it
 explicitly when a density matrix may be close enough to the maximally mixed
-state.
+state. The composite `is_separable` API adds the documented deterministic,
+explicit-RNG, and optional-hierarchy strategies while retaining every
+certificate boundary and resource-limit outcome.
 
-These APIs are intentionally narrower than a general separability solver. They
-do not export or claim a complete replacement for QETLAB `IsSeparable`.
+This structured mapping completes the pinned public `IsSeparable` row; it is
+not a claim that the Julia result behaves like an unchecked MATLAB Boolean.
+`MATLABCompat.IsSeparable` returns a scalar only for a validated certificate
+and rejects an inconclusive scalar conversion.
 `MATLABCompat.IsPPT` is also intentionally tri-state: it accepts a finite
 Hermitian operator without requiring unit trace but returns `CriterionResult`
-rather than collapsing a numerical-boundary case to a Boolean.
+rather than collapsing a numerical-boundary case to a Boolean. A nonzero
+Hermiticity residual inside the requested tolerance returns `unknown` with
+residual evidence; the wrapper never substitutes the Hermitian part.
 
-The native pipeline passes 68 focused assertions. The underlying scalar
-measures and criteria, including all 11 Tier D compatibility wrappers, pass
-168 focused assertions. The Tier D supplemental Octave/QETLAB artifact has 13
-fixtures and 34 passing comparisons; its SHA-256 is
+The focused separability and local-discrimination suites pass 211/211 native,
+42/42 compatibility, and 72/72 optional Hypatia/SCS extension assertions on
+Julia 1.12.6 and the installed Julia 1.10.0. The source-free QETLAB
+comparators pass 26/26 separability and 18/18 local-discrimination assertions
+on both Julia lines. The earlier Tier D supplemental Octave/QETLAB artifact
+has 13 fixtures and 34 passing comparisons; its SHA-256 is
 `ad0cdc45077390fc1eb736fc7c7ff1ec41696c796a508b536774cb6e0020160a`.
-This evidence does not establish complete QETLAB parity or supported-platform
-coverage.
+These oracle results are function-specific and do not establish general MATLAB
+parity.
 
 ## EntanglementDetection.jl 0.2.2
 
@@ -108,8 +129,8 @@ TERM-to-KILL escalation, interrupt cleanup, response validation, and
 output/read limits. The core pipeline suite separately checks dependency
 absence. EntanglementDetection 0.2.2 currently resolves only on Julia 1.11 or
 later because of Ket 0.9 registry compatibility. The six-job Julia 1.11/1.12
-Linux/macOS/Windows workflow passed at predecessor commit `6bf8d61`; an exact
-release-candidate rerun remains required.
+Linux/macOS/Windows workflow passed at predecessor commit `6bf8d61`; a rerun
+on the exact current commit remains required.
 
 See [EntanglementDetection.jl extension](entanglement_detection_extension.md)
 for installation, execution, failure semantics, IPC trust boundaries, and

@@ -19,10 +19,29 @@ Install Julia 1.10 or later, then instantiate and test from the repository root:
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 ```
 
-The current full corpus contains 2,417 assertions—2,369 core plus 48
-executable-tutorial assertions—and has passed locally on Julia 1.12.6 and Julia
-1.10.11. Those runs are development evidence, not a substitute for
-supported-platform CI or MATLAB validation.
+<!-- qetlab-current-claims: begin -->
+
+The pinned inventory revision is
+`d8589610f00cff106537268dee2e2a1153f3a601`. Its strict static ledger reports
+127/127 public rows are verified with the required final status, 36/36 internal
+helpers have terminal dispositions, the completion queue contains 0 public
+rows, 0 required internal helpers remain, and 0 static completion failures.
+The public API has 458 public bindings with matching provenance entries.
+
+The 8,117-assertion full package suite passed 8,117/8,117, including 48
+executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
+The full optional JuMP suite passed 836/836 on both Julia lines. The
+EntanglementDetection.jl extension passed 125/125 focused assertions on the
+current compatible Julia. All 114 declared quick benchmark cases completed
+locally with `--no-save`; this is execution smoke evidence, not a performance
+baseline.
+
+These runs and static checks are development evidence, not QETLAB/MATLAB
+parity, supported-platform remote CI, comparative performance, API stability,
+release approval, or non-delegable human review. No version has been tagged or
+published.
+
+<!-- qetlab-current-claims: end -->
 
 Run the tutorials independently with:
 
@@ -37,7 +56,8 @@ julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.in
 julia --project=docs docs/make.jl
 ```
 
-Run the 42-case non-recording quick benchmark smoke suite with:
+The benchmark source declares 114 quick cases. Run its non-recording smoke
+command with:
 
 ```sh
 julia --project=benchmark benchmark/benchmarks.jl --quick --no-save
@@ -45,7 +65,20 @@ julia --project=benchmark benchmark/benchmarks.jl --quick --no-save
 
 Omit `--no-save` only when you intend to keep a local raw artifact under the
 ignored `benchmark/results/local/` directory. Do not present planned commands
-as passing checks or the smoke suite as a performance comparison.
+as passing checks, the declared count as execution evidence, or the smoke suite
+as a performance comparison.
+
+Set up and run the optional JuMP extension suite from the repository root with:
+
+```sh
+julia --project=test/extensions/jump_optimization -e '
+    using Pkg
+    Pkg.develop(PackageSpec(path=pwd()))
+    Pkg.instantiate()
+'
+julia --startup-file=no --project=test/extensions/jump_optimization \
+  test/extensions/jump_optimization/runtests.jl
+```
 
 Set up and run the optional EntanglementDetection.jl 0.2.2 extension tests from
 the repository root with:
@@ -69,8 +102,8 @@ responsible for source integrity. Run this optional environment on Julia 1.11
 or later; its Ket 0.9 dependency does not currently resolve on the core
 package's Julia 1.10 minimum. The dedicated extension suite passes 125/125
 locally on Julia 1.12.6. The six-job Julia 1.11/1.12 Linux/macOS/Windows
-workflow passed at predecessor commit `6bf8d61`; an exact release-candidate
-rerun remains required.
+workflow passed at predecessor commit `6bf8d61`; a rerun on the exact current
+commit remains required.
 
 Run the package-quality and ledger checks with:
 
@@ -82,11 +115,9 @@ julia --project=. scripts/check_public_api.jl
 julia --project=. scripts/validate_matrix_predicates.jl
 ```
 
-The current quality run reports Aqua 11/11 and 25 representative JET probes.
-Those JET probes do not cover the matrix-predicate functions. All 163
-inventory rows now have source-reviewed dispositions. Of the 127 public rows,
-63 are implemented, 15 partial, 19 deferred, and 30 blocked with explicit
-reasons; the 36 private helpers have separate internal dispositions.
+The strict static completion ledger is a separate gate from quality, oracle,
+documentation, release, and supported-platform CI checks. Record each command
+as passing only after it has run against the exact tree under review.
 
 Run the optional development oracle against a pinned QETLAB checkout with:
 

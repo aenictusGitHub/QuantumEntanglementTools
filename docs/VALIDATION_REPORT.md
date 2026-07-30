@@ -1,13 +1,55 @@
 # Validation report
 
-Evidence date: 2026-07-29.
+Evidence date: 2026-07-30.
 
-Status: Tier A and the reviewed Tier B--Tier E slices plus the native
-entanglement pipeline, executable tutorials, and the isolated optional
-EntanglementDetection.jl adapter locally tested; no general parity or
-production-backend claim.
+Status: local completion and release-gate evidence for the uncommitted
+convergence worktree; no MATLAB parity, remote supported-platform, production
+backend, performance, or release-approval claim.
 
-## Summary
+## Current summary
+
+<!-- qetlab-current-claims: begin -->
+
+- The strict completion checker passes with 127/127 public rows verified with
+  final status, completion queue containing 0 public rows, 36/36 internal
+  helpers with terminal dispositions, 0 required helpers remaining, and 0
+  static completion failures.
+- The API checker matches 458 runtime exports to 458 provenance records.
+- The full package corpus passes 8,117/8,117 assertions, including 48 tutorial
+  assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
+- The standalone tutorials pass 48/48 and independent matrix-predicate
+  validation passes 130/130 on both installed Julia lines.
+- The complete JuMP/Hypatia/SCS environment passes 836/836 assertions on both
+  installed Julia lines. Numerical solver outcomes retain status, residual,
+  bound, and certificate metadata and are not automatically mathematical
+  certificates.
+- The EntanglementDetection.jl 0.2.2 adapter passes 125/125 assertions on Julia
+  1.12.6. Its candidate evidence remains conservatively `unknown`.
+- All 27 source-free oracle comparators pass 1,347/1,347 assertions on both
+  installed Julia lines, and every fixture SHA-256 is verified. These
+  function-specific Octave/QETLAB fixtures are supplemental evidence; MATLAB
+  was not run.
+- Aqua passes 11/11 and the representative JET set passes 25/25. The formatter
+  gate passes after applying the repository formatter.
+- All 114 declared quick benchmark cases completed with `--no-save`. This
+  execution smoke never constitutes a comparative-performance or
+  regression-baseline claim.
+- The dirty-worktree distribution preflight and an isolated fresh-depot archive
+  load smoke pass on both installed Julia lines. Dirty mode uses a temporary
+  Git index/object store and does not change the repository index; it is not
+  exact committed-tree release evidence.
+
+This evidence applies to a dirty local worktree based on
+`ec9094dad43a7531b16b1f1d282a490ccba0c543`. It is not exact committed-tree
+remote CI, API-stability evidence, release approval, or the maintainer's
+non-delegable review.
+
+<!-- qetlab-current-claims: end -->
+
+## Historical baseline summary (2026-07-29)
+
+The following section is retained as dated pre-convergence evidence. Its
+counts are superseded by the current summary above.
 
 The Tier A subsystem kernel passes 345/345 tests and the Tier B
 operators/states/random slice passes 954/954 tests locally on Julia 1.12.6.
@@ -64,7 +106,7 @@ MATLAB is absent.
 | Julia 1.10/stable/nightly CI | Local Julia 1.10.11 and 1.12.6 core suites pass. The predecessor core workflow passed at `485b6a3`; the hardened exact-candidate workflow and nightly schedule still require remote runs. The optional extension's effective floor is Julia 1.11 |
 | Linux/macOS/Windows CI | The optional Julia 1.11/1.12 six-job platform matrix passed at `6bf8d61`. The expanded core Julia 1.10 macOS/Windows jobs and all exact-candidate workflows remain pending |
 
-## Commands and results
+## Historical commands and results (2026-07-29)
 
 The historical 2,270-assertion core baseline was run on the exact staged source
 tree committed as implementation milestone
@@ -398,12 +440,19 @@ broader tolerance.
 
 ## Known gaps
 
-The authoritative QETLAB inventory contains 163 source-reviewed rows and none
-remains pending. Among its 127 public rows, 63 are marked implemented, 15 are
-explicitly partial, 19 are deferred, and 30 are blocked with explicit reasons;
-the 36 private helpers have separate internal dispositions. The project-native
-criteria and orchestration bindings mark only a conservative subset of QETLAB
-`IsSeparable`, not the complete entry point. Until every public row maps to
-function-level provenance, tests, and docs—or an intentionally maintained
-replacement/blocker—whole-project parity percentages would be misleading and
-are intentionally omitted. See `docs/INVENTORY_REVIEW.md`.
+The local static implementation ledger is complete, but broader release
+evidence is not:
+
+- MATLAB/CVX was not run, and Octave fixtures do not establish general MATLAB
+  equivalence.
+- Remote Linux/macOS/Windows CI and accepted Codecov ingestion have not run on
+  an exact commit containing this convergence work.
+- The 114-case quick benchmark is a smoke suite, not a reviewed regression
+  baseline or performance comparison.
+- The optional EntanglementDetection environment has an effective Julia 1.11
+  resolver floor and treats the trusted child worker as local IPC, not a
+  security boundary.
+- The worktree is uncommitted, so exact archive and fresh-depot release gates
+  cannot yet identify the final source state.
+- The maintainer's non-delegable mathematical, API, licensing, provenance, and
+  generated-change review remains open.

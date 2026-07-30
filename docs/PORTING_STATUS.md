@@ -1,6 +1,6 @@
 # Porting status
 
-Last updated: 2026-07-29.
+Last updated: 2026-07-30.
 
 This is the human-readable status summary. The generated upstream inventory is
 the authoritative function ledger once reviewed. A function is not complete
@@ -8,95 +8,135 @@ merely because a similarly named Julia method exists.
 
 ## Snapshot
 
+<!-- qetlab-current-claims: begin -->
+
 | Area | Evidence-based status |
 |---|---|
-| Repository/package shell | Present; experimental `v0.1.0` release candidate |
-| Neutral name audit | The 2026-07-28 local General snapshot (12,263 non-JLL names) has no exact case-insensitive name or UUID collision, and AutoMerge 1.0.0's similarity check passes; GitHub and JuliaHub checks remain provisional and must be rerun before public registration |
-| QETLAB pin | Inspected at `d8589610f00cff106537268dee2e2a1153f3a601` |
-| Raw QETLAB source count | 127 root `.m` files and 36 helper `.m` files |
-| Authoritative inventory | Generated (163 files, 503 dependency edges, no detected cycles); all 163 rows source-reviewed and zero pending |
-| Tier A native kernel | Implemented; 345/345 focused local tests pass on Julia 1.12.6 and Julia 1.10.11, including constructor-integrity and non-one-based-array rejection |
-| Tier A QETLAB entry-point mappings | 12 implemented and manually reviewed mappings |
-| Tier B operators/states/random | 22 complete mappings plus the scalar bipartite Werner path; 954/954 focused local tests pass, including capped pre-allocation guards and compatibility-keyword forwarding for Brauer-state combinatorics |
-| Tier B deferred scope | Multipartite Werner is partial; `RandomSuperoperator` and `RandomPPTState` are explicitly deferred and not exported |
-| Tier C channels/maps | 24 native public bindings and 11 `MATLABCompat` wrappers have 35 provenance rows; 177/177 focused local assertions pass, including representation-constructor and post-construction storage-invariant safety |
-| Tier C QETLAB entry-point mappings | Five channel/map constructors are implemented; six general-map entry points are partial because two-sided Kraus and/or rectangular row/column operator-space forms remain absent |
-| Tier D measures/criteria | 22 native measures/criteria bindings and 11 `MATLABCompat` wrappers are recorded; 168/168 focused local assertions pass |
-| Tier D native pipeline | 10 project-native orchestration exports are recorded; 68/68 certificate, tri-state, low-dimensional PPT, conservative pure-Schmidt, and failure-semantics assertions pass |
-| Tier D QETLAB entry-point mappings | Ten mappings are implemented; `Entropy` is partial because only the verified von Neumann `ALPHA=1` branch is exposed |
-| Tier E coherence | Three reviewed mappings are implemented; 54/54 focused local assertions and 25/25 supplemental fixture assertions pass |
-| Tier E product analysis | 10 native bindings and six `MATLABCompat` entry points are recorded; 179/179 native and 52/52 compatibility assertions pass |
-| Tier E product mappings | Four mappings are implemented and two are partial; the supplemental artifact passes 68/68 assertions over 14 fixtures |
-| Tier E matrix analysis | Four native bindings and four `MATLABCompat` entry points are recorded; 131/131 native and 34/34 compatibility assertions pass |
-| Tier E matrix mappings | Four mappings are implemented with native/compatibility distinctions for strong versus weak majorization and compound boundary shapes/errors; the supplemental artifact passes 59/59 assertions over 22 fixtures |
-| Tier E matrix predicates | Nine native bindings and four structured-result compatibility entry points pass 170/170 native and 37/37 compatibility assertions; `IsPSD` is partial because the pinned CVX symbolic branch is omitted; no MATLAB-family predicate oracle has been run |
-| Recorded full local package run | The integrated 2,417-assertion package corpus (2,369 core plus 48 executable tutorials) passes on Julia 1.12.6 and the minimum supported Julia 1.10.11 |
-| Exact local release archive | Candidate code commit `0b63359159e1c0c1527c8753f78b61940701eb25` passes the release checker and fresh-depot archive smoke on Julia 1.12.6 and Julia 1.10.11; the final documentation-only evidence `HEAD` was rerun on both versions |
-| Browser code generator | Original BSD-licensed documentation tool covers nine curated state families, six analysis/measure routes, guarded decomposable PPT witnesses, and the five-qubit published symmetric witness; 71 deterministic JavaScript assertions and all nine generated Julia branches pass locally on Julia 1.12.6 and 1.10.11. The GitHub source preview now shows artifact/local-build instructions instead of raw Documenter HTML, while the built site retains the interactive form |
-| Documentation math compatibility | All 110 inline spans in the documentation source use syntax rendered by both GitHub and Documenter; 49 fenced display equations are retained. A build-integrated checker rejects Documenter-only inline double backticks, unbalanced delimiters, unsupported `\operatorname`, table-breaking math pipes, and unclosed fences |
-| Rendered documentation delivery | The Documentation workflow builds and retains an authenticated `documentation` artifact for seven days; GitHub Pages is not configured. Enabling Pages for the private personal repository is a separate publication decision because the resulting Pages site would be public |
-| Reviewed public-row totals | 63 implemented, 15 partial, 19 deferred, 30 blocked with explicit reasons, and zero pending; the 36 private helpers have separate internal dispositions |
-| Upstream differential validation | Tier A: 13 Octave/QETLAB fixtures and 52 assertions pass; Tier B: 18 deterministic fixtures and 72 assertions pass; Tier C: 7 fixtures and 28 assertions pass; Tier D: 13 fixtures and 34 assertions pass; Tier E coherence: 6 fixtures and 25 assertions pass; Tier E product: 14 fixtures and 68 assertions pass; Tier E matrix: 22 fixtures and 59 assertions pass. MATLAB not run; Octave evidence is function-specific and supplemental |
-| Benchmark smoke | 42 quick cases ran locally, including three product-analysis and three matrix-analysis cases; not a regression baseline or comparative performance claim |
-| Native entanglement orchestration | Dependency-free certificate-first pipeline implemented; a satisfied necessary criterion remains `unknown` except for the exact `2×2`/`2×3` PPT theorem, and no full `IsSeparable` mapping is claimed |
-| EntanglementDetection extension | Exact 0.2.2 weak-dependency adapter implemented with bounded child-process isolation and conservative `unknown` reports; 125/125 focused assertions pass locally on Julia 1.12.6; the six-job Julia 1.11/1.12 Linux/macOS/Windows workflow passed at `6bf8d61`, while an exact release-candidate rerun remains required |
-| Prior remote evidence | Core and documentation workflows passed at `485b6a3`; the optional-extension matrix passed at `6bf8d61`; those predecessor runs are not evidence for the unpushed release-candidate tree |
-| Exact release-candidate remote evidence | Pending: Quality previously failed because its ignored QETLAB checkout was absent, and the previously green Coverage job hid a rejected upload; both workflows are corrected locally but require successful runs and accepted Codecov ingestion on the exact candidate commit |
+| Repository state | Uncommitted convergence work on `main` at base `ec9094dad43a7531b16b1f1d282a490ccba0c543`; no commit, push, tag, release, visibility, or settings change |
+| QETLAB source | Pinned and clean at `d8589610f00cff106537268dee2e2a1153f3a601`; 163 MATLAB files, 127 public functions, 36 private helpers, 503 dependency edges, and no detected cycle |
+| Strict completion ledger | 127/127 public rows are verified with final status; completion queue contains 0 public rows; 36/36 internal helpers have terminal dispositions; 0 required helpers remain; 0 static completion failures |
+| Public API/provenance | 458 runtime exports (328 native/module and 130 `MATLABCompat`) match 458 provenance records |
+| Full package corpus | 8,117/8,117 assertions, including 48 executable-tutorial assertions, pass on Julia 1.12.6 and the installed Julia 1.10.0 |
+| Optional optimization | The complete JuMP/Hypatia/SCS environment passes 836/836 assertions on both installed Julia lines; solver output remains status-rich and is not automatically a certificate |
+| EntanglementDetection.jl | Exact 0.2.2 adapter passes 125/125 assertions on Julia 1.12.6; its effective resolver floor remains Julia 1.11 because of Ket 0.9 |
+| Independent predicates | Randomized spectrum/minor validation passes 130/130 assertions on both installed Julia lines |
+| Executable tutorials | The standalone runner passes 48/48 assertions on both installed Julia lines |
+| Quick benchmarks | All 114 declared quick benchmark cases completed with `--no-save`; this is not a comparative-performance or regression-baseline claim |
+| Remote/release evidence | Dirty-worktree preflight and isolated archive smoke pass on both installed Julia lines; exact-commit supported-platform CI, Codecov ingestion, maintainer review, and publication decisions remain open |
+
+The strict result is a bounded local repository-evidence claim. It does not
+establish complete MATLAB/QETLAB parity, supported-platform CI, comparative
+performance, API stability, release approval, or the maintainer's
+non-delegable review.
+
+<!-- qetlab-current-claims: end -->
 
 ## Milestones
 
 | Milestone | Status | Exit evidence still required |
 |---|---|---|
-| M0 — audit and scaffold | Inventory classification complete; release evidence still in progress | Obtain passing remote CI on the exact candidate commit and complete the non-delegable maintainer review |
-| M1 — subsystem kernel | In progress; local implementation/tests and reviewed mappings pass | Cross-version/platform CI, MATLAB differential review, and reviewed benchmark baseline |
-| M2 — states/operators/random | In progress; reviewed core slice locally validated | Add reviewed benchmarks, supported-platform CI, MATLAB evidence, and decide/develop deferred multipartite Werner/random capabilities in their proper milestones |
-| M3 — channels/maps | In progress; representation, physicality, constructor, wrapper, and focused oracle tests pass locally | Add two-sided Kraus and rectangular row/column operator-space support or retain explicit partial statuses; add supported-platform CI, MATLAB evidence, and reviewed benchmarks |
-| M4 — measures/criteria | In progress; reviewed scalar measures, tri-state necessary criteria, native orchestration, focused tests, supplemental oracle fixtures, and benchmark smoke pass locally | Implement Rényi entropy or retain the explicit partial status; add supported-platform CI and MATLAB evidence; do not claim a general `IsSeparable` implementation |
-| M5 — optimization | Not started | Documented formulations, optional solvers, status-aware tests |
-| M6 — EntanglementDetection | Local adapter, load-order checks, lifecycle hardening, caller-state isolation, and tri-state translation pass for exact 0.2.2; the six-job remote matrix passed at `6bf8d61` | Rerun the configured Julia 1.11/1.12 Linux/macOS/Windows matrix on the exact candidate; reassess every widened backend version and retain the trusted-worker/non-certificate limitations |
-| M7 — QETLAB parity sweep | In progress; all rows classified, with 64 public rows still partial, deferred, or blocked | Advance each public row to verified, intentionally superseded, or a maintained explicit blocker; do not convert classification into a parity claim |
-| M8 — release candidate | In progress; scoped `v0.1.0` release candidate preparation | Complete remote CI, documentation, legal/API/archive review, non-delegable human review of Codex-assisted work, and the explicit visibility/rename decision required for General registration |
-
-The `v0.1.0` candidate is scoped to the package-owned API whose provenance,
-documentation, and tests are recorded. The source review removes the inventory
-classification backlog, but it does not complete M7: 64 public QETLAB rows
-remain partial, deferred, or blocked. See
-[`INVENTORY_REVIEW.md`](INVENTORY_REVIEW.md) for their exact dispositions. A
-private GitHub release and General registration have separate gates in
-`docs/RELEASE_CHECKLIST.md`.
+| M0--M6 — architecture and work packages | Local implementation and focused evidence complete | Exact-tree remote/platform evidence and human review remain release gates |
+| M7 — QETLAB completeness sweep | Local static objective reached: 127/127 public rows and 36/36 helpers are terminal | MATLAB equivalence is not claimed; keep source-free fixtures supplemental to analytic/property evidence |
+| M8 — release convergence | In progress; local release gates are being refreshed for this dirty worktree | Format, docs, benchmark, release/archive, exact committed-tree CI, legal/API review, and non-delegable maintainer review |
 
 ## Completion vocabulary
 
-- `implemented`: code exists; this alone is not a completion claim.
-- `verified`: specification, provenance, implementation, applicable tests, and
-  documentation pass.
+- `verified`: final public-row status after the static ledger finds synchronized
+  native and compatibility mappings, provenance, implementation, tests, and
+  documentation.
 - `compatibility_alias`: tested wrapper delegates to a verified native API.
 - `superseded_with_documented_mapping`: no capability loss and migration is
   documented.
-- `deferred`: the row is understood but implementation is outside the current
-  release scope; its required specification and prerequisites are recorded.
-- `blocked_with_explicit_reason`: evidence and the required implementation
-  prerequisite or external action are recorded.
 - Private-helper dispositions record whether a helper was replaced internally,
-  intentionally excluded, partially covered, or deferred with its parent. They
-  are not public API completion claims.
+  intentionally excluded, or subsumed by a completed parent. They are not
+  public API promises.
 
-`forgotten`, blank, or an unreviewed generated classification is never an
-acceptable final status.
+The strict checker is deliberately static. Passing it does not prove semantic
+correctness, MATLAB parity, or solver-certificate validity.
 
-## Immediate gates
+## Remaining gates
 
-1. Work through the 64 partial, deferred, or blocked public rows in
-   `docs/INVENTORY_REVIEW.md` without weakening solver, RNG, validation, sparse,
-   or certificate semantics.
-2. Keep `UpstreamManifest.toml`, `PROVENANCE.toml`, and reviewed status overlays
-   synchronized as later milestones export new bindings.
-3. Run the Tier A--Tier E reviewed slices and native pipeline on Julia 1.10 and
-   the supported-platform CI matrix.
-4. Add MATLAB differential evidence where MATLAB becomes available; keep
-   analytic/property/independent formulations as primary checks.
-5. Turn the current reviewed benchmark smoke cases into a regression baseline
-   without claiming comparative speedups.
-6. Rerun the EntanglementDetection Julia 1.11/1.12 platform matrix on the exact
-   release candidate and keep its exact-version, child-process, trusted-worker,
-   and uncertified-result boundaries explicit.
+The formatter, local documentation, benchmark smoke, claim reconciliation,
+two-version runtime checks, dirty-worktree distribution preflight, and isolated
+archive smoke have been completed for this worktree.
+
+1. Have the maintainer perform the non-delegable mathematical, API, provenance,
+   licensing, and generated-change review.
+2. Only with explicit authorization, commit and push, then require exact-SHA
+   supported-platform CI and accepted Codecov ingestion.
+3. Treat tagging, a private GitHub release, public visibility, and General
+   registration as separate, explicitly authorized decisions.
+
+## Twirl completion evidence (2026-07-30)
+
+The pinned `Twirl` row is implemented for Werner, isotropic, real, and Pauli
+branches with strict copy/dimension validation, sparse spanning operators,
+exact Gram-dependence elimination, and explicit combinatorial, dense-entry,
+nonzero, and work guards. The focused suite passes 149/149 on Julia 1.12.6 and
+1.10.11. Six source-free pinned Octave/QETLAB fixtures pass 18/18 native,
+compatibility, and idempotence comparisons; MATLAB was not run.
+
+## Absolute-PPT completion evidence (2026-07-30)
+
+The pinned `AbsPPTConstraints` and `IsAbsPPT` rows are implemented through
+package-owned numeric and affine-LMI representations, explicit dimensions,
+typed sparse opt-in, bounded monotone/criss-cross ordering enumeration, and
+certificate-aware tri-state results. The native API distinguishes analytic,
+sufficient, exhaustive, negative-certificate, capped, boundary, and backend
+outcomes. A negative result is issued only after exact rational realization of
+the candidate ordering; optional solver work remains isolated in the JuMP
+extension.
+
+On both Julia 1.12.6 and Julia 1.10.11, the focused suites pass 197/197 native,
+24/24 compatibility, 28/28 committed Octave-fixture, and 23/23 dedicated JuMP
+extension assertions. The complete JuMP-extension runner passes 115/115 on
+both Julia lines. The fixture digest is
+`17b825d6e15fae1f2391162137255603653de245fea39661c18ba1db65e74f6c`;
+MATLAB was not run.
+
+After regeneration, the static ledgers pass on both Julia lines with 316 public
+bindings, 316 provenance entries, 163 reviewed upstream rows, 503 dependency
+edges, zero cycles, and zero completion-checker failures. The completion view
+contains 127 public rows: 95 implementation-complete, five partial, one
+deferred, and 26 blocked, with 32 queued rows. The documentation-math scan
+passes over 45 Markdown files, 210 inline spans, and 99 display blocks, and the
+79-case quick benchmark smoke includes the two absolute-PPT cases. These are
+local implementation and validation claims, not a general QETLAB parity or
+performance claim.
+
+## Symmetric-extension and random-PPT completion evidence (2026-07-30)
+
+The pinned `SymmetricExtension` and `SymmetricInnerExtension` rows now use
+package-owned solver-neutral SDP models with an explicit optional backend.
+Outer models support full permutation-invariant and bosonic-compressed
+extensions, representative PPT constraints, solver-free theorem branches, and
+independently validated primal or dual certificates. Inner models implement
+the Navascués--Owari--Plenio transform and preserve the essential warning that
+a negative inner-cone dual is not automatically an entanglement witness. The
+private exact Jacobi recurrence supersedes the pinned `jacobi_poly` helper
+without exporting it.
+
+`RandomPPTState` is now a bounded, mandatory-explicit-RNG construction. A
+shifted induced state covers full-rank requests and a convex mixture of random
+product projectors covers low-rank requests. A candidate becomes `state` only
+after independent Hermiticity, PSD, trace-one, PPT, and rank-bound checks;
+resource and zero-iteration exits occur before consuming the RNG.
+
+On Julia 1.12.6 and Julia 1.10.11, the focused suites pass 162/162 native,
+31/31 compatibility, 85/85 dedicated Hypatia/SCS extension, and 31/31
+committed Octave-fixture assertions. The source-free fixture covers five
+solver-free extension decisions, three Jacobi coefficient vectors, and
+random-PPT properties, with SHA-256
+`572dc3d846d1adb0b2ee64f9ee5a3b7a6903eb86d56927ff76e5e8fa520551f0`;
+MATLAB and CVX were not run.
+
+Regenerated ledgers pass with 331 public bindings and provenance entries, 163
+reviewed upstream rows, 503 dependency edges, zero cycles, 98
+implementation-complete public rows, 29 queued public rows, 25 terminal helper
+dispositions, and zero static-evidence failures. The 82-case quick benchmark
+smoke passes, including analytic outer-extension, bosonic PPT model-building,
+and random-PPT cases. The documentation-math scan passes 48 Markdown files,
+244 inline spans, and 109 display blocks. The repository-wide Documenter run
+was blocked only by the concurrently pending state-discrimination module
+integration; no symmetric-extension or random-PPT documentation failure was
+reported.

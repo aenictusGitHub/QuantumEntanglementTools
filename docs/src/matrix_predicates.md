@@ -20,7 +20,10 @@ rational inputs are checked exactly. Floating BLAS types use a Hermitian
 eigendecomposition; `BigFloat` and other supported types use a generic LDL
 congruence calculation. The input is not symmetrized: a Hermiticity defect
 inside tolerance is `unknown`, and one outside tolerance violates the
-predicate.
+predicate. The generic path scans for robustly negative diagonal witnesses and
+continues across an exactly decoupled boundary pivot so that a later decisive
+violation takes precedence. A boundary pivot coupled to the trailing block
+remains conservatively `unknown`.
 
 ```jldoctest matrix-predicates
 julia> is_positive_semidefinite([2.0 1.0; 1.0 2.0]).status === MatrixPredicateSatisfied

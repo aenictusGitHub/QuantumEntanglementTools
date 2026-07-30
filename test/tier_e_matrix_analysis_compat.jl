@@ -58,6 +58,15 @@ end
         @test CompatMatrixAnalysis.Majorizes(
             sparsevec([1], [1.0], 2), [1.0, 0.0]; rtol=0, allow_densify=true
         )
+        @test CompatMatrixAnalysis._compat_majorization_accumulator_type(
+            Float32[1, 2], Float32[2, 1]
+        ) === Float32
+        @test CompatMatrixAnalysis._compat_majorization_accumulator_type(
+            Float64[1, 2], Float64[2, 1]
+        ) === Float64
+        @test CompatMatrixAnalysis._compat_majorization_accumulator_type(
+            Rational{Int}[1 // 2], Rational{Int}[1 // 2]
+        ) === Rational{BigInt}
     end
 
     @testset "ElemSymPoly delegates with exact arithmetic" begin

@@ -1,0 +1,257 @@
+# Reviewed planning metadata for the QETLAB completion program.
+#
+# Source facts, current statuses, reasons, files, and call dependencies remain in
+# qetlab_inventory.toml and PROVENANCE.toml. This policy records only the
+# capability-led work-package structure and assigns each currently incomplete
+# public row exactly once.
+schema_version = 1
+
+baseline_capabilities = [
+    "checked_dimension_and_combinatorial_guards",
+    "explicit_rng_contract",
+    "reviewed_source_inventory",
+    "sparse_and_densification_policy",
+    "structured_certificate_and_unknown_semantics",
+    "structured_numeric_predicates",
+    "tested_product_analysis",
+    "typed_square_map_representations",
+    "validated_symmetric_extension_hierarchies",
+    "validated_spectral_primitives",
+    "verified_random_ppt_construction",
+]
+
+[[work_packages]]
+id = "general_map_model"
+order = 1
+title = "General rectangular and two-sided map model"
+summary = "Complete the package-owned operator-space and two-sided operator-sum model before extending channel wrappers or optimization routines."
+architecture_only = true
+prerequisite_capabilities = [
+    "reviewed_source_inventory",
+    "sparse_and_densification_policy",
+    "typed_square_map_representations",
+]
+provides_capabilities = [
+    "general_rectangular_operator_space_model",
+    "hermiticity_preserving_map_diagnostics",
+    "two_sided_operator_sum_model",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "spectral_norm_foundations"
+order = 2
+title = "Solver-free spectral and norm foundations"
+summary = "Finish exact or structured solver-free branches, separating exact values from bounds and unsupported symbolic optimizer expressions."
+architecture_only = true
+prerequisite_capabilities = [
+    "reviewed_source_inventory",
+    "sparse_and_densification_policy",
+    "structured_numeric_predicates",
+    "validated_spectral_primitives",
+]
+provides_capabilities = [
+    "full_spectral_measure_contracts",
+    "operator_schmidt_completion",
+    "structured_norm_bound_contracts",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "algebraic_iterative_foundations"
+order = 3
+title = "Bounded algebraic and iterative foundations"
+summary = "Provide bounded convergence, explicit allocation policy, state restoration, and structured failure evidence for iterative algebra and map construction."
+architecture_only = false
+prerequisite_capabilities = [
+    "checked_dimension_and_combinatorial_guards",
+    "explicit_rng_contract",
+    "general_rectangular_operator_space_model",
+    "operator_schmidt_completion",
+]
+provides_capabilities = [
+    "bounded_iterative_linear_algebra",
+    "bounded_multidimensional_iteration",
+    "random_map_construction_foundations",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "state_entanglement_constructions"
+order = 4
+title = "States, subspaces, UPBs, and exact entanglement constructions"
+summary = "Complete guarded state and subspace constructions with explicit RNG, theorem domains, witnesses, and family-level provenance."
+architecture_only = false
+prerequisite_capabilities = [
+    "checked_dimension_and_combinatorial_guards",
+    "explicit_rng_contract",
+    "operator_schmidt_completion",
+    "structured_certificate_and_unknown_semantics",
+    "tested_product_analysis",
+]
+provides_capabilities = [
+    "verified_state_and_subspace_constructions",
+    "verified_upb_construction_and_analysis",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "polynomial_foundations"
+order = 5
+title = "Typed polynomial and copositivity foundations"
+summary = "Define type-preserving polynomial data, coefficient ordering, deterministic work budgets, and corrected solver-free bound semantics."
+architecture_only = true
+prerequisite_capabilities = [
+    "checked_dimension_and_combinatorial_guards",
+    "explicit_rng_contract",
+    "reviewed_source_inventory",
+    "sparse_and_densification_policy",
+]
+provides_capabilities = [
+    "bounded_polynomial_algebra",
+    "typed_polynomial_representation",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "optimization_architecture"
+order = 6
+title = "Solver-independent optimization architecture"
+summary = "Define package-owned models and result contracts, optimizer extension boundaries, residual checks, bounds, statuses, and certificate retention before solver-backed rows."
+architecture_only = true
+prerequisite_capabilities = [
+    "full_spectral_measure_contracts",
+    "general_rectangular_operator_space_model",
+    "structured_certificate_and_unknown_semantics",
+    "structured_norm_bound_contracts",
+    "typed_polynomial_representation",
+]
+provides_capabilities = [
+    "optional_solver_extension_contract",
+    "solver_independent_optimization_models",
+    "status_aware_optimization_results",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "channel_optimization"
+order = 7
+title = "Channel norms and distinguishability optimization"
+summary = "Implement channel SDPs and analytic shortcuts over the completed general-map model with validated solver status and primal-dual evidence."
+architecture_only = false
+prerequisite_capabilities = [
+    "general_rectangular_operator_space_model",
+    "optional_solver_extension_contract",
+    "solver_independent_optimization_models",
+    "status_aware_optimization_results",
+    "two_sided_operator_sum_model",
+]
+provides_capabilities = [
+    "status_aware_channel_optimization",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "entanglement_state_optimization"
+order = 8
+title = "Entanglement and state optimization"
+summary = "Complete absolute-PPT, symmetric-extension, distinguishability, randomized-PPT, UPB, and composite separability strategies without Boolean collapse."
+architecture_only = false
+prerequisite_capabilities = [
+    "bounded_iterative_linear_algebra",
+    "general_rectangular_operator_space_model",
+    "optional_solver_extension_contract",
+    "status_aware_optimization_results",
+    "structured_certificate_and_unknown_semantics",
+    "verified_state_and_subspace_constructions",
+    "verified_upb_construction_and_analysis",
+]
+provides_capabilities = [
+    "status_aware_entanglement_optimization",
+    "status_aware_state_discrimination",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "sk_norms_and_block_positivity"
+order = 9
+title = "S(k) norms, dual norms, and block positivity"
+summary = "Separate exact cases, bounds, randomized evidence, solver relaxations, witnesses, and unknown outcomes under explicit budgets."
+architecture_only = false
+prerequisite_capabilities = [
+    "explicit_rng_contract",
+    "general_rectangular_operator_space_model",
+    "optional_solver_extension_contract",
+    "status_aware_optimization_results",
+    "structured_norm_bound_contracts",
+]
+provides_capabilities = [
+    "status_aware_sk_norm_bounds",
+    "structured_block_positivity_results",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "coherence_optimization"
+order = 10
+title = "Coherence criteria and robustness optimization"
+summary = "Correct recorded theorem/helper defects, implement analytic branches, and expose optimizer-backed results with closest-state or noise evidence."
+architecture_only = false
+prerequisite_capabilities = [
+    "full_spectral_measure_contracts",
+    "general_rectangular_operator_space_model",
+    "optional_solver_extension_contract",
+    "status_aware_optimization_results",
+]
+provides_capabilities = [
+    "status_aware_coherence_optimization",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "polynomial_solver_models"
+order = 11
+title = "Polynomial SOS and copositivity solver models"
+summary = "Build sparse status-aware SOS and copositivity models on the typed polynomial layer, preserving lower and upper bound semantics."
+architecture_only = false
+prerequisite_capabilities = [
+    "bounded_polynomial_algebra",
+    "optional_solver_extension_contract",
+    "status_aware_optimization_results",
+    "typed_polynomial_representation",
+]
+provides_capabilities = [
+    "status_aware_polynomial_optimization",
+]
+functions = []
+internal_helpers = []
+
+[[work_packages]]
+id = "bell_nonlocal_games"
+order = 12
+title = "Bell scenarios, nonlocal games, and hierarchies"
+summary = "Introduce typed Bell-scenario data and guarded exact, heuristic, and hierarchy routes with explicit RNG, solver status, and bound evidence."
+architecture_only = false
+prerequisite_capabilities = [
+    "bounded_multidimensional_iteration",
+    "checked_dimension_and_combinatorial_guards",
+    "explicit_rng_contract",
+    "optional_solver_extension_contract",
+    "status_aware_optimization_results",
+]
+provides_capabilities = [
+    "status_aware_nonlocal_game_optimization",
+    "typed_bell_scenario_representation",
+]
+functions = []
+internal_helpers = []

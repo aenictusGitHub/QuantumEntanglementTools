@@ -277,11 +277,35 @@ end
     rectangular_pure = ComplexF64[cos(angle), 0, 0, 0, sin(angle), 0]
     expected = -cos(angle)^2 * log2(cos(angle)^2) - sin(angle)^2 * log2(sin(angle)^2)
     @test QETProduct.entanglement_of_formation(rectangular_pure, (2, 3)) ≈ expected
+    exact_rectangular_density = zeros(6, 6)
+    exact_rectangular_density[1, 1] = 0.5
+    exact_rectangular_density[1, 5] = 0.5
+    exact_rectangular_density[5, 1] = 0.5
+    exact_rectangular_density[5, 5] = 0.5
+    @test QETProduct.entanglement_of_formation(exact_rectangular_density, (2, 3)) ≈ 1
+    @test QETProduct.entanglement_of_formation(
+        exact_rectangular_density, (2, 3); base=exp(1)
+    ) ≈ log(2)
+    exact_product_density = Diagonal([1.0, 0, 0, 0, 0, 0])
+    @test QETProduct.entanglement_of_formation(exact_product_density, (2, 3)) == 0
+
+    numerical_rectangular_density = rectangular_pure * adjoint(rectangular_pure)
+    @test_throws DomainError QETProduct.entanglement_of_formation(
+        numerical_rectangular_density, (2, 3)
+    )
+    @test QETProduct.entanglement_of_formation(
+        numerical_rectangular_density,
+        (2, 3);
+        psd_boundary_policy=:project,
+        rank_boundary_policy=:project,
+    ) ≈ expected
 
     bell_density = bell * adjoint(bell)
     maximally_mixed = Matrix{Float64}(I, 4, 4) / 4
     @test QETProduct.entanglement_of_formation(bell_density, (2, 2)) ≈ 1
     @test QETProduct.entanglement_of_formation(maximally_mixed, (2, 2)) == 0
+    @test QETProduct.entanglement_of_formation(Diagonal([1.0, 0, 0, 0]), (2, 2)) == 0
+    @test QETProduct.entanglement_of_formation(Diagonal([0.5, 0, 0, 0.5]), (2, 2)) == 0
     bell_mixture = 0.7bell_density + 0.3maximally_mixed
     mixture_concurrence = 0.55
     mixture_probability = (1 + sqrt(1 - mixture_concurrence^2)) / 2
@@ -295,7 +319,12 @@ end
         random_pure = randn(rng, ComplexF64, 4)
         random_pure ./= norm(random_pure)
         random_density = random_pure * adjoint(random_pure)
-        matrix_eof = QETProduct.entanglement_of_formation(random_density, (2, 2))
+        matrix_eof = QETProduct.entanglement_of_formation(
+            random_density,
+            (2, 2);
+            psd_boundary_policy=:project,
+            range_boundary_policy=:project,
+        )
         @test isfinite(matrix_eof)
         @test matrix_eof ≈ QETProduct.entanglement_of_formation(random_pure, (2, 2)) atol =
             2e-7
@@ -307,7 +336,9 @@ end
     rank_two_density =
         0.37(first_rank_two * adjoint(first_rank_two)) +
         0.63(second_rank_two * adjoint(second_rank_two))
-    rank_two_eof = QETProduct.entanglement_of_formation(rank_two_density, (2, 2))
+    rank_two_eof = QETProduct.entanglement_of_formation(
+        rank_two_density, (2, 2); psd_boundary_policy=:project
+    )
     @test isfinite(rank_two_eof)
     @test 0 ≤ rank_two_eof ≤ 1 + 1e-12
 
@@ -316,7 +347,12 @@ end
         local_b = Matrix(qr(randn(rng, ComplexF64, 2, 2)).Q)
         rotated_bell = kron(local_a, local_b) * bell
         rotated_density = rotated_bell * adjoint(rotated_bell)
-        @test QETProduct.entanglement_of_formation(rotated_density, (2, 2)) ≈ 1 atol = 2e-7
+        @test QETProduct.entanglement_of_formation(
+            rotated_density,
+            (2, 2);
+            psd_boundary_policy=:project,
+            range_boundary_policy=:project,
+        ) ≈ 1 atol = 2e-7
     end
 
     sparse_bell = sparsevec([1, 4], fill(inv(sqrt(2)), 2), 4)
@@ -326,15 +362,57 @@ end
     @test_throws ArgumentError QETProduct.entanglement_of_formation(sparse_mixed, (2, 2))
     @test QETProduct.entanglement_of_formation(sparse_mixed, (2, 2); allow_densify=true) ==
         0
+    sparse_rectangular_density = sparse(exact_rectangular_density)
+    @test_throws ArgumentError QETProduct.entanglement_of_formation(
+        sparse_rectangular_density, (2, 3)
+    )
+    @test QETProduct.entanglement_of_formation(
+        sparse_rectangular_density, (2, 3); allow_densify=true
+    ) ≈ 1
+
+    rank_boundary = Diagonal([1 - 1e-10, 1e-10, 0.0, 0.0, 0.0, 0.0])
+    @test_throws DomainError QETProduct.entanglement_of_formation(
+        rank_boundary, (2, 3); atol=1e-9, rtol=0
+    )
+    @test QETProduct.entanglement_of_formation(
+        rank_boundary, (2, 3); atol=1e-9, rtol=0, rank_boundary_policy=:project
+    ) == 0
+    psd_boundary = Diagonal([1 + 1e-10, -1e-10, 0.0, 0.0, 0.0, 0.0])
+    @test_throws DomainError QETProduct.entanglement_of_formation(
+        psd_boundary, (2, 3); atol=1e-9, rtol=0
+    )
+    @test QETProduct.entanglement_of_formation(
+        psd_boundary,
+        (2, 3);
+        atol=1e-9,
+        rtol=0,
+        psd_boundary_policy=:project,
+        rank_boundary_policy=:project,
+    ) == 0
+    high_dimensional_mixed = Diagonal([0.5, 0.5, 0.0, 0.0, 0.0, 0.0])
+    @test_throws ArgumentError QETProduct.entanglement_of_formation(
+        high_dimensional_mixed, (2, 3)
+    )
+    @test_throws ArgumentError QETProduct.entanglement_of_formation(
+        high_dimensional_mixed,
+        (2, 3);
+        psd_boundary_policy=:project,
+        rank_boundary_policy=:project,
+    )
+
+    two_qubit_psd_boundary = Diagonal([-1e-10, 0.25, 0.25, 0.5000000001])
+    @test_throws DomainError QETProduct.entanglement_of_formation(
+        two_qubit_psd_boundary, (2, 2); atol=1e-9, rtol=0
+    )
+    @test QETProduct.entanglement_of_formation(
+        two_qubit_psd_boundary, (2, 2); atol=1e-9, rtol=0, psd_boundary_policy=:project
+    ) == 0
 
     @test_throws ArgumentError QETProduct.entanglement_of_formation(0.9bell, (2, 2))
     @test_throws ArgumentError QETProduct.entanglement_of_formation(bell, (2, 2); base=1)
     @test_throws ArgumentError QETProduct.entanglement_of_formation(bell, (2, 2); base=true)
     @test_throws ArgumentError QETProduct.entanglement_of_formation(bell, (4,))
     @test_throws DimensionMismatch QETProduct.entanglement_of_formation(bell, (2, 3))
-    @test_throws ArgumentError QETProduct.entanglement_of_formation(
-        rectangular_pure * adjoint(rectangular_pure), (2, 3)
-    )
     @test_throws DimensionMismatch QETProduct.entanglement_of_formation(ones(4, 3), (2, 2))
     @test_throws ArgumentError QETProduct.entanglement_of_formation(
         2maximally_mixed, (2, 2)
@@ -347,6 +425,12 @@ end
     )
     @test_throws ArgumentError QETProduct.entanglement_of_formation(
         bell_density, (2, 2); psd_boundary_policy=:unsupported
+    )
+    @test_throws ArgumentError QETProduct.entanglement_of_formation(
+        bell_density, (2, 2); rank_boundary_policy=:unsupported
+    )
+    @test_throws ArgumentError QETProduct.entanglement_of_formation(
+        bell_density, (2, 2); range_boundary_policy=:unsupported
     )
 end
 

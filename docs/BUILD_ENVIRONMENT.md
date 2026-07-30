@@ -1,7 +1,58 @@
 # Build environment
 
-Observed locally on 2026-07-29. This is environment evidence, not a statement
-that every tool below has successfully built, tested, or validated the package.
+Current convergence evidence observed locally on 2026-07-30. Environment
+details and predecessor results dated 2026-07-29 are retained below as a
+historical baseline.
+
+## Current convergence environment
+
+<!-- qetlab-current-claims: begin -->
+
+| Item | Current local evidence |
+|---|---|
+| Repository | Dirty `main` worktree based on `ec9094dad43a7531b16b1f1d282a490ccba0c543`; `origin/main` is the same base; no commit or publication action |
+| Julia | 1.12.6 and installed minimum-line binary 1.10.0 |
+| Completion ledger | 127/127 public rows are verified with final status; completion queue contains 0 public rows; 36/36 internal helpers have terminal dispositions; 0 required helpers remain; 0 static completion failures |
+| API/provenance | 458 exports and 458 matching provenance records |
+| Package corpus | 8,117/8,117 assertions including 48 tutorials on both installed Julia lines |
+| JuMP optimization | 836/836 assertions with package-managed Hypatia/SCS on both installed Julia lines |
+| EntanglementDetection.jl | Exact 0.2.2 environment; 125/125 assertions on Julia 1.12.6; effective resolver floor Julia 1.11 |
+| Source-free oracles | 27/27 comparators and 1,347/1,347 assertions on both installed Julia lines; all fixture digests verified |
+| Quality | Aqua 11/11, JET 25/25, formatter gate passing, randomized matrix predicates 130/130 on both lines |
+| Benchmarks | All 114 declared quick benchmark cases completed with `--no-save`; smoke evidence only |
+| Distribution preflight | Isolated dirty-worktree archive and fresh-depot load smoke pass on Julia 1.12.6 and 1.10.0; not committed-tree release evidence |
+
+`Pkg.test()` initially encountered sandbox-only permission failures when Julia
+attempted to write `~/.julia/logs/manifest_usage.toml.pid`; the approved
+outside-sandbox reruns passed. Julia 1.10 warned that the ignored local
+manifest had been resolved by Julia 1.12 and that project requirements had
+changed; `Pkg.test()` generated an isolated temporary test environment and
+passed.
+
+The optimization evidence uses Julia packages rather than command-line solver
+executables. A successful numerical solve is not automatically a mathematical
+certificate. These are local dirty-worktree results, not MATLAB parity,
+supported-platform CI, comparative performance, API stability, release
+approval, or human review.
+
+<!-- qetlab-current-claims: end -->
+
+## Historical environment and evidence (2026-07-29)
+
+## Evidence boundaries
+
+At the start of the convergence audit, local `main`, `origin/main`, and `HEAD`
+were clean and equal to
+`2d965bfbbcb6f3af350e293f1034b1fdcd4f937e`. The repository now contains
+uncommitted Phase 0 improvements. The results below are the recorded local
+comparison baseline; they do not certify the current prospective worktree or a
+future release commit. Exact local and remote reruns remain required after the
+changes are committed.
+
+The repository is private, and no tag, GitHub release, or GitHub Pages
+deployment exists. See [`CONVERGENCE_AUDIT.md`](CONVERGENCE_AUDIT.md) for the
+separation between exact baseline evidence, prospective local work, and
+external release gates.
 
 ## Host
 
@@ -46,17 +97,17 @@ Julia 1.10.
 | Graphviz `dot` | 12.2.1 | Present; docs diagrams not yet validated |
 | GNU Octave | 11.3.0, x86_64 build | Present; not accepted as a QETLAB oracle by default |
 | MATLAB | — | Not found on `PATH` |
-| EntanglementDetection.jl | Exact 0.2.2 in an isolated test environment | 125/125 focused assertions pass on Julia 1.12.6; the remote Julia 1.11/1.12 Linux/macOS/Windows matrix passed at `6bf8d61`, and an exact release-candidate rerun is pending |
+| EntanglementDetection.jl | Exact 0.2.2 in an isolated test environment | 125/125 focused assertions pass on Julia 1.12.6; an exact rerun remains required for the commit produced by the current convergence work |
 | GLPK/`glpsol` | 5.0 | Present; not an SDP solver and not validated for package APIs |
 | Other solver executables checked | SCS, CSDP, SDPA, Mosek, Gurobi, CBC, HiGHS, Ipopt | Not found on `PATH` |
 
 No MATLAB, CVX, or solver-backed certification results are available from this
-environment snapshot. Exact Octave/QETLAB Tier A fixtures have passed for
-permutation, trace, partial transpose, realignment, and
-symmetric/antisymmetric projectors; this function-specific evidence does not
-make Octave a generally equivalent MATLAB oracle. Package-managed Julia solver
-libraries may differ from command-line executables and must be reported by each
-test environment.
+environment snapshot. The source-free differential fixture corpus contains 338
+passing assertions against QETLAB commit
+`d8589610f00cff106537268dee2e2a1153f3a601`. This function-specific evidence
+does not make Octave a generally equivalent MATLAB oracle. Package-managed
+Julia solver libraries may differ from command-line executables and must be
+reported by each test environment.
 
 ## Local checks recorded
 
@@ -69,9 +120,11 @@ test environment.
 - Optional integration: the exact EntanglementDetection.jl 0.2.2 focused suite
   passed 125/125 on Julia 1.12.6. Searches use child-process isolation, bounded
   reads, and explicit cleanup; backend candidates always remain `unknown` and
-  uncertified. The configured six-job remote platform matrix passed at
-  predecessor commit `6bf8d61`; the exact release-candidate SHA still needs a
-  remote rerun.
+  uncertified. An exact remote rerun remains required after the current
+  prospective changes are committed.
+- Inventory: the generator passed with 163 source rows, 503 dependency edges,
+  and zero automatically detected cycles against QETLAB commit
+  `d8589610f00cff106537268dee2e2a1153f3a601`.
 - Documentation: strict Documenter build, doctests, and live tutorial examples
   passed on Julia 1.12.6 and Julia 1.10.11 with Documenter 1.17.0. The API
   reference is split into native and compatibility pages; the 157 KiB native
@@ -81,18 +134,35 @@ test environment.
 - Code generator: JavaScriptCore passed 71 deterministic assertions and emitted
   a generated Julia smoke program whose nine state-family branches passed on
   Julia 1.12.6 and Julia 1.10.11.
-- Quality: Aqua passed 11/11 and 25 representative JET probes passed. Those
-  probes do not yet include the matrix-predicate slice.
-- API consistency: the public-API/provenance gate passed over 214 public
-  bindings.
+- Quality: Aqua passed 11/11, 25 representative JET probes passed, and the
+  independent matrix-predicate validation passed 130/130 assertions.
+- API consistency: the public-API/provenance gate passed over 214 exports and
+  214 provenance records.
+- Differential fixtures: 338/338 assertions passed against the exact QETLAB
+  source pin. This is supplemental, function-specific evidence.
 - Benchmark smoke: all 42 cases ran with BenchmarkTools 1.8.0; see
   `BENCHMARK_REPORT.md`. This is not a comparative or release baseline.
-- Release integrity: the working-tree preflight passed on Julia 1.12.6 and
-  Julia 1.10.11; exact committed-archive smoke remains pending until the local
-  candidate commit exists. CFFConvert 2.0.0 validates `CITATION.cff` against
-  schema 1.2.0. The offline upstream audit reports 10/10 pin/license checks
-  clean, and a scoped history scan found no common token or private-key
-  signatures.
+- Release integrity: CFFConvert 2.0.0 validates `CITATION.cff` against schema
+  1.2.0, and the offline upstream audit reports 10/10 pin/license checks clean.
+  The current prospective worktree still requires an exact committed-tree
+  rerun.
+
+## Exact remote baseline and current blockers
+
+At `2d965bfbbcb6f3af350e293f1034b1fdcd4f937e`, Core and Documentation passed.
+Quality failed only because a tracked editor-workspace file made the
+release-integrity check reject the tree. Coverage's package-test steps passed,
+but Codecov rejected the upload with `Repository not found`.
+
+The effective branch controls observed protect against deletion and
+non-fast-forward updates. Required status checks and required pull-request
+reviews are absent. The repository remains private and has no tag, GitHub
+release, or Pages deployment. These are repository or service observations,
+not properties of the local host.
+
+A source-scope scan found no excluded-source identifier in the current tracked
+tree or current commit archive. A history-only occurrence remains, and no
+history rewrite was performed.
 
 ## Reproduction metadata to capture
 

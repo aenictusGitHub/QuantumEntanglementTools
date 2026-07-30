@@ -9,8 +9,33 @@ a minor-version increment.
 
 ## [Unreleased]
 
-The changes below are part of the unreleased `0.1.0` development milestone.
-No version has been tagged or published.
+The changes below are part of the unreleased `0.1.0` development milestone
+toward behavioral coverage of the public API at the pinned QETLAB revision. No
+version has been tagged or published.
+
+<!-- qetlab-current-claims: begin -->
+
+The inventory is pinned to QETLAB revision
+`d8589610f00cff106537268dee2e2a1153f3a601`. Its strict static ledger reports
+127/127 public rows are verified with the required final status, 36/36 internal
+helpers have terminal dispositions, the completion queue contains 0 public
+rows, 0 required internal helpers remain, and 0 static completion failures.
+The package has 458 public bindings with matching provenance entries.
+
+The 8,117-assertion full package suite passed 8,117/8,117, including 48
+executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
+The full optional JuMP suite passed 836/836 on both Julia lines. The
+EntanglementDetection.jl extension passed 125/125 focused assertions on the
+current compatible Julia. All 114 declared quick benchmark cases completed
+locally with `--no-save`; this is execution smoke evidence, not a performance
+baseline.
+
+These static and local results are not QETLAB/MATLAB parity,
+supported-platform remote CI, comparative performance, API stability, release
+approval, or non-delegable human review. No release, tag, or publication has
+been made.
+
+<!-- qetlab-current-claims: end -->
 
 ### Added
 
@@ -45,12 +70,12 @@ No version has been tagged or published.
   positive, and totally nonsingular matrix predicates, including witnesses,
   three-valued numerical-boundary results, exact arithmetic, explicit sparse
   densification, combinatorial guards, and four compatibility entry points.
-  Their focused suites pass 170 native and 37 compatibility assertions; no
-  MATLAB-family predicate oracle has been run. The `IsPSD` mapping remains
-  partial because the pinned CVX symbolic branch is omitted.
-- A 2,417-assertion full package suite passing locally on Julia 1.12.6 and
-  Julia 1.10.11, comprising 2,369 core assertions and 48 executable-tutorial
-  assertions, plus consistency checks over 214 public bindings and all 163
+  Their package-owned mappings use explicit structured results and documented
+  numerical boundaries; function-specific MATLAB-family oracle coverage is not
+  implied.
+- An 8,117-assertion full package suite passing 8,117/8,117 locally on Julia
+  1.12.6 and the installed Julia 1.10.0, including 48 executable-tutorial
+  assertions, plus consistency checks over 458 public bindings and all 163
   source-reviewed inventory rows.
 - Five deterministic executable tutorials for subsystem reductions, local
   channel noise, separability certificates, symmetric SAPPT states and
@@ -62,9 +87,11 @@ No version has been tagged or published.
   five-qubit SAPPT threshold, same-spectrum separable/entangled
   representatives, published witness reconstruction, a decomposable NPT
   witness, and explicit GHZ phase handling.
-- A 42-case quick benchmark smoke suite and quality checks in which Aqua passes
-  11 assertions and 25 representative JET probes pass. The JET set does not
-  cover the matrix predicates.
+- A benchmark harness containing 114 declared quick cases, all of which
+  completed in the current-tree `--no-save` smoke. This is not a
+  comparative-performance claim or regression baseline.
+- An optional JuMP extension suite passing 836/836 locally on Julia 1.12.6 and
+  the installed Julia 1.10.0.
 - An optional EntanglementDetection.jl 0.2.2 extension that runs heuristic
   searches only in an isolated child Julia process, preserves candidate results
   as uncertified evidence, and contains backend failures as `:unknown` reports.

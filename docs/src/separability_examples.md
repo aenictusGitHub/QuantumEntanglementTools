@@ -6,29 +6,32 @@ vector. Deciding separability for an arbitrary mixed state is difficult, so
 this package returns structured conclusions instead of a potentially
 misleading `Bool`.
 
-There is intentionally no general `is_separable` function. A result of
-`unknown` means that the methods run did not produce a certificate; it does
-not mean that the state is entangled or separable.
+The general `is_separable` entry point returns an `EntanglementReport`, never
+an unchecked Boolean. A result of `unknown` means that the selected methods
+did not produce a certificate; it does not mean that the state is entangled
+or separable.
 
 ## Choosing an API
 
 | Input and question | Start with | A conclusive result | An inconclusive result |
 |---|---|---|---|
 | Bipartite pure vector | `analyze_entanglement(psi, dims)` | `status == :separable` with an exact product-decomposition certificate | `status == :unknown` |
-| Density matrix in `2×2` or `2×3` | `analyze_entanglement(rho, dims)` | `status == :separable` when the low-dimensional PPT theorem applies | `status == :unknown` |
+| Density matrix in `2×2` or `2×3` | `is_separable(rho, dims)` | `status == :separable` when the low-dimensional PPT theorem or another sufficient certificate applies | `status == :unknown` |
 | Bipartite density matrix in any supported dimensions | `in_separable_ball(rho, dims)` | `status == :separable_certified` inside the Gurvits--Barnum ball | `:outside_ball` or `:unknown`; neither implies entanglement |
-| Higher-dimensional density matrix, looking for entanglement | `analyze_entanglement(rho, dims)` | A criterion violation can return certified `:entangled` | Passing the requested necessary criteria returns `:unknown` |
+| Higher-dimensional density matrix | `is_separable(rho, dims; strategies=...)` | A sufficient theorem/decomposition returns certified `:separable`; a checked violation or witness returns certified `:entangled` | Passing necessary tests, hierarchy limits, and numerical boundaries return `:unknown` |
 
-`analyze_entanglement` returns an
+Both `analyze_entanglement` and `is_separable` return an
 [`EntanglementReport`](@ref), whose status is `:separable`, `:entangled`, or
 `:unknown`. Inspect `certified`, `certificate_kind`, and `message` before using
 the conclusion. `in_separable_ball` returns a [`SeparableBallResult`](@ref)
 with the separate status vocabulary `:separable_certified`, `:outside_ball`,
 or `:unknown`.
 
-The density-matrix pipeline currently tries PPT, realignment, and reduction
-criteria. It does **not** call `in_separable_ball`; run the ball test explicitly
-when it is relevant.
+The smaller `analyze_entanglement` density-matrix pipeline tries PPT,
+realignment, and reduction. The composite `is_separable` pipeline adds the
+documented low-rank, separable-ball, positive-map, filtering, randomized, and
+optional hierarchy routes; see
+[Separability and local discrimination](separability_optimization.md).
 
 ## 1. A pure product state
 

@@ -48,12 +48,17 @@ compatibility.
 
 ## M7 — QETLAB completeness sweep
 
-Account for every reviewed public upstream function and example with
-implementation, compatibility mapping, documented supersession, or explicit
-blocker. Complete provenance and validation matrices.
+The local static terminal-coverage objective is reached at pinned revision
+`d8589610f00cff106537268dee2e2a1153f3a601`: 127/127 public rows are verified,
+36/36 internal helpers have terminal dispositions, the queue is empty, and the
+strict checker passes. This is repository evidence, not complete MATLAB/QETLAB
+parity, supported-platform CI, or release approval.
 
-## M8 — release candidate
+## M8 — release convergence
 
-Review API stability, cross-platform/minimum-version CI, documentation, legal
-notices, registry readiness, allocation/performance evidence, and SemVer policy.
-Do not tag 1.0 solely because the function count is high.
+Review API stability, exact committed-tree cross-platform CI, documentation,
+legal notices, registry readiness, allocation/performance evidence, and SemVer
+policy. The local isolated dirty-worktree archive smoke passes, but exact
+committed-tree remote CI and the non-delegable maintainer review remain open.
+Do not tag or publish without explicit authorization, and do not tag 1.0 solely
+because the function count is high.

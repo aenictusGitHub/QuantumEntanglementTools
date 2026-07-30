@@ -14,10 +14,91 @@ export SubsystemLayout,
     tensor_power,
     tensor_sum,
     kronecker_sum,
+    parallel_repetition,
+    BellScenario,
+    FullProbabilityBehavior,
+    CollinsGisinBehavior,
+    BellFunctional,
+    NonlocalGame,
+    BCSGame,
+    NPALetter,
+    NPAWord,
+    NPALevel,
+    NPAStatus,
+    NPAProblem,
+    NPAResult,
+    NonlocalValueStatus,
+    DeterministicStrategy,
+    NonlocalValueResult,
+    NonlocalLowerBoundResult,
+    BellQubitProblem,
+    BellQubitResult,
+    full_probability_behavior,
+    collins_gisin_behavior,
+    evaluate_bell_functional,
+    nonlocal_game,
+    npa_word,
+    npa_problem,
+    npa_membership,
+    bell_inequality_bound,
+    nonlocal_game_value,
+    xor_game_value,
+    nonlocal_game_lower_bound,
+    bcs_game_lower_bound,
+    bcs_game_value,
+    bell_inequality_qubit_bound,
     majorizes,
     elementary_symmetric_polynomial,
     compound_matrix,
     additive_compound_matrix,
+    commutant,
+    HomogeneousPolynomial,
+    PolynomialOptimizationResult,
+    PolynomialSOSResult,
+    monomial_exponents,
+    evaluate_polynomial,
+    copositive_polynomial,
+    polynomial_as_matrix,
+    polynomial_bounds,
+    polynomial_sos_problem,
+    polynomial_sos_bounds,
+    CopositivityStatus,
+    CopositivityWitness,
+    CopositivityResult,
+    CliqueNumberStatus,
+    MotzkinStrausWitness,
+    CliqueNumberResult,
+    copositivity_criterion,
+    clique_number_bounds,
+    OptimizationStatus,
+    AbstractOptimizationBackend,
+    NoOptimizationBackend,
+    JuMPBackend,
+    OptimizationLimits,
+    AffineScalar,
+    AffineEquality,
+    AffineInterval,
+    HermitianAffineMatrix,
+    SemidefiniteProgram,
+    positive_semidefinite_constraint,
+    MatsumotoFidelityModel,
+    matsumoto_fidelity_model,
+    matsumoto_fidelity_problem,
+    ComplexAffineTerm,
+    ComplexAffineMatrix,
+    TopKPNormEpigraph,
+    TopKPNormDualEpigraph,
+    complex_affine_variable,
+    top_k_p_norm_epigraph,
+    add_top_k_p_norm_epigraph!,
+    top_k_p_norm_dual_epigraph,
+    add_top_k_p_norm_dual_epigraph!,
+    OptimizerMetadata,
+    OptimizationPrimal,
+    OptimizationDual,
+    OptimizationResult,
+    hermitian_variable,
+    solve_optimization,
     MatrixPredicateStatus,
     MatrixPredicateResult,
     MatrixPredicateSatisfied,
@@ -47,7 +128,32 @@ export SubsystemLayout,
     antisymmetric_subspace_basis,
     SchmidtDecompositionResult,
     OperatorSchmidtDecompositionResult,
+    OperatorSinkhornResult,
+    FilterNormalFormResult,
     ProductAnalysisResult,
+    EntanglingGateResult,
+    BlockPositivityStatus,
+    BlockPositivityWitness,
+    BlockPositivityResult,
+    AbsPPTEnumerationStatus,
+    AbsolutePPTStatus,
+    AbsPPTOrdering,
+    AbsPPTConstraint,
+    AbsPPTConstraintFamily,
+    AbsPPTOrderingCertificate,
+    IsAbsPPTResult,
+    SymmetricExtensionStatus,
+    SymmetricExtensionProblem,
+    SymmetricInnerExtensionProblem,
+    SymmetricExtensionWitness,
+    SymmetricExtensionResult,
+    RandomPPTStatus,
+    RandomPPTStateResult,
+    UPBAnalysisResult,
+    MinimumUPBSizeResult,
+    UPBConstruction,
+    UPBConstructionUnavailable,
+    UPBResourceLimitError,
     SeparableBallResult,
     CriterionStatus,
     CriterionResult,
@@ -57,25 +163,97 @@ export SubsystemLayout,
     trace_norm,
     schatten_norm,
     ky_fan_norm,
+    top_k_p_norm,
+    top_k_p_norm_dual,
+    InducedMatrixNormResult,
+    induced_matrix_norm,
+    InducedSchattenNormResult,
+    induced_schatten_lower_bound,
+    StateDiscriminationStatus,
+    StateDiscriminationProblem,
+    StateDiscriminationResult,
+    LocalDistinguishabilityStatus,
+    LocalDistinguishabilityProblem,
+    LocalDistinguishabilityResult,
+    state_discrimination_problem,
+    state_distinguishability,
+    local_distinguishability_problem,
+    local_distinguishability,
+    SKOperatorNormStatus,
+    SKOperatorNormLowerWitness,
+    SKOperatorNormUpperWitness,
+    SKOperatorNormProblem,
+    SKOperatorNormResult,
+    sk_operator_norm_problem,
+    sk_operator_norm,
+    ChannelOptimizationStatus,
+    DiamondNormProblem,
+    ChannelNormResult,
+    ChannelDistinguishabilityResult,
+    MaximumOutputFidelityProblem,
+    MaximumOutputFidelityResult,
+    diamond_norm_problem,
+    diamond_norm,
+    cb_norm,
+    channel_distinguishability,
+    maximum_output_fidelity_problem,
+    maximum_output_fidelity,
+    RandomSuperoperatorResult,
+    random_superoperator,
+    twirl,
     purity,
+    renyi_entropy,
     von_neumann_entropy,
     fidelity,
+    matsumoto_fidelity,
     trace_distance,
     negativity,
     logarithmic_negativity,
     l1_coherence,
     relative_entropy_coherence,
     coherence_rank,
+    PureKCoherenceRobustnessResult,
+    pure_k_coherence_robustness,
+    CoherenceCriterionResult,
+    CoherenceOptimizationResult,
+    is_k_incoherent,
+    is_absolutely_k_incoherent,
+    robustness_coherence,
+    trace_distance_coherence,
+    generalized_robustness_k_coherence,
     schmidt_coefficients,
     schmidt_decomposition,
+    schmidt_k_norm,
     schmidt_rank,
     operator_schmidt_decomposition,
     operator_schmidt_coefficients,
     operator_schmidt_rank,
+    operator_sinkhorn,
+    filter_normal_form,
     is_product_vector,
     is_product_operator,
+    is_entangling_gate,
+    is_block_positive,
+    abs_ppt_lmi_matrix,
+    abs_ppt_constraints,
+    abs_ppt_ordering_program,
+    is_abs_ppt,
+    symmetric_extension_problem,
+    symmetric_extension,
+    symmetric_inner_extension_problem,
+    symmetric_inner_extension,
+    random_ppt_state,
+    is_upb,
+    minimum_upb_size,
+    upb,
+    UPBReplacementVector,
+    UPBSeparableDiscriminationProblem,
+    UPBSeparableDiscriminationResult,
+    upb_sep_distinguishability_problem,
+    upb_sep_distinguishable,
     concurrence,
     entanglement_of_formation,
+    entangled_subspace,
     in_separable_ball,
     ppt_criterion,
     realignment_criterion,
@@ -90,29 +268,64 @@ export SubsystemLayout,
     EntanglementReport,
     detect_entanglement,
     analyze_entanglement,
+    is_separable,
     backend_capabilities,
     available_entanglement_backends,
     MATLABCompat
 
 include("dimensions.jl")
 include("tensor_products.jl")
+include("nonlocal_games/parallel_repetition.jl")
 include("linear_algebra/matrix_analysis.jl")
+include("linear_algebra/commutant.jl")
 include("linear_algebra/matrix_predicates.jl")
+include("optimization/polynomials.jl")
+include("optimization/interface.jl")
+include("optimization/psd_constraints.jl")
+include("optimization/matsumoto_fidelity_model.jl")
+include("optimization/top_k_p_norm_epigraph.jl")
+include("optimization/top_k_p_norm_dual_epigraph.jl")
 include("subsystem/permutation.jl")
 include("subsystem/partial_trace.jl")
 include("subsystem/partial_transpose.jl")
 include("subsystem/realignment.jl")
 include("subsystem/projectors.jl")
+include("optimization/linear_maps.jl")
+include("optimization/state_discrimination.jl")
+include("optimization/polynomial_sos.jl")
+include("optimization/copositivity_clique.jl")
 include("operators/operators.jl")
 include("states/states.jl")
+include("states/entangled_subspace.jl")
 include("random/random_objects.jl")
 include("channels/channels.jl")
 include("channels/representations.jl")
+include("optimization/channel_optimization.jl")
+include("channels/random_superoperator.jl")
+include("channels/twirls.jl")
 include("measures/scalar_measures.jl")
+include("optimization/sk_operator_norm.jl")
+include("entanglement/block_positivity.jl")
+include("channels/induced_schatten.jl")
 include("coherence/coherence.jl")
+include("coherence/pure_k_robustness.jl")
+include("coherence/coherence_optimization.jl")
+include("entanglement/operator_sinkhorn.jl")
 include("entanglement/product_analysis.jl")
+include("entanglement/filter_normal_form.jl")
+include("entanglement/entangling_gate.jl")
+include("entanglement/upb_size.jl")
+include("entanglement/upb_catalog.jl")
+include("entanglement/upb_analysis.jl")
 include("entanglement/criteria.jl")
+include("entanglement/absolute_ppt.jl")
+include("entanglement/symmetric_extensions.jl")
 include("entanglement/backend_interface.jl")
+include("entanglement/separability_optimization.jl")
+include("nonlocal_games/scenarios.jl")
+include("nonlocal_games/npa.jl")
+include("nonlocal_games/game_values.jl")
+include("nonlocal_games/nonlocal_optimization.jl")
 include("compat/MATLABCompat.jl")
 
 end # module QuantumEntanglementTools

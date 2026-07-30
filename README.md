@@ -2,33 +2,49 @@
 
 `QuantumEntanglementTools` is an independent Julia package for
 quantum-information and entanglement calculations. Development currently
-targets an unreleased, experimental `0.1.0` milestone with a scoped,
-type-generic, sparse-aware API, explicit QETLAB migration helpers, and optional
-backend integrations.
+targets an unreleased, experimental `0.1.0` milestone toward complete
+behavioral coverage of the public API at a pinned QETLAB revision. It provides
+a type-generic, sparse-aware API, explicit QETLAB migration helpers, and
+optional backend integrations.
 
 > [!WARNING]
-> The unreleased `0.1.0` development milestone is experimental. It is not a
-> claim of complete QETLAB parity, API stability, comparative performance, or
-> registry availability. Check the [porting status](docs/PORTING_STATUS.md) and
+> The unreleased `0.1.0` development milestone is experimental.
+> Static implementation completion is not QETLAB/MATLAB behavioral parity. It
+> does not establish supported-platform remote CI, API stability, comparative
+> performance, release approval, human review, or registry availability. Check
+> the [porting status](docs/PORTING_STATUS.md) and
 > [validation report](docs/VALIDATION_REPORT.md) before relying on a migration
 > mapping or numerical certificate.
 
 ## Current status
 
-- The local package corpus contains 2,417 passing assertions on Julia 1.10.11
-  and 1.12.6: 2,369 core assertions plus 48 assertions that execute the
-  published tutorials.
-- All 163 inventoried QETLAB files have source-reviewed dispositions. Among the
-  127 public rows, 63 mappings are implemented, 15 are partial, 19 are
-  deferred, and 30 are blocked with explicit reasons; none remains pending.
-  The 36 private helpers are tracked separately.
-- The implemented scope covers subsystem operations, states and random objects,
-  channels, scalar measures and criteria, certificate-aware entanglement
-  analysis, coherence, product analysis, and selected matrix analysis.
-- The exact EntanglementDetection.jl 0.2.2 integration is optional and isolated
-  in a child process. Its heuristic output remains uncertified candidate
-  evidence and never becomes a package-owned separability certificate.
-- Full test, oracle, platform, benchmark, and limitation details live in the
+<!-- qetlab-current-claims: begin -->
+
+- The inventory is pinned to QETLAB revision
+  `d8589610f00cff106537268dee2e2a1153f3a601`. All 163 inventoried QETLAB files
+  are source-reviewed. The strict static ledger reports 127/127 public rows
+  are verified with the required final status, 36/36 internal helpers have
+  terminal dispositions, the completion queue contains 0 public rows, 0
+  required internal helpers remain, and there are 0 static completion failures.
+- The package exports 458 public bindings, each with a matching provenance
+  entry.
+- The 8,117-assertion full package suite passed 8,117/8,117, including 48
+  executable-tutorial assertions, on Julia 1.12.6 and the installed Julia
+  1.10.0. The full optional JuMP suite passed 836/836 on both Julia lines.
+- The exact EntanglementDetection.jl 0.2.2 integration remains optional and
+  child-process isolated. The EntanglementDetection.jl extension passed 125/125
+  focused assertions on the current compatible Julia; heuristic output remains
+  uncertified candidate evidence.
+- All 114 declared quick benchmark cases completed locally with `--no-save`;
+  this is execution smoke evidence, not a performance baseline.
+- These are static-ledger and local-test results, not a claim of complete
+  QETLAB parity or MATLAB parity, supported-platform remote CI, comparative
+  performance, API stability, release approval, or non-delegable human review.
+  No version has been tagged or published.
+
+<!-- qetlab-current-claims: end -->
+
+Test, oracle, platform, benchmark, and limitation details live in the
   [porting status](docs/PORTING_STATUS.md),
   [inventory source review](docs/INVENTORY_REVIEW.md),
   [validation report](docs/VALIDATION_REPORT.md), and
@@ -81,8 +97,10 @@ report = analyze_entanglement(ψ01, (2, 2))
 @assert report.certificate_kind === :pure_product_decomposition
 ```
 
-There is intentionally no general Boolean `is_separable`: mixed-state
-separability is hard, and `:unknown` must not be confused with entanglement.
+`is_separable(rho, dims; strategies=...)` is deliberately a structured,
+certificate-first API rather than a bare Boolean predicate. It returns an
+`EntanglementReport` with ordered evidence and retains inconclusive outcomes as
+`:unknown`, which must not be confused with entanglement.
 The [separability examples](docs/src/separability_examples.md) build explicit
 mixed states, compare the native pipeline with `in_separable_ball`, and explain
 every status and certificate. The

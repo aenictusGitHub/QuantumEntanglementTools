@@ -14,7 +14,8 @@ function run(; io::IO=stdout)
     bell_density = bell * bell'
     channel = depolarizing_channel(2)
 
-    @assert is_completely_positive(channel)
+    complete_positivity = is_completely_positive(channel; allow_densify=true)
+    @assert complete_positivity.status === MatrixPredicateSatisfied
     @assert is_trace_preserving(channel)
     @assert is_unital(channel)
 
@@ -36,8 +37,8 @@ function run(; io::IO=stdout)
 
     println(
         io,
-        "Channel diagnostics: CP=",
-        is_completely_positive(channel),
+        "Channel diagnostics: CP status=",
+        complete_positivity.status,
         ", TP=",
         is_trace_preserving(channel),
         ", unital=",
@@ -62,7 +63,8 @@ function run(; io::IO=stdout)
     )
 
     return (
-        completely_positive=is_completely_positive(channel),
+        completely_positive=complete_positivity.status === MatrixPredicateSatisfied,
+        complete_positivity_status=complete_positivity.status,
         trace_preserving=is_trace_preserving(channel),
         unital=is_unital(channel),
         representation_error=representation_error,

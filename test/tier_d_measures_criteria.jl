@@ -296,7 +296,7 @@ end
     maximally_mixed = Matrix{Float64}(I, 4, 4) / 4
     @test CompatD.Entropy(maximally_mixed) == 2.0
     @test CompatD.Entropy(maximally_mixed, exp(1), 1) ≈ log(4)
-    @test_throws ArgumentError CompatD.Entropy(maximally_mixed, 2, 2)
+    @test CompatD.Entropy(maximally_mixed, 2, 2) == 2.0
 
     pure_zero = [1.0 0.0; 0.0 0.0]
     pure_plus = [0.5 0.5; 0.5 0.5]
@@ -334,6 +334,17 @@ end
     ppt_mixed = CompatD.IsPPT(maximally_mixed, 2, (2, 2), 1e-12)
     @test ppt_mixed.status === QETD.CriterionSatisfied
     @test ppt_mixed.witness === nothing
+
+    near_hermitian = copy(maximally_mixed)
+    near_hermitian[1, 2] = 1e-10
+    saved_near_hermitian = copy(near_hermitian)
+    ppt_near_hermitian = CompatD.IsPPT(near_hermitian, 2, (2, 2), 1e-8)
+    @test ppt_near_hermitian.status === QETD.CriterionUnknown
+    @test ppt_near_hermitian.witness.kind === :hermiticity_boundary
+    @test ppt_near_hermitian.witness.residual == 1e-10
+    @test abs(ppt_near_hermitian.witness.difference) == 1e-10
+    @test ppt_near_hermitian.value == ppt_near_hermitian.witness.residual
+    @test near_hermitian == saved_near_hermitian
 
     product_density = Diagonal([1.0, 0.0, 0.0, 0.0])
     @test CompatD.IsPPT(Matrix(product_density), 2, (2, 2), 1e-12).status ===

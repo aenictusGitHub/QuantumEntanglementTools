@@ -136,6 +136,6 @@ the actionable error path. Independent smoke calls also covered `Float32`,
 `Float64`, `ComplexF32`, `ComplexF64`, and multipartite input.
 
 The six-job Julia 1.11/1.12 Linux/macOS/Windows workflow passed at predecessor
-commit `6bf8d61`; an exact release-candidate rerun remains required. That
+commit `6bf8d61`; a rerun on the exact current commit remains required. That
 platform evidence does not make backend candidates certificates or make
 `Serialization` an adversarial isolation boundary.

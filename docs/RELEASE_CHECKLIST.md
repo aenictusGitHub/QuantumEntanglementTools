@@ -42,9 +42,10 @@ not suitable for registration.
       `0.1.0`, authors, Julia floor, weak dependency, extension, and compat
       bounds.
 - [ ] State that `v0.1.0` covers only the API recorded in `PROVENANCE.toml`.
-- [ ] Keep all 64 partial, deferred, or explicitly blocked public QETLAB rows
-      visible; zero pending classifications does not imply complete QETLAB
-      parity.
+- [ ] Verify that the generated completion ledger still reports 127/127 public
+      rows with a permitted final terminal status, 36/36 internal helpers
+      terminal, zero queued or required rows, and zero static failures. This is
+      not a MATLAB parity claim.
 - [ ] Run `julia --startup-file=no --project=. scripts/check_public_api.jl` and
       verify every exported binding has specification, provenance, tests, and
       documentation.
@@ -53,13 +54,15 @@ not suitable for registration.
       version and release scope.
 - [ ] Immediately before the approved tag, confirm that the dated changelog
       heading and `CITATION.cff` `date-released` equal the actual publication
-      date. If publication is not 2026-07-29, update both on a new candidate
-      commit and rerun every gate; the preparation date is not a release date.
+      date. Update both on a new candidate commit and rerun every gate; the
+      preparation date is not a release date.
 - [ ] While iterating, run the explicitly non-evidentiary worktree preflight
-      after all intended release files are tracked:
+      after all intended release files are present. Dirty mode uses an isolated
+      temporary Git index/object store and does not alter the repository index:
 
   ```sh
-  julia --startup-file=no --project=. scripts/check_release.jl --allow-dirty
+  julia --startup-file=no --project=. \
+    scripts/check_release.jl --allow-dirty --archive-smoke
   ```
 
 - [ ] Validate `CITATION.cff` against CFF schema 1.2.0 and record the validator
@@ -115,7 +118,32 @@ Run each command from the repository root on the exact candidate commit:
   julia --startup-file=no --project=quality quality/format.jl
   julia --startup-file=no --project=. scripts/build_upstream_inventory.jl --check
   julia --startup-file=no --project=. scripts/check_public_api.jl
+  julia --startup-file=no --project=. scripts/check_qetlab_completion.jl --strict
+  julia --startup-file=no --project=. test/qetlab_completion_checker.jl
   julia --startup-file=no --project=. scripts/validate_matrix_predicates.jl
+  ```
+
+- [ ] Complete optional JuMP/Hypatia/SCS environment:
+
+  ```sh
+  julia --startup-file=no --project=test/extensions/jump_optimization \
+    test/extensions/jump_optimization/runtests.jl
+  julia +1.10 --startup-file=no --project=test/extensions/jump_optimization \
+    test/extensions/jump_optimization/runtests.jl
+  ```
+
+- [ ] Every committed source-free oracle comparator, with its fixture path
+      supplied explicitly and fixture SHA-256 verified. Record MATLAB versus
+      Octave provenance per fixture; passing Octave comparisons do not establish
+      MATLAB parity.
+
+- [ ] Claim reconciliation must run without `--skip-tests` after all source,
+      test, ledger, and current-claim prose changes:
+
+  ```sh
+  julia --startup-file=no --project=. scripts/reconcile_project_claims.jl
+  julia --startup-file=no --project=. scripts/reconcile_project_claims.jl \
+    --check --skip-tests
   ```
 
 - [ ] Optional EntanglementDetection.jl environment on Julia 1.11 or later:

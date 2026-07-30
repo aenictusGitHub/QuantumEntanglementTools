@@ -20,18 +20,41 @@ X ≈ tensor_sum(
 ```
 
 The factors are Frobenius-orthonormal within each side. Singular-vector phases
-are not unique, and Hermitian input does not imply that each returned factor is
-Hermitian. `row_dims` and `column_dims` record the two local row and column
-dimensions used for the decomposition.
+and bases inside degenerate singular subspaces are not unique.
+`factor_convention` is `:general` for the ordinary complex SVD or `:hermitian`
+when `hermitian_factors=true` selected the real Hermitian-operator-space SVD.
+For the latter, `coordinate_imaginary_residual` and
+`coordinate_imaginary_tolerance` report the checked roundoff boundary used
+before taking real Hermitian-basis coordinates. They are `nothing` for the
+general convention. `row_dims` and `column_dims` record the two local row and
+column dimensions used for the decomposition.
 """
 struct OperatorSchmidtDecompositionResult{
-    C<:AbstractVector,L<:AbstractVector,R<:AbstractVector,RD<:Tuple,CD<:Tuple
+    C<:AbstractVector,L<:AbstractVector,R<:AbstractVector,RD<:Tuple,CD<:Tuple,IR,IT
 }
     coefficients::C
     left_factors::L
     right_factors::R
     row_dims::RD
     column_dims::CD
+    factor_convention::Symbol
+    coordinate_imaginary_residual::IR
+    coordinate_imaginary_tolerance::IT
+end
+
+function OperatorSchmidtDecompositionResult(
+    coefficients, left_factors, right_factors, row_dims, column_dims
+)
+    return OperatorSchmidtDecompositionResult(
+        coefficients,
+        left_factors,
+        right_factors,
+        row_dims,
+        column_dims,
+        :general,
+        nothing,
+        nothing,
+    )
 end
 
 """
@@ -96,6 +119,8 @@ function Base.show(io::IO, result::OperatorSchmidtDecompositionResult)
         result.row_dims,
         ", column_dims=",
         result.column_dims,
+        ", factor_convention=",
+        result.factor_convention,
         ")",
     )
 end
@@ -179,6 +204,8 @@ function _tiere_operator_schmidt_state(
     # slowest-subsystem-first state convention used by `schmidt_decomposition`.
     state = vec(permutedims(realigned, (2, 1)))
     return (
+        dense=dense,
+        realigned=realigned,
         state=state,
         state_dims=plan.output_size,
         row_layout=row_layout,
@@ -192,10 +219,158 @@ function _tiere_unrowmajor(
     return permutedims(reshape(copy(vector), column_dimension, row_dimension), (2, 1))
 end
 
+function _tiere_rowmajor_index(row::Int, column::Int, dimension::Int)
+    return Base.checked_add(Base.checked_mul(row - 1, dimension), column)
+end
+
+function _tiere_hermitian_coordinates(
+    realigned::AbstractMatrix{T}, left_dimension::Int, right_dimension::Int
+) where {T<:LinearAlgebra.BlasFloat}
+    real_type = typeof(real(zero(T)))
+    work_type = Complex{real_type}
+    inverse_sqrt_two = inv(sqrt(real_type(2)))
+    imaginary_unit = complex(zero(real_type), one(real_type))
+    left_size = Base.checked_mul(left_dimension, left_dimension)
+    right_size = Base.checked_mul(right_dimension, right_dimension)
+
+    left_coordinates = Matrix{work_type}(undef, left_size, right_size)
+    basis_index = 1
+    for row in 1:left_dimension
+        source = _tiere_rowmajor_index(row, row, left_dimension)
+        @views left_coordinates[basis_index, :] .= realigned[source, :]
+        basis_index += 1
+    end
+    for row in 1:left_dimension, column in (row + 1):left_dimension
+        first_source = _tiere_rowmajor_index(row, column, left_dimension)
+        second_source = _tiere_rowmajor_index(column, row, left_dimension)
+        @views left_coordinates[basis_index, :] .=
+            inverse_sqrt_two .* (realigned[first_source, :] .+ realigned[second_source, :])
+        basis_index += 1
+    end
+    for row in 1:left_dimension, column in (row + 1):left_dimension
+        first_source = _tiere_rowmajor_index(row, column, left_dimension)
+        second_source = _tiere_rowmajor_index(column, row, left_dimension)
+        @views left_coordinates[basis_index, :] .=
+            (imaginary_unit * inverse_sqrt_two) .*
+            (realigned[second_source, :] .- realigned[first_source, :])
+        basis_index += 1
+    end
+
+    coordinates = Matrix{work_type}(undef, left_size, right_size)
+    basis_index = 1
+    for row in 1:right_dimension
+        source = _tiere_rowmajor_index(row, row, right_dimension)
+        @views coordinates[:, basis_index] .= left_coordinates[:, source]
+        basis_index += 1
+    end
+    for row in 1:right_dimension, column in (row + 1):right_dimension
+        first_source = _tiere_rowmajor_index(row, column, right_dimension)
+        second_source = _tiere_rowmajor_index(column, row, right_dimension)
+        @views coordinates[:, basis_index] .=
+            inverse_sqrt_two .*
+            (left_coordinates[:, first_source] .+ left_coordinates[:, second_source])
+        basis_index += 1
+    end
+    for row in 1:right_dimension, column in (row + 1):right_dimension
+        first_source = _tiere_rowmajor_index(row, column, right_dimension)
+        second_source = _tiere_rowmajor_index(column, row, right_dimension)
+        @views coordinates[:, basis_index] .=
+            (imaginary_unit * inverse_sqrt_two) .*
+            (left_coordinates[:, second_source] .- left_coordinates[:, first_source])
+        basis_index += 1
+    end
+    return coordinates
+end
+
+function _tiere_hermitian_factor(
+    coefficients::AbstractVector{R}, dimension::Int
+) where {R<:AbstractFloat}
+    factor = zeros(Complex{R}, dimension, dimension)
+    inverse_sqrt_two = inv(sqrt(R(2)))
+    imaginary_unit = complex(zero(R), one(R))
+    basis_index = 1
+    for row in 1:dimension
+        factor[row, row] = coefficients[basis_index]
+        basis_index += 1
+    end
+    for row in 1:dimension, column in (row + 1):dimension
+        value = inverse_sqrt_two * coefficients[basis_index]
+        factor[row, column] += value
+        factor[column, row] += value
+        basis_index += 1
+    end
+    for row in 1:dimension, column in (row + 1):dimension
+        value = imaginary_unit * inverse_sqrt_two * coefficients[basis_index]
+        factor[row, column] += value
+        factor[column, row] += conj(value)
+        basis_index += 1
+    end
+    return factor
+end
+
+function _tiere_hermitian_operator_schmidt(data)
+    data.row_layout.dims == data.column_layout.dims || throw(
+        ArgumentError(
+            "hermitian_factors=true requires locally square operator spaces; " *
+            "row_dims=$(data.row_layout.dims) and " *
+            "column_dims=$(data.column_layout.dims)",
+        ),
+    )
+    ishermitian(data.dense) || throw(
+        ArgumentError(
+            "hermitian_factors=true requires an exactly Hermitian operator; " *
+            "the input is never symmetrized or projected",
+        ),
+    )
+    left_dimension, right_dimension = data.row_layout.dims
+    complex_coordinates = _tiere_hermitian_coordinates(
+        data.realigned, left_dimension, right_dimension
+    )
+    real_type = typeof(real(zero(eltype(data.dense))))
+    coordinate_scale = maximum(abs, complex_coordinates; init=zero(real_type))
+    coordinate_tolerance =
+        8 *
+        max(size(complex_coordinates)...) *
+        eps(real_type) *
+        max(one(real_type), coordinate_scale)
+    imaginary_residual = maximum(
+        value -> abs(imag(value)), complex_coordinates; init=zero(real_type)
+    )
+    imaginary_residual <= coordinate_tolerance || error(
+        "Hermitian-basis coordinates have imaginary residual " *
+        "$imaginary_residual above the derived roundoff tolerance " *
+        "$coordinate_tolerance",
+    )
+
+    factorization = svd(real.(complex_coordinates); full=false)
+    term_count = length(factorization.S)
+    left_factors = [
+        _tiere_hermitian_factor(@view(factorization.U[:, index]), left_dimension) for
+        index in 1:term_count
+    ]
+    right_factors = [
+        _tiere_hermitian_factor(@view(factorization.V[:, index]), right_dimension) for
+        index in 1:term_count
+    ]
+    return OperatorSchmidtDecompositionResult(
+        factorization.S,
+        left_factors,
+        right_factors,
+        data.row_layout.dims,
+        data.column_layout.dims,
+        :hermitian,
+        imaginary_residual,
+        coordinate_tolerance,
+    )
+end
+
 """
-    operator_schmidt_decomposition(operator, dims; allow_densify=false)
     operator_schmidt_decomposition(
-        operator, row_dims, column_dims; allow_densify=false
+        operator, dims; allow_densify=false, hermitian_factors=false
+    )
+    operator_schmidt_decomposition(
+        operator, row_dims, column_dims;
+        allow_densify=false, hermitian_factors=false
     )
 
 Compute the full operator Schmidt decomposition of a bipartite operator.
@@ -204,23 +379,45 @@ Compute the full operator Schmidt decomposition of a bipartite operator.
 spaces are supported. The one-layout method is the square-operator
 convenience form.
 
-The implementation reuses [`realign`](@ref) and
+The general convention reuses [`realign`](@ref) and
 [`schmidt_decomposition`](@ref). It returns all
 `min(rA*cA, rB*cB)` coefficients, including numerical zeros, in descending
 order. The full dense SVD costs
 `O(rA*cA*rB*cB*min(rA*cA,rB*cB))` time and dense workspace proportional to
 the operator size. Sparse input is rejected unless `allow_densify=true`.
 Only BLAS floating element types are supported; no precision-changing
-conversion, normalization, clipping, or Hermitian-factor repair is performed.
+conversion, normalization, clipping, or input repair is performed.
+
+With `hermitian_factors=true`, both local layouts must be square and identical
+between rows and columns, and `operator` must be exactly Hermitian. The
+operator is expanded in real orthonormal Hermitian bases before a real SVD, so
+every returned local factor is Hermitian. This convention corrects the pinned
+routine's use of linear indexing for unequal local dimensions. The checked
+imaginary coordinate residual and its dimension- and scale-aware roundoff
+tolerance are reported in the result. A near-Hermitian input is never
+symmetrized implicitly.
 """
 function operator_schmidt_decomposition(
-    operator::AbstractMatrix{<:Number}, dims; allow_densify::Bool=false
+    operator::AbstractMatrix{<:Number},
+    dims;
+    allow_densify::Bool=false,
+    hermitian_factors::Bool=false,
 )
-    return operator_schmidt_decomposition(operator, dims, dims; allow_densify=allow_densify)
+    return operator_schmidt_decomposition(
+        operator,
+        dims,
+        dims;
+        allow_densify=allow_densify,
+        hermitian_factors=hermitian_factors,
+    )
 end
 
 function operator_schmidt_decomposition(
-    operator::AbstractMatrix{<:Number}, row_dims, column_dims; allow_densify::Bool=false
+    operator::AbstractMatrix{<:Number},
+    row_dims,
+    column_dims;
+    allow_densify::Bool=false,
+    hermitian_factors::Bool=false,
 )
     data = _tiere_operator_schmidt_state(
         operator,
@@ -229,6 +426,7 @@ function operator_schmidt_decomposition(
         allow_densify=allow_densify,
         operation="operator_schmidt_decomposition",
     )
+    hermitian_factors && return _tiere_hermitian_operator_schmidt(data)
     decomposition = schmidt_decomposition(data.state, data.state_dims; allow_densify=false)
     term_count = length(decomposition.coefficients)
     left_factors = [
@@ -571,11 +769,98 @@ function _tiere_entropy_from_probabilities(probabilities, base)
     return result / log(converted_base)
 end
 
+function _tiere_validate_projection_policy(policy::Symbol, name::AbstractString)
+    policy === :reject ||
+        policy === :project ||
+        throw(ArgumentError("$name must be :reject or :project; got $policy"))
+    return policy
+end
+
+function _tiere_rank_one_density_vector(
+    analysis; psd_boundary_policy::Symbol, rank_boundary_policy::Symbol
+)
+    _tiere_validate_projection_policy(psd_boundary_policy, "PSD boundary policy")
+    _tiere_validate_projection_policy(rank_boundary_policy, "rank boundary policy")
+
+    exact_projector =
+        iszero(analysis.hermiticity_residual) &&
+        iszero(analysis.trace_imaginary_residual) &&
+        iszero(analysis.normalization_residual) &&
+        all(iszero, analysis.matrix * analysis.matrix - analysis.matrix)
+    if exact_projector
+        diagonal_values = real.(diag(analysis.matrix))
+        pivot = argmax(diagonal_values)
+        pivot_value = diagonal_values[pivot]
+        pivot_value > zero(pivot_value) || return nothing
+        return copy(@view(analysis.matrix[:, pivot])) / sqrt(pivot_value)
+    end
+
+    if analysis.spectral_boundary_uncertain && psd_boundary_policy === :reject
+        throw(
+            DomainError(
+                analysis.minimum_eigenvalue,
+                "rho has a negative eigenvalue inside the validation tolerance; " *
+                "psd_boundary_policy=:reject refuses the bounded projection " *
+                "needed for rank-one density-matrix conversion",
+            ),
+        )
+    end
+
+    raw_tail = @view analysis.eigenvalues[1:(end - 1)]
+    raw_tail_residual = maximum(abs, raw_tail; init=zero(eltype(analysis.eigenvalues)))
+    eigenvalues = if psd_boundary_policy === :project
+        map(value -> value < zero(value) ? zero(value) : value, analysis.eigenvalues)
+    else
+        analysis.eigenvalues
+    end
+    tail = @view eigenvalues[1:(end - 1)]
+    tail_residual = maximum(abs, tail; init=zero(eltype(eigenvalues)))
+    tail_residual <= analysis.tolerance || return nothing
+
+    leading_eigenvalue = last(eigenvalues)
+    projector_residual = maximum(
+        abs, analysis.matrix * analysis.matrix - analysis.matrix; init=zero(tail_residual)
+    )
+    rank_residual = max(
+        raw_tail_residual,
+        abs(leading_eigenvalue - one(leading_eigenvalue)),
+        projector_residual,
+    )
+    rank_boundary_policy === :project || throw(
+        DomainError(
+            rank_residual,
+            "rho lies inside the numerical rank-one tolerance boundary; " *
+            "rank_boundary_policy=:reject refuses to discard its spectral " *
+            "tail and replace it by the normalized leading eigenvector",
+        ),
+    )
+
+    leading_eigenvalue > zero(leading_eigenvalue) || return nothing
+    leading_vector = @view analysis.decomposition.vectors[
+        :, size(analysis.decomposition.vectors, 2)
+    ]
+    return copy(leading_vector)
+end
+
+function _tiere_entanglement_from_concurrence(concurrence_value, base)
+    radicand = one(concurrence_value) - concurrence_value^2
+    radicand >= zero(radicand) || throw(
+        DomainError(
+            concurrence_value,
+            "computed concurrence exceeds one; refusing to clip the " *
+            "Wootters formula radicand",
+        ),
+    )
+    first_probability = (one(concurrence_value) + sqrt(radicand)) / 2
+    probabilities = [first_probability, one(first_probability) - first_probability]
+    return _tiere_entropy_from_probabilities(probabilities, base)
+end
+
 """
     entanglement_of_formation(
         state, dims; base=2, atol=nothing, rtol=nothing,
-        allow_densify=false, psd_boundary_policy=:project,
-        range_boundary_policy=:project
+        allow_densify=false, psd_boundary_policy=:reject,
+        rank_boundary_policy=:reject, range_boundary_policy=:reject
     )
 
 Return the closed-form bipartite entanglement of formation in the domains where
@@ -583,21 +868,28 @@ it is known exactly:
 
 - a validated normalized pure vector in arbitrary bipartite dimensions, using
   the entropy of its squared Schmidt coefficients;
+- a validated rank-one density matrix in arbitrary bipartite dimensions,
+  converted to its projected pure vector as in the pinned QETLAB entry point;
 - a validated `4 x 4` two-qubit density matrix with `dims == (2, 2)`, using
   Wootters concurrence and binary entropy.
 
 `base` defaults to `2` and must be finite and greater than one. Sparse spectral
 work requires `allow_densify=true`, and the dependency-free implementation
-supports only BLAS floating element types. Mixed states outside `2 x 2` local
-dimensions are rejected, including rank-one matrices: callers must pass pure
-states as vectors. For the mixed-state formula, `psd_boundary_policy=:project`
-explicitly projects only negative eigenvalues already proven to lie inside
-the requested PSD validation tolerance to zero; use `:reject` to refuse that
-roundoff-boundary repair. Eigenvalues below the tolerance always raise.
-`range_boundary_policy` analogously controls a bounded projection of a
-mixed-state concurrence just above its exact upper endpoint.
-Inputs and intermediate probabilities are never normalized. Complexity is
-dominated by dense SVD/eigendecomposition work.
+supports only BLAS floating element types for matrix spectral work. Mixed
+states outside `2 x 2` local dimensions are rejected.
+
+No boundary projection is enabled by default. For matrix inputs,
+`psd_boundary_policy=:project` explicitly projects only negative eigenvalues
+already proven to lie inside the requested PSD validation tolerance to zero.
+For a higher-dimensional matrix whose remaining non-leading spectral tail is
+nonzero but inside the rank tolerance, `rank_boundary_policy=:project`
+explicitly permits rank-one conversion. `range_boundary_policy=:project`
+analogously permits a bounded projection of a two-qubit concurrence just above
+its exact upper endpoint. Values outside the relevant tolerances always raise.
+The supplied density matrix is never trace-normalized. Rank-one conversion
+produces a normalized projected vector; doing so for a nonexact numerical
+projector requires `rank_boundary_policy=:project`. Complexity is dominated
+by dense SVD/eigendecomposition work.
 """
 function entanglement_of_formation(
     state::AbstractVector{<:Number},
@@ -624,38 +916,55 @@ function entanglement_of_formation(
     atol=nothing,
     rtol=nothing,
     allow_densify::Bool=false,
-    psd_boundary_policy::Symbol=:project,
-    range_boundary_policy::Symbol=:project,
+    psd_boundary_policy::Symbol=:reject,
+    rank_boundary_policy::Symbol=:reject,
+    range_boundary_policy::Symbol=:reject,
 )
     checked_base = _tierd_validate_log_base(base)
-    layout = _tierd_bipartite_layout(dims, size(rho, 1))
     size(rho, 1) == size(rho, 2) ||
         throw(DimensionMismatch("rho must be square; got size $(size(rho))"))
-    layout.dims == (2, 2) || throw(
-        ArgumentError(
-            "mixed-state entanglement_of_formation is implemented only " *
-            "for dims=(2, 2); got $(layout.dims)",
-        ),
+    layout = _tierd_bipartite_layout(dims, size(rho, 1))
+    _tiere_validate_projection_policy(psd_boundary_policy, "PSD boundary policy")
+    _tiere_validate_projection_policy(rank_boundary_policy, "rank boundary policy")
+    _tiere_validate_projection_policy(
+        range_boundary_policy, "concurrence range boundary policy"
     )
-    concurrence_value = concurrence(
+
+    if layout.dims == (2, 2)
+        concurrence_value = concurrence(
+            rho;
+            atol=atol,
+            rtol=rtol,
+            allow_densify=allow_densify,
+            psd_boundary_policy=psd_boundary_policy,
+            range_boundary_policy=range_boundary_policy,
+        )
+        return _tiere_entanglement_from_concurrence(concurrence_value, checked_base)
+    end
+
+    analysis = _tierd_density_analysis(
         rho;
         atol=atol,
         rtol=rtol,
         allow_densify=allow_densify,
-        psd_boundary_policy=psd_boundary_policy,
-        range_boundary_policy=range_boundary_policy,
+        boundary_policy=:record,
+        operation="entanglement_of_formation",
     )
-    radicand = one(concurrence_value) - concurrence_value^2
-    radicand >= zero(radicand) || throw(
-        DomainError(
-            concurrence_value,
-            "computed concurrence exceeds one; refusing to clip the " *
-            "Wootters formula radicand",
+    state = _tiere_rank_one_density_vector(
+        analysis;
+        psd_boundary_policy=psd_boundary_policy,
+        rank_boundary_policy=rank_boundary_policy,
+    )
+    state === nothing && throw(
+        ArgumentError(
+            "mixed-state entanglement_of_formation is implemented only for " *
+            "dims=(2, 2); the supplied $(layout.dims) density matrix is not " *
+            "rank one within the requested validation tolerance",
         ),
     )
-    first_probability = (one(concurrence_value) + sqrt(radicand)) / 2
-    probabilities = [first_probability, one(first_probability) - first_probability]
-    return _tiere_entropy_from_probabilities(probabilities, checked_base)
+    return entanglement_of_formation(
+        state, layout.dims; base=checked_base, atol=atol, rtol=rtol, allow_densify=false
+    )
 end
 
 function _tiere_separable_ball_result(

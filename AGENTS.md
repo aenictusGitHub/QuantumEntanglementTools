@@ -7,15 +7,40 @@ in this repository. Read it together with
 
 ## Project state
 
-`QuantumEntanglementTools` is preparing an experimental `v0.1.0` release of a
-scoped Julia API for selected quantum-information and entanglement operations.
-The upstream inventory and QETLAB parity sweep are not complete. Never infer
-completeness from a file existing or a symbol being exported, and do not widen
-the release scope beyond functions backed by the provenance, test, and
-documentation ledgers.
+`QuantumEntanglementTools` is unreleased pre-1.0 software whose development goal
+is complete behavioral coverage of the documented public API at the pinned
+QETLAB revision. Classification, source disposition, and the strict static
+implementation ledger are complete. Semantic validation, oracle evidence,
+supported-platform remote CI, and QETLAB/MATLAB behavioral parity remain
+separate milestones. Never infer completeness from a file existing or a symbol
+being exported, and do not widen a milestone's verified scope beyond functions
+backed by the provenance, test, and documentation ledgers.
 
 The package name is provisional. It is intentionally neutral and must not be
 described as an official QETLAB project.
+
+<!-- qetlab-current-claims: begin -->
+
+- The inventory is pinned to QETLAB revision
+  `d8589610f00cff106537268dee2e2a1153f3a601`. Its strict static ledger reports
+  127/127 public rows are verified with the required final status, 36/36 internal
+  helpers have terminal dispositions, the completion queue contains 0 public
+  rows, 0 required internal helpers remain, and there are 0 static completion
+  failures.
+- The public API contains 458 public bindings with matching provenance entries.
+- The 8,117-assertion full package suite passed 8,117/8,117, including 48
+  tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0. The full
+  optional JuMP suite passed 836/836 on both Julia lines. The exact
+  EntanglementDetection.jl 0.2.2 extension passed 125/125 focused assertions on
+  the current compatible Julia.
+- All 114 declared quick benchmark cases completed locally with `--no-save`;
+  this is execution smoke evidence, not a performance baseline.
+- These local and static results do not establish QETLAB/MATLAB parity,
+  supported-platform remote CI, comparative performance, API stability,
+  release approval, or non-delegable human review. No version has been tagged
+  or published.
+
+<!-- qetlab-current-claims: end -->
 
 ## Sources of truth
 
@@ -26,6 +51,10 @@ described as an official QETLAB project.
 - `docs/src/conventions.md` records user-visible mathematical conventions.
 - `docs/PORTING_STATUS.md` summarizes verified milestone status.
 - `docs/SESSION_HANDOFF.md` records the current working state and blockers.
+- `porting/qetlab_completion_plan.toml` records the generated all-public-row
+  completion program.
+- `artifacts/convergence/current_snapshot.toml` records reconciled current
+  counts and static-audit candidates.
 
 If these disagree, stop making broad claims, resolve the discrepancy from primary
 evidence, and update all affected records.
@@ -78,6 +107,8 @@ julia --startup-file=no --project=. scripts/check_release.jl
 julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 julia --project=docs docs/make.jl
 julia --project=benchmark benchmark/benchmarks.jl --quick --no-save
+julia --startup-file=no --project=test/extensions/jump_optimization \
+  test/extensions/jump_optimization/runtests.jl
 julia --startup-file=no --project=test/extensions/entanglement_detection \
   test/extensions/entanglement_detection/runtests.jl
 ```

@@ -146,8 +146,9 @@ basis coefficients strictly larger than
 
 `basis=nothing` selects the computational basis and preserves sparse-vector
 storage. A supplied basis must be a finite square unitary matrix whose columns
-are the basis vectors; coordinates are computed with `basis \\ state`, never
-with an explicit inverse. Sparse coordinate transforms require
+are the basis vectors; after validation, coordinates are computed directly as
+`basis' * state`, never with an explicit inverse or generic factorization.
+Sparse coordinate transforms require
 `allow_densify=true` because the result can be dense.
 """
 function coherence_rank(
@@ -193,7 +194,7 @@ function coherence_rank(
         )
         coordinate_basis = issparse(basis) ? Matrix(basis) : basis
         coordinate_state = issparse(state) ? Vector(state) : state
-        coordinate_basis \ coordinate_state
+        adjoint(coordinate_basis) * coordinate_state
     end
     real_type = typeof(real(zero(eltype(coefficients))))
     scale = maximum(abs, coefficients; init=zero(real_type))

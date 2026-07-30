@@ -175,10 +175,17 @@ end
             @test choi_data[row_range, column_range] ≈ QET.apply_channel(matrix_unit, kraus)
         end
 
-        recovered = QET.kraus_representation(choi)
-        @test QET.choi_matrix(recovered) ≈ QET.choi_matrix(choi)
-        @test QET.superoperator_matrix(QET.kraus_representation(superoperator)) ≈
-            QET.superoperator_matrix(superoperator)
+        @test_throws DomainError QET.kraus_representation(choi)
+        @test_throws DomainError QET.kraus_representation(superoperator)
+        recovered = QET.canonical_map_decomposition(choi)
+        @test QET.choi_matrix(recovered.representation) ≈ QET.choi_matrix(choi)
+        @test recovered.complete_positivity.status === MatrixPredicateUnknown
+
+        full_rank_choi = QET.ChoiRepresentation(
+            Matrix(Diagonal([4.0, 3.0, 2.0, 1.0])), 2, 2
+        )
+        @test QET.choi_matrix(QET.kraus_representation(full_rank_choi)) ≈
+            QET.choi_matrix(full_rank_choi)
 
         input = ComplexF64[0.6 0.2im; -0.2im 0.4]
         expected = sum(operator * input * operator' for operator in operators)
@@ -198,10 +205,10 @@ end
         )
 
         zero_map = QET.ChoiRepresentation(zeros(4, 4))
-        zero_kraus = QET.kraus_representation(zero_map)
-        @test length(zero_kraus.operators) == 1
-        @test iszero(only(zero_kraus.operators))
-        @test iszero(QET.choi_matrix(zero_kraus))
+        @test_throws DomainError QET.kraus_representation(zero_map)
+        zero_decomposition = QET.canonical_map_decomposition(zero_map)
+        @test zero_decomposition.retained_rank == 0
+        @test iszero(QET.choi_matrix(zero_decomposition.representation))
     end
 
     @testset "rectangular maps and complex precision" begin
@@ -215,7 +222,7 @@ end
         @test QET.output_dimension(map) == 3
         @test size(QET.choi_matrix(map)) == (6, 6)
         @test size(QET.superoperator_matrix(map)) == (9, 4)
-        @test QET.is_completely_positive(map)
+        @test QET.is_completely_positive(map).status === MatrixPredicateSatisfied
         @test QET.is_trace_preserving(map)
         @test !QET.is_unital(map)
 
@@ -244,7 +251,7 @@ end
 
     @testset "physicality diagnostics" begin
         identity_map = QET.KrausRepresentation([Matrix{Float64}(I, 2, 2)])
-        @test QET.is_completely_positive(identity_map)
+        @test QET.is_completely_positive(identity_map).status === MatrixPredicateSatisfied
         @test QET.is_trace_preserving(identity_map)
         @test QET.is_unital(identity_map)
 
@@ -253,7 +260,8 @@ end
             transpose_super[column + (row - 1) * 2, row + (column - 1) * 2] = 1
         end
         transpose_map = QET.SuperoperatorRepresentation(transpose_super, 2, 2)
-        @test !QET.is_completely_positive(transpose_map; atol=1e-14, rtol=1e-14)
+        @test QET.is_completely_positive(transpose_map; atol=1e-14, rtol=1e-14).status ===
+            MatrixPredicateViolated
         @test QET.is_trace_preserving(transpose_map)
         @test QET.is_unital(transpose_map)
         @test_throws DomainError QET.kraus_representation(transpose_map)
@@ -268,11 +276,12 @@ end
             2,
             2,
         )
-        @test !QET.is_completely_positive(nonhermitian)
+        @test QET.is_completely_positive(nonhermitian).status === MatrixPredicateViolated
         @test_throws DomainError QET.kraus_representation(nonhermitian)
 
         scaled_identity = QET.KrausRepresentation([2.0 * Matrix{Float64}(I, 2, 2)])
-        @test QET.is_completely_positive(scaled_identity)
+        @test QET.is_completely_positive(scaled_identity).status ===
+            MatrixPredicateSatisfied
         @test !QET.is_trace_preserving(scaled_identity)
         @test !QET.is_unital(scaled_identity)
 
@@ -287,27 +296,33 @@ end
         completely_depolarizing = QET.depolarizing_channel(2)
         @test QET.apply_channel(density, completely_depolarizing) ≈
             tr(density) * identity2 / 2
-        @test QET.is_completely_positive(completely_depolarizing)
+        @test QET.is_completely_positive(completely_depolarizing; allow_densify=true).status ===
+            MatrixPredicateSatisfied
         @test QET.is_trace_preserving(completely_depolarizing)
         @test QET.is_unital(completely_depolarizing)
         @test issparse(QET.choi_matrix(completely_depolarizing))
 
         identity_depolarizing = QET.depolarizing_channel(2, 1)
         @test QET.apply_channel(density, identity_depolarizing) ≈ density
-        @test QET.is_completely_positive(QET.depolarizing_channel(2, -1 // 3))
+        @test QET.is_completely_positive(
+            QET.depolarizing_channel(2, -1 // 3); allow_densify=true
+        ).status === MatrixPredicateSatisfied
         @test_throws DomainError QET.depolarizing_channel(2, -0.34)
         @test_throws DomainError QET.depolarizing_channel(2, 1.01)
 
         complete_dephasing = QET.dephasing_channel(2)
         @test QET.apply_channel(density, complete_dephasing) ≈ Diagonal(diag(density))
         @test QET.apply_channel(density, QET.dephasing_channel(2, 1)) ≈ density
-        @test QET.is_completely_positive(QET.dephasing_channel(3, -1 // 2))
+        @test QET.is_completely_positive(
+            QET.dephasing_channel(3, -1 // 2); allow_densify=true
+        ).status === MatrixPredicateSatisfied
         @test_throws DomainError QET.dephasing_channel(3, -0.51)
 
         bit_flip = QET.pauli_channel([0.0, 1.0, 0.0, 0.0])
         x = ComplexF64[0 1; 1 0]
         @test QET.apply_channel(density, bit_flip) ≈ x * density * x
-        @test QET.is_completely_positive(bit_flip)
+        @test QET.is_completely_positive(bit_flip; allow_densify=true).status ===
+            MatrixPredicateUnknown
         @test QET.is_trace_preserving(bit_flip)
         @test QET.is_unital(bit_flip)
         @test issparse(QET.choi_matrix(bit_flip))
@@ -345,12 +360,13 @@ end
         complement = QET.complementary_channel(map)
         @test QET.input_dimension(complement) == 2
         @test QET.output_dimension(complement) == 2
-        @test QET.is_completely_positive(complement)
+        @test QET.is_completely_positive(complement).status === MatrixPredicateSatisfied
         @test QET.is_trace_preserving(complement)
         choi_complement = QET.complementary_channel(QET.choi_representation(map))
         @test QET.input_dimension(choi_complement) == 2
         @test QET.output_dimension(choi_complement) == 2
-        @test QET.is_completely_positive(choi_complement)
+        @test QET.is_completely_positive(choi_complement; allow_densify=true).status ===
+            MatrixPredicateUnknown
         @test QET.is_trace_preserving(choi_complement)
 
         rho_a = ComplexF64[0.6 0.1; 0.1 0.4]
@@ -385,7 +401,8 @@ end
         matrix = ComplexF64[1 2im; -2im 3]
         @test QET.apply_channel(matrix, reduction) ≈
             tr(matrix) * Matrix{ComplexF64}(I, 2, 2) - matrix
-        @test !QET.is_completely_positive(reduction; atol=1e-14, rtol=1e-14)
+        @test QET.is_completely_positive(reduction; atol=0, rtol=0, allow_densify=true).status ===
+            MatrixPredicateViolated
 
         generalized_reduction = QET.reduction_map(3, 2)
         matrix3 = reshape(ComplexF64.(1:9), 3, 3)
@@ -394,7 +411,8 @@ end
 
         choi = QET.choi_map()
         @test size(QET.choi_matrix(choi)) == (9, 9)
-        @test !QET.is_completely_positive(choi; atol=1e-14, rtol=1e-14)
+        @test QET.is_completely_positive(choi; atol=0, rtol=0, allow_densify=true).status ===
+            MatrixPredicateViolated
         @test QET.choi_matrix(choi) == QET.choi_matrix(QET.choi_map(1, 1, 0))
         choi_input = reshape(ComplexF64.(1:9), 3, 3)
         @test QET.apply_channel(choi_input, choi) ≈ ComplexF64[
@@ -436,8 +454,21 @@ end
         @test size(CompatC.ApplyMap(density, CompatC.ChoiMatrix(rectangular))) == (3, 3)
 
         canonical = CompatC.KrausOperators(raw_choi)
-        @test QET.choi_matrix(QET.KrausRepresentation(canonical)) ≈ raw_choi
-        @test length(CompatC.KrausOperators(CompatC.ChoiMatrix(rectangular), (2, 3))) == 1
+        @test canonical isa Matrix
+        canonical_map = QET.OperatorSumRepresentation(
+            [canonical[index, 1] for index in axes(canonical, 1)],
+            [canonical[index, 2] for index in axes(canonical, 1)],
+        )
+        @test QET.choi_matrix(canonical_map) ≈ raw_choi
+        rectangular_factors = CompatC.KrausOperators(
+            CompatC.ChoiMatrix(rectangular), (2, 3)
+        )
+        @test size(rectangular_factors) == (1, 2)
+        @test QET.choi_matrix(
+            QET.OperatorSumRepresentation(
+                [rectangular_factors[1, 1]], [rectangular_factors[1, 2]]
+            ),
+        ) ≈ CompatC.ChoiMatrix(rectangular)
 
         dual_kraus = CompatC.DualMap(kraus)
         @test dual_kraus == [operator' for operator in kraus]
@@ -481,13 +512,23 @@ end
         @test !hasmethod(CompatC.PauliChannel, Tuple{Int})
 
         two_sided = reshape([identity2, bit_flip], 1, 2)
-        @test_throws ArgumentError CompatC.ApplyMap(density, two_sided)
-        @test_throws DomainError CompatC.KrausOperators(CompatC.ReductionMap(2))
+        @test CompatC.ApplyMap(density, two_sided) ≈ identity2 * density * adjoint(bit_flip)
+        reduction_raw = Matrix{Float64}(CompatC.ReductionMap(2))
+        reduction_factors = CompatC.KrausOperators(reduction_raw)
+        @test reduction_factors isa Matrix
+        @test QET.choi_matrix(
+            QET.OperatorSumRepresentation(
+                [reduction_factors[index, 1] for index in axes(reduction_factors, 1)],
+                [reduction_factors[index, 2] for index in axes(reduction_factors, 1)],
+            ),
+        ) ≈ reduction_raw
         @test_throws ArgumentError CompatC.ChoiMatrix(kraus, 0)
         @test_throws DimensionMismatch CompatC.KrausOperators(
             CompatC.ChoiMatrix(rectangular), (2, 2)
         )
-        @test_throws ArgumentError CompatC.PartialMap(product, raw_dephasing, 2, [2 2; 1 4])
+        @test_throws DimensionMismatch CompatC.PartialMap(
+            product, raw_dephasing, 2, [2 2; 1 3]
+        )
         @test_throws ArgumentError CompatC.KrausOperators(
             raw_choi, _TierCZeroBasedMatrix([2 2; 2 2])
         )

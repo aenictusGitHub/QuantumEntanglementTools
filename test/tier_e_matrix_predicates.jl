@@ -119,6 +119,33 @@ end
         big_indefinite = BigFloat[1 2; 2 1]
         @test is_positive_semidefinite(big_indefinite).status === MatrixPredicateViolated
 
+        boundary_before_violation = BigFloat[0 0; 0 -1]
+        delayed_violation = is_positive_semidefinite(
+            boundary_before_violation; atol=big"0", rtol=big"0"
+        )
+        @test delayed_violation.status === MatrixPredicateViolated
+        @test delayed_violation.value == -one(BigFloat)
+        @test delayed_violation.witness == (kind=:negative_diagonal_entry, index=2)
+
+        decoupled_boundary_before_indefinite_block = BigFloat[
+            0 0 0
+            0 1 2
+            0 2 1
+        ]
+        block_violation = is_positive_semidefinite(
+            decoupled_boundary_before_indefinite_block; atol=big"0", rtol=big"0"
+        )
+        @test block_violation.status === MatrixPredicateViolated
+        @test block_violation.value < 0
+        @test block_violation.witness.kind === :negative_ldl_pivot
+
+        decoupled_boundary_before_positive_block = BigFloat[0 0; 0 1]
+        block_boundary = is_positive_semidefinite(
+            decoupled_boundary_before_positive_block; atol=big"0", rtol=big"0"
+        )
+        @test block_boundary.status === MatrixPredicateUnknown
+        @test block_boundary.witness == (kind=:ldl_pivot_boundary, index=1)
+
         big_boundary = is_positive_semidefinite(BigFloat[1 1; 1 1])
         @test big_boundary.status === MatrixPredicateUnknown
         @test iszero(big_boundary.value)

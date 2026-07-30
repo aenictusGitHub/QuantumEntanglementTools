@@ -29,6 +29,45 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  jump-optimization:
+    name: JuMP optimization / Julia ${{ matrix.julia-version }} / ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version:
+          - "1.10"
+          - "1"
+    env:
+      JULIA_NUM_THREADS: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install Julia
+        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v3
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: Cache Julia artifacts
+        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+      - name: Show environment
+        run: >-
+          julia --startup-file=no -e
+          'using InteractiveUtils, LinearAlgebra; versioninfo();
+          println(LinearAlgebra.BLAS.get_config())'
+      - name: Instantiate isolated extension environment
+        run: >-
+          julia --startup-file=no
+          --project=test/extensions/jump_optimization -e
+          'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - name: Run load-order, solver-status, and residual tests
+        run: >-
+          julia --startup-file=no
+          --project=test/extensions/jump_optimization
+          test/extensions/jump_optimization/runtests.jl
+
   entanglement-detection:
     name: EntanglementDetection 0.2.2 / Julia ${{ matrix.julia-version }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}

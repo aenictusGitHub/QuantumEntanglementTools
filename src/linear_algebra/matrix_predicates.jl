@@ -282,6 +282,30 @@ function _matrix_predicate_psd_ldl(matrix, exact::Bool, tolerance)
     work = exact ? _matrix_predicate_exact_matrix(matrix) : Matrix(matrix)
     dimension = size(work, 1)
     minimum_pivot = nothing
+    boundary_pivot = nothing
+    boundary_index = nothing
+
+    if !exact
+        diagonal_index = 1
+        minimum_diagonal = real(work[1, 1])
+        for index in 2:dimension
+            value = real(work[index, index])
+            if value < minimum_diagonal
+                minimum_diagonal = value
+                diagonal_index = index
+            end
+        end
+        if minimum_diagonal < -tolerance
+            return _matrix_predicate_result(
+                :positive_semidefinite,
+                MatrixPredicateViolated;
+                value=minimum_diagonal,
+                tolerance=tolerance,
+                witness=(kind=:negative_diagonal_entry, index=diagonal_index),
+                message=_matrix_predicate_psd_message(MatrixPredicateViolated),
+            )
+        end
+    end
 
     for index in 1:dimension
         pivot = real(work[index, index])
@@ -331,6 +355,14 @@ function _matrix_predicate_psd_ldl(matrix, exact::Bool, tolerance)
                 message=_matrix_predicate_psd_message(MatrixPredicateViolated),
             )
         elseif pivot <= tolerance
+            coupled = any(row -> !iszero(work[row, index]), (index + 1):dimension)
+            if !coupled
+                if boundary_pivot === nothing || pivot < boundary_pivot
+                    boundary_pivot = pivot
+                    boundary_index = index
+                end
+                continue
+            end
             return _matrix_predicate_result(
                 :positive_semidefinite,
                 MatrixPredicateUnknown;
@@ -349,6 +381,17 @@ function _matrix_predicate_psd_ldl(matrix, exact::Bool, tolerance)
                 work[column, row] = conj(updated)
             end
         end
+    end
+
+    if boundary_pivot !== nothing
+        return _matrix_predicate_result(
+            :positive_semidefinite,
+            MatrixPredicateUnknown;
+            value=boundary_pivot,
+            tolerance=tolerance,
+            witness=(kind=:ldl_pivot_boundary, index=boundary_index),
+            message=_matrix_predicate_psd_message(MatrixPredicateUnknown),
+        )
     end
 
     return _matrix_predicate_result(

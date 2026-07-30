@@ -80,6 +80,19 @@ end
         @test majorizes([1, 4, 1], [2, 1, 3]; rtol=0)
         largest = typemax(Int)
         @test majorizes([largest, largest, -largest], [largest, 0, 0]; rtol=0)
+        @test QuantumEntanglementTools._majorization_accumulator_type(
+            Float32[1, 2], Float32[2, 1]
+        ) === Float32
+        @test (@inferred QuantumEntanglementTools._majorization_accumulator_type(
+            Float64[1, 2], Float64[2, 1]
+        )) === Float64
+        @test QuantumEntanglementTools._majorization_accumulator_type(
+            Rational{Int}[1 // 2], Rational{Int}[1 // 2]
+        ) === Rational{BigInt}
+        @test (@inferred QuantumEntanglementTools._majorization_scale(
+            Float64[1, 2], Float64[2, 1], Float64
+        )) == 3.0
+        @test @inferred(majorizes([4.0, 1.0, 1.0], [3.0, 2.0, 1.0]))
 
         first_matrix = Diagonal([3.0, 1.0])
         second_matrix = Diagonal([2.0, 2.0])

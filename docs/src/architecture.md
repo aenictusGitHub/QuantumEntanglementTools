@@ -37,5 +37,7 @@ The architecture decision records are maintained in `docs/adr/`. In particular:
 - ADR 0003 fixes subsystem/indexing and implemented channel-representation
   conventions.
 - ADR 0004 defines the optional-extension boundary.
-- ADR 0005 deliberately leaves the optimization modeling layer proposed until
-  representative prototypes are evaluated.
+- ADR 0005 accepts package-owned conic models with an optional JuMP/MOI
+  translator after evaluating representative complex-SDP prototypes.
+- ADR 0006 defines rectangular operator spaces, general two-sided map sums,
+  and their Choi, superoperator, application, dual, and diagnostic boundaries.

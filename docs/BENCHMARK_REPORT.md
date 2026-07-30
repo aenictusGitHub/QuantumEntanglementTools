@@ -1,8 +1,32 @@
 # Benchmark report
 
-Evidence date: 2026-07-28.
+Evidence date: 2026-07-30.
 
-Status: local quick smoke only; no comparative performance claim.
+Status: local quick smoke only; no comparative performance claim or regression
+threshold.
+
+## Current 114-case quick smoke
+
+<!-- qetlab-current-claims: begin -->
+
+The complete set of 114 declared quick benchmark cases completed with exit
+status zero on Julia 1.12.6 from the dirty convergence worktree based on
+`ec9094dad43a7531b16b1f1d282a490ccba0c543`:
+
+```sh
+julia --compiled-modules=no --startup-file=no --project=benchmark \
+  benchmark/benchmarks.jl --quick --no-save
+```
+
+Each case produced 20 samples with one evaluation. `--no-save` intentionally
+created no machine-readable result artifact. This run is a broad execution and
+allocation smoke test only: it has no clean committed-tree identity, repeated
+environment study, comparison target, acceptance threshold, or performance
+claim.
+
+<!-- qetlab-current-claims: end -->
+
+## Historical 42-case quick smoke
 
 The organized 42-case suite completed across subsystem kernels, states,
 operators, random objects, channels, scalar measures, entanglement criteria,

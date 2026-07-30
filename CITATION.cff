@@ -1,12 +1,15 @@
 cff-version: 1.2.0
 message: >-
-  This is an experimental, unreleased development milestone. Please cite the
-  exact version and commit used; no complete QETLAB-parity claim is made.
+  This is an experimental, unreleased development milestone with a complete
+  strict static implementation ledger for the public API at the pinned QETLAB
+  revision. This is not a QETLAB/MATLAB parity, API-stability, release, or human
+  review claim; please cite the exact version and commit used.
 type: software
 title: QuantumEntanglementTools.jl
 abstract: >-
-  An independent Julia package providing a scoped, certificate-aware API for
-  quantum-information and entanglement computations.
+  An independent Julia package providing a certificate-aware API for
+  quantum-information and entanglement computations, with source-traceable
+  mappings for the pinned public QETLAB inventory.
 authors:
   - family-names: Martin
     given-names: John

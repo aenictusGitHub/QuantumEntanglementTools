@@ -18,18 +18,33 @@ const REQUIRED_DISTRIBUTION_FILES = (
     "CITATION.bib",
     "CHANGELOG.md",
     "SECURITY.md",
+    "artifacts/convergence/current_snapshot.toml",
     "docs/BENCHMARK_REPORT.md",
     "docs/BUILD_ENVIRONMENT.md",
+    "docs/CONVERGENCE_AUDIT.md",
+    "docs/FULL_QETLAB_BASELINE.md",
+    "docs/JULIA_CORE_AUDIT.md",
     "docs/LEGAL.md",
     "docs/PORTING_STATUS.md",
+    "docs/QETLAB_COMPLETION_PLAN.md",
     "docs/RELEASE_CHECKLIST.md",
     "docs/SESSION_HANDOFF.md",
     "docs/VALIDATION_REPORT.md",
+    "docs/adr/0006-general-operator-space-maps.md",
     "ext/QuantumEntanglementToolsEntanglementDetectionExt.jl",
     "ext/entanglement_detection_worker.jl",
     "licenses/QETLAB-LICENSE.txt",
     "licenses/QETLAB-BRUNO-LUONG-HELPERS-LICENSE.txt",
+    "porting/qetlab_completion_plan.toml",
+    "porting/qetlab_completion_policy.toml",
+    "porting/qetlab_completion_queue.toml",
+    "porting/qetlab_inventory.toml",
+    "porting/qetlab_status.toml",
+    "scripts/build_qetlab_completion_plan.jl",
+    "scripts/check_qetlab_completion.jl",
     "scripts/check_release.jl",
+    "scripts/qetlab_completion_common.jl",
+    "scripts/reconcile_project_claims.jl",
     "test/runtests.jl",
 )
 const FORBIDDEN_DISTRIBUTION_PATHS = (
@@ -57,15 +72,17 @@ Options:
   --tag TAG          Require an annotated v<version> tag and dated release metadata
   --archive-smoke    Extract REF and load/smoke-test it in a fresh Julia depot
   --registry         Run a partial General-registry preflight
-  --allow-dirty      Validate tracked worktree bytes for local iteration only
+  --allow-dirty      Validate an isolated archive of current worktree bytes
   -h, --help         Show this help
 
 Without `--allow-dirty`, checks read bytes from the exact committed tree and
-reject tracked changes and unexpected untracked files. `--allow-dirty` is never
-release evidence. Without `--tag`, the changelog and citation metadata must
-describe an unreleased development milestone. `--registry` is only a partial
-preflight: it cannot prove the maintainer's non-delegable review, remote
-visibility, or RegistryCI acceptance.
+reject tracked changes and unexpected untracked files. Dirty mode uses an
+isolated temporary Git index and object store, includes nonignored untracked
+paths, and never changes the repository index. It is local preflight evidence,
+not release evidence. Without `--tag`, the changelog and citation metadata
+must describe an unreleased development milestone. `--registry` is only a
+partial preflight: it cannot prove the maintainer's non-delegable review,
+remote visibility, or RegistryCI acceptance.
 """,
     )
 end
@@ -175,15 +192,29 @@ function inspect_candidate_bytes!(
 end
 
 function candidate_content(
-    path::AbstractString,
-    options,
-    archive_root::AbstractString,
-    candidate_paths::Set{String},
+    path::AbstractString, archive_root::AbstractString, candidate_paths::Set{String}
 )
     path in candidate_paths || return ""
-    candidate_root = options.allow_dirty ? REPOSITORY_ROOT : archive_root
-    full_path = joinpath(candidate_root, path)
+    full_path = joinpath(archive_root, path)
     return isfile(full_path) ? read(full_path, String) : ""
+end
+
+function dirty_archive_bytes(resolved_commit::AbstractString)
+    return mktempdir() do temporary_root
+        index_path = joinpath(temporary_root, "index")
+        object_path = joinpath(temporary_root, "objects")
+        mkpath(object_path)
+        git_directory = strip(git_string("rev-parse", "--absolute-git-dir"))
+        environment = (
+            "GIT_INDEX_FILE" => index_path,
+            "GIT_OBJECT_DIRECTORY" => object_path,
+            "GIT_ALTERNATE_OBJECT_DIRECTORIES" => joinpath(git_directory, "objects"),
+        )
+        run(addenv(git_command("read-tree", resolved_commit), environment...))
+        run(addenv(git_command("add", "-A", "--", "."), environment...))
+        tree = strip(read(addenv(git_command("write-tree"), environment...), String))
+        return read(addenv(git_command("archive", "--format=tar", tree), environment...))
+    end
 end
 
 function run_archive_smoke(archive_bytes::Vector{UInt8})
@@ -220,7 +251,11 @@ function check_release(options)
         exit(1)
     end
 
-    archive_bytes = git_bytes("archive", "--format=tar", resolved_commit)
+    archive_bytes = if options.allow_dirty
+        dirty_archive_bytes(resolved_commit)
+    else
+        git_bytes("archive", "--format=tar", resolved_commit)
+    end
     archive_digest = bytes2hex(sha256(archive_bytes))
     archive_headers = Tar.list(IOBuffer(archive_bytes))
     archive_root = mktempdir()
@@ -228,26 +263,14 @@ function check_release(options)
     archive_paths = Set(
         String(header.path) for header in archive_headers if header.type == :file
     )
-    candidate_paths = if options.allow_dirty
-        paths = Set{String}()
-        for record in split_nul_records(git_bytes("ls-files", "-z"))
-            if isvalid(String, record)
-                push!(paths, String(record))
-            else
-                push!(failures, "Git index contains a non-UTF-8 path")
-            end
-        end
-        paths
-    else
-        copy(archive_paths)
-    end
-    content(path) = candidate_content(path, options, archive_root, candidate_paths)
+    candidate_paths = copy(archive_paths)
+    content(path) = candidate_content(path, archive_root, candidate_paths)
 
     status_lines = git_lines("status", "--porcelain=v1", "--untracked-files=all")
     for line in status_lines
         if startswith(line, "?? ")
             path = line[4:end]
-            push!(failures, "unexpected untracked path: $path")
+            options.allow_dirty || push!(failures, "unexpected untracked path: $path")
         else
             status_code = line[1:2]
             unsafe_dirty_status =
@@ -350,17 +373,13 @@ function check_release(options)
 
     lfs_pointer_prefix = collect(codeunits("version https://git-lfs.github.com/spec/v1"))
     for path in candidate_paths
-        candidate_root = options.allow_dirty ? REPOSITORY_ROOT : archive_root
-        full_path = joinpath(candidate_root, path)
-        worktree_symlink = options.allow_dirty && islink(full_path)
-        worktree_symlink &&
-            push!(failures, "symbolic link requires explicit review: $path (worktree)")
-        bytes = !worktree_symlink && isfile(full_path) ? read(full_path) : UInt8[]
+        full_path = joinpath(archive_root, path)
+        bytes = isfile(full_path) ? read(full_path) : UInt8[]
         inspect_candidate_bytes!(
             failures,
             path,
             bytes,
-            options.allow_dirty ? "worktree" : "archive",
+            options.allow_dirty ? "isolated worktree archive" : "archive",
             lfs_pointer_prefix,
         )
     end
@@ -400,13 +419,7 @@ function check_release(options)
             push!(failures, "symbolic link requires explicit review: $path (Git tree)")
         kind == "blob" || continue
         bytes = git_bytes("cat-file", "blob", object_id)
-        inspect_candidate_bytes!(
-            failures,
-            path,
-            bytes,
-            "Git tree",
-            lfs_pointer_prefix,
-        )
+        inspect_candidate_bytes!(failures, path, bytes, "Git tree", lfs_pointer_prefix)
     end
 
     license = content("LICENSE")
@@ -427,7 +440,8 @@ function check_release(options)
     )
     check(
         occursin(
-            r"(?i)(not a claim of|does not claim|no)\s+(complete\s+)?QETLAB parity", readme
+            r"(?is)(not\s+a\s+claim\s+of|does\s+not\s+claim|no)\s+(complete\s+)?QETLAB\s+parity",
+            readme,
         ),
         "README must retain an explicit no-QETLAB-parity statement",
     )
@@ -531,10 +545,6 @@ function check_release(options)
             "partial General preflight expects origin $expected_url",
         )
     end
-
-    options.archive_smoke &&
-        options.allow_dirty &&
-        push!(failures, "--archive-smoke cannot represent a dirty worktree")
 
     if isempty(failures) && options.archive_smoke
         try

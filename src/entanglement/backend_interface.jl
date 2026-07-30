@@ -162,7 +162,9 @@ One recorded step in an [`EntanglementReport`](@ref). `status` is one of
 `:entangled`, `:separable`, or `:unknown`. `certified` is true only when the
 attempt supplies a mathematically valid certificate in the stated domain.
 `raw_result` is package-owned criterion/decomposition data, never an
-undocumented external backend object.
+undocumented external backend object. Package-certified attempts are produced
+only by validated internal constructors; the public constructor is available
+for uncertified user annotations.
 """
 struct EntanglementAttempt
     method::Symbol
@@ -172,6 +174,7 @@ struct EntanglementAttempt
     certificate_kind::Union{Nothing,Symbol}
     raw_result::Any
     message::String
+    _package_validated::Bool
 
     function EntanglementAttempt(
         method::Symbol,
@@ -185,19 +188,120 @@ struct EntanglementAttempt
         status in (:entangled, :separable, :unknown) || throw(
             ArgumentError("attempt status must be :entangled, :separable, or :unknown")
         )
-        certified &&
+        certified && throw(
+            ArgumentError(
+                "package-certified attempts are produced by analysis routines, not by the public constructor",
+            ),
+        )
+        certificate_kind === nothing ||
+            throw(ArgumentError("an uncertified attempt cannot name a certificate_kind"))
+        return new(
+            method,
+            backend,
+            status,
+            false,
+            nothing,
+            deepcopy(raw_result),
+            String(message),
+            false,
+        )
+    end
+
+    function EntanglementAttempt(
+        token::_ValidatedConstructorToken,
+        method::Symbol,
+        backend::Symbol,
+        status::Symbol,
+        certified::Bool,
+        certificate_kind::Union{Nothing,Symbol},
+        raw_result,
+        message::AbstractString,
+    )
+        _require_validated_constructor_token(token)
+        status in (:entangled, :separable, :unknown) || throw(
+            ArgumentError("attempt status must be :entangled, :separable, or :unknown")
+        )
+        if certified
+            status in (:entangled, :separable) ||
+                throw(ArgumentError("a certified attempt must be entangled or separable"))
             certificate_kind === nothing &&
-            throw(ArgumentError("a certified attempt must name its certificate_kind"))
+                throw(ArgumentError("a certified attempt must name its certificate_kind"))
+            raw_result === nothing &&
+                throw(ArgumentError("a certified attempt must retain its evidence"))
+        else
+            certificate_kind === nothing || throw(
+                ArgumentError("an uncertified attempt cannot name a certificate_kind")
+            )
+        end
         return new(
             method,
             backend,
             status,
             certified,
             certificate_kind,
-            raw_result,
+            _entanglement_owned_evidence(raw_result),
             String(message),
+            true,
         )
     end
+end
+
+_entanglement_owned_evidence(::Nothing) = nothing
+_entanglement_owned_evidence(value::_ReadOnlyPlanArray) = _read_only_plan_array(copy(value))
+_entanglement_owned_evidence(value::Array{<:Number}) = _read_only_plan_array(value)
+function _entanglement_owned_evidence(value::Diagonal)
+    return Diagonal(_read_only_plan_array(Vector(diag(value))))
+end
+function _entanglement_owned_evidence(value::Tuple)
+    return map(_entanglement_owned_evidence, value)
+end
+function _entanglement_owned_evidence(value::NamedTuple{names}) where {names}
+    copied = Tuple(_entanglement_owned_evidence(entry) for entry in values(value))
+    return NamedTuple{names}(copied)
+end
+function _entanglement_owned_evidence(value::CriterionResult)
+    return CriterionResult(
+        value.criterion,
+        value.status,
+        value.value,
+        value.threshold,
+        value.tolerance,
+        _entanglement_owned_evidence(value.witness),
+        value.message,
+    )
+end
+function _entanglement_owned_evidence(value::SchmidtDecompositionResult)
+    return SchmidtDecompositionResult(
+        _entanglement_owned_evidence(value.coefficients),
+        _entanglement_owned_evidence(value.left_vectors),
+        _entanglement_owned_evidence(value.right_vectors),
+    )
+end
+_entanglement_owned_evidence(value) = deepcopy(value)
+
+function _validated_entanglement_attempt(
+    method::Symbol,
+    backend::Symbol,
+    status::Symbol,
+    certified::Bool,
+    certificate_kind::Union{Nothing,Symbol},
+    raw_result,
+    message::AbstractString,
+)
+    return EntanglementAttempt(
+        _VALIDATED_CONSTRUCTOR_TOKEN,
+        method,
+        backend,
+        status,
+        certified,
+        certificate_kind,
+        raw_result,
+        message,
+    )
+end
+
+function _is_package_validated_entanglement_attempt(attempt::EntanglementAttempt)
+    return getfield(attempt, :_package_validated)
 end
 
 """
@@ -205,9 +309,10 @@ end
 
 Structured high-level conclusion. `status` is `:entangled`, `:separable`, or
 `:unknown`; `certified` is never true without a named `certificate_kind`.
-`attempts` records every method run in order. A necessary criterion that merely
-passes is represented as `:unknown`, except where a separately stated theorem
-makes it sufficient.
+`attempts` records every method run in order in owned immutable tuple storage.
+A necessary criterion that merely passes is represented as `:unknown`, except
+where a separately stated theorem makes it sufficient. Package-certified
+reports are produced only by analysis routines.
 """
 struct EntanglementReport
     status::Symbol
@@ -216,8 +321,9 @@ struct EntanglementReport
     method::Symbol
     backend::Symbol
     evidence::Any
-    attempts::Vector{EntanglementAttempt}
+    attempts::Tuple{Vararg{EntanglementAttempt}}
     message::String
+    _package_validated::Bool
 
     function EntanglementReport(
         status::Symbol,
@@ -226,28 +332,123 @@ struct EntanglementReport
         method::Symbol,
         backend::Symbol,
         evidence,
-        attempts::Vector{EntanglementAttempt},
+        attempts::Union{Tuple,AbstractVector},
         message::AbstractString,
     )
         status in (:entangled, :separable, :unknown) || throw(
             ArgumentError("report status must be :entangled, :separable, or :unknown")
         )
-        certified &&
+        all(attempt -> attempt isa EntanglementAttempt, attempts) ||
+            throw(ArgumentError("attempts must contain only EntanglementAttempt values"))
+        certified && throw(
+            ArgumentError(
+                "package-certified reports are produced by analysis routines, not by the public constructor",
+            ),
+        )
+        certificate_kind === nothing ||
+            throw(ArgumentError("an uncertified report cannot name a certificate_kind"))
+        return new(
+            status,
+            false,
+            nothing,
+            method,
+            backend,
+            deepcopy(evidence),
+            Tuple(attempts),
+            String(message),
+            false,
+        )
+    end
+
+    function EntanglementReport(
+        token::_ValidatedConstructorToken,
+        status::Symbol,
+        certified::Bool,
+        certificate_kind::Union{Nothing,Symbol},
+        method::Symbol,
+        backend::Symbol,
+        evidence,
+        attempts::Union{Tuple,AbstractVector},
+        message::AbstractString,
+    )
+        _require_validated_constructor_token(token)
+        status in (:entangled, :separable, :unknown) || throw(
+            ArgumentError("report status must be :entangled, :separable, or :unknown")
+        )
+        all(attempt -> attempt isa EntanglementAttempt, attempts) ||
+            throw(ArgumentError("attempts must contain only EntanglementAttempt values"))
+        owned_attempts = Tuple(attempts)
+        if certified
+            status in (:entangled, :separable) ||
+                throw(ArgumentError("a certified report must be entangled or separable"))
             certificate_kind === nothing &&
-            throw(ArgumentError("a certified report must name its certificate_kind"))
-        status === :unknown &&
-            certified &&
-            throw(ArgumentError("an :unknown report cannot be certified"))
+                throw(ArgumentError("a certified report must name its certificate_kind"))
+            evidence === nothing &&
+                throw(ArgumentError("a certified report must retain its evidence"))
+            matching_attempt = any(owned_attempts) do attempt
+                return _is_package_validated_entanglement_attempt(attempt) &&
+                       attempt.certified &&
+                       attempt.status === status &&
+                       attempt.certificate_kind === certificate_kind &&
+                       attempt.method === method &&
+                       attempt.backend === backend
+            end
+            matching_attempt || throw(
+                ArgumentError(
+                    "a certified report requires a matching package-validated attempt"
+                ),
+            )
+        else
+            certificate_kind === nothing ||
+                throw(ArgumentError("an uncertified report cannot name a certificate_kind"))
+        end
         return new(
             status,
             certified,
             certificate_kind,
             method,
             backend,
-            evidence,
-            attempts,
+            _entanglement_owned_evidence(evidence),
+            owned_attempts,
             String(message),
+            true,
         )
+    end
+end
+
+function _validated_entanglement_report(
+    status::Symbol,
+    certified::Bool,
+    certificate_kind::Union{Nothing,Symbol},
+    method::Symbol,
+    backend::Symbol,
+    evidence,
+    attempts,
+    message::AbstractString,
+)
+    return EntanglementReport(
+        _VALIDATED_CONSTRUCTOR_TOKEN,
+        status,
+        certified,
+        certificate_kind,
+        method,
+        backend,
+        evidence,
+        attempts,
+        message,
+    )
+end
+
+function _is_package_validated_entanglement_report(report::EntanglementReport)
+    getfield(report, :_package_validated) || return false
+    report.certified || return report.certificate_kind === nothing
+    return any(report.attempts) do attempt
+        return _is_package_validated_entanglement_attempt(attempt) &&
+               attempt.certified &&
+               attempt.status === report.status &&
+               attempt.certificate_kind === report.certificate_kind &&
+               attempt.method === report.method &&
+               attempt.backend === report.backend
     end
 end
 
@@ -365,7 +566,9 @@ function _ppt_low_dimension_separability_domain(layout::SubsystemLayout)
 end
 
 function _report_from_attempt(attempt::EntanglementAttempt)
-    return EntanglementReport(
+    _is_package_validated_entanglement_attempt(attempt) ||
+        throw(ArgumentError("reports may only promote package-validated attempts"))
+    return _validated_entanglement_report(
         attempt.status,
         attempt.certified,
         attempt.certificate_kind,
@@ -388,7 +591,7 @@ function detect_entanglement(rho::AbstractMatrix{<:Number}, dims, method::Native
         allow_densify=method.allow_densify,
     )
     attempt = if result.status === CriterionEntanglementDetected
-        EntanglementAttempt(
+        _validated_entanglement_attempt(
             :ppt,
             :native,
             :entangled,
@@ -399,7 +602,7 @@ function detect_entanglement(rho::AbstractMatrix{<:Number}, dims, method::Native
         )
     elseif result.status === CriterionSatisfied &&
         _ppt_low_dimension_separability_domain(layout)
-        EntanglementAttempt(
+        _validated_entanglement_attempt(
             :ppt,
             :native,
             :separable,
@@ -409,7 +612,7 @@ function detect_entanglement(rho::AbstractMatrix{<:Number}, dims, method::Native
             "PPT is sufficient for separability in 2×2 and 2×3 bipartite systems",
         )
     else
-        EntanglementAttempt(
+        _validated_entanglement_attempt(
             :ppt,
             :native,
             :unknown,
@@ -435,11 +638,11 @@ function _criterion_attempt(method::Symbol, result::CriterionResult)
         else
             Symbol(method, :_violation)
         end
-        return EntanglementAttempt(
+        return _validated_entanglement_attempt(
             method, :native, :entangled, true, certificate, result, result.message
         )
     end
-    return EntanglementAttempt(
+    return _validated_entanglement_attempt(
         method,
         :native,
         :unknown,
@@ -490,7 +693,7 @@ function analyze_entanglement(
         NativePPT(; systems=systems, atol=atol, rtol=rtol, allow_densify=allow_densify),
     )
     ppt_report.certified && return ppt_report
-    attempts = copy(ppt_report.attempts)
+    attempts = collect(ppt_report.attempts)
 
     realignment_result = realignment_criterion(
         rho, dims; systems=(1,), atol=atol, rtol=rtol, allow_densify=allow_densify
@@ -498,7 +701,7 @@ function analyze_entanglement(
     realignment_attempt = _criterion_attempt(:realignment, realignment_result)
     push!(attempts, realignment_attempt)
     if realignment_attempt.certified
-        return EntanglementReport(
+        return _validated_entanglement_report(
             :entangled,
             true,
             realignment_attempt.certificate_kind,
@@ -518,7 +721,7 @@ function analyze_entanglement(
         reduction_attempt = _criterion_attempt(:reduction, reduction_result)
         push!(attempts, reduction_attempt)
         if reduction_attempt.certified
-            return EntanglementReport(
+            return _validated_entanglement_report(
                 :entangled,
                 true,
                 reduction_attempt.certificate_kind,
@@ -531,7 +734,7 @@ function analyze_entanglement(
         end
     end
 
-    return EntanglementReport(
+    return _validated_entanglement_report(
         :unknown,
         false,
         nothing,
@@ -591,7 +794,7 @@ function analyze_entanglement(
         norm_squared=validation.norm_squared,
         threshold=threshold,
     )
-    attempt = EntanglementAttempt(
+    attempt = _validated_entanglement_attempt(
         :pure_schmidt, :native, status, certified, certificate, raw_result, message
     )
     return _report_from_attempt(attempt)

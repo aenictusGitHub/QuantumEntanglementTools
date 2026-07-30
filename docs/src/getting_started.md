@@ -4,8 +4,18 @@
 
 The minimum supported Julia version is 1.10. Development currently targets the
 repository checkout. The experimental `0.1.0` development milestone is
-unreleased and unregistered, and its API may change before publication or in
-later `0.x` releases.
+unreleased and unregistered. At pinned QETLAB revision
+`d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
+checker passes with 127/127 public rows carrying final `verified` status, 36/36
+internal helpers assigned terminal dispositions, no queued rows, and 458
+exported bindings with matching provenance entries. The API may still change
+before publication or in later `0.x` releases.
+
+The direct local full corpus passes 8,117/8,117 assertions, including 48
+executable-tutorial assertions, on Julia 1.12.6 and the installed Julia
+1.10.0. This is local implementation and validation evidence, not
+MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,
+API stability, release approval, or human review.
 
 From the repository root:
 
@@ -39,8 +49,8 @@ using LinearAlgebra
 @assert isapprox(ρA, Matrix{ComplexF64}(I, 2, 2) / 2)
 ```
 
-This behavior passes the local Tier A/Tier B test suite. It is not a claim of
-full QETLAB parity or cross-platform validation.
+This behavior is covered by the local corpus. Compatibility mappings may still
+document deliberate differences from the pinned MATLAB implementation.
 
 Other implemented Tier A families include tensor products/sums, subsystem
 permutations and swaps, partial transpose, realignment/inverse realignment,
@@ -75,6 +85,13 @@ report = analyze_entanglement(ψ01, (2, 2))
 @assert report.certified
 @assert report.certificate_kind === :pure_product_decomposition
 ```
+
+For density matrices, `is_separable(rho, dims; ...)` is the broader
+certificate-first entry point. It always returns an `EntanglementReport` with
+a structured `status`, certification flag, evidence, and ordered attempt
+history; it never returns an unchecked Boolean. See
+[Separability and local discrimination](separability_optimization.md) for its
+deterministic and explicit-RNG strategies and their resource limits.
 
 For explicit mixed separable states, low-dimensional PPT certificates,
 higher-dimensional `:unknown` outcomes, and the sufficient separable-ball
@@ -111,7 +128,7 @@ rng = Xoshiro(2026)
 
 Read [States, operators, and random objects](states_operators_random.md) before
 using the Tier B slice; it records physical parameter ranges, sparse behavior,
-oracle evidence, and deliberately deferred functions.
+oracle evidence, resource limits, and compatibility differences.
 
 The core supports Julia 1.10. The optional exact-version
 [EntanglementDetection.jl extension](entanglement_detection_extension.md)
@@ -132,7 +149,7 @@ environment. `docs/Manifest.toml` is intentionally not versioned.
 
 Check all of the following:
 
-1. its inventory row is reviewed and does not say merely `implemented`;
+1. its inventory row records the completed mapping and its evidence;
 2. `PROVENANCE.toml` records its specification and implementation origin;
 3. the API reference describes shapes, conventions, tolerances, errors, and
    certification meaning;
@@ -140,4 +157,8 @@ Check all of the following:
    or differential tests pass;
 5. any optional backend reports its version and solver status.
 
-Until those gates exist, treat results as development output.
+For separability and nonlocal optimization in particular, inspect the
+structured status rather than treating a numerical value or necessary-test
+pass as a theorem; see
+[Separability and local discrimination](separability_optimization.md) and
+[Bell inequalities and nonlocal games](nonlocal_optimization.md).

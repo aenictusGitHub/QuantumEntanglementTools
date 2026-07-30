@@ -43,7 +43,11 @@ const ALLOWED_PUBLIC_KINDS = Set([
 ])
 const ALLOWED_API_STATUSES = Set(["implemented", "verified", "compatibility_alias"])
 const IMPLEMENTED_INVENTORY_STATUSES = Set([
-    "implemented", "verified", "compatibility_alias", "superseded_with_documented_mapping"
+    "implemented",
+    "verified",
+    "verified_with_documented_upstream_correction",
+    "compatibility_alias",
+    "superseded_with_documented_mapping",
 ])
 const STATUS_IDENTITY_FIELDS = Set(["function_name", "source_path"])
 const STATUS_OVERLAY_FIELDS = Set([

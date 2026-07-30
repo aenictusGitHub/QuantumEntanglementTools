@@ -255,6 +255,287 @@ function werner_state(dim, alpha; sparse_output::Bool=true)
     return sparse_output ? result : Matrix(result)
 end
 
+function _werner_party_count(permutation_count::Int)
+    permutation_count >= 2 ||
+        throw(ArgumentError("multipartite alpha must contain at least one parameter"))
+    factorial_value = 1
+    parties = 1
+    while factorial_value < permutation_count
+        parties += 1
+        factorial_value = try
+            Base.checked_mul(factorial_value, parties)
+        catch err
+            err isa OverflowError || rethrow()
+            throw(ArgumentError("length(alpha) + 1 exceeds representable factorials"))
+        end
+    end
+    factorial_value == permutation_count || throw(
+        ArgumentError(
+            "multipartite alpha must contain p! - 1 parameters for some p >= 2; " *
+            "got $(permutation_count - 1)",
+        ),
+    )
+    return parties
+end
+
+function _werner_next_permutation!(permutation::Vector{Int})
+    pivot = length(permutation) - 1
+    while pivot >= 1 && permutation[pivot] >= permutation[pivot + 1]
+        pivot -= 1
+    end
+    pivot == 0 && return false
+    successor = length(permutation)
+    while permutation[successor] <= permutation[pivot]
+        successor -= 1
+    end
+    permutation[pivot], permutation[successor] = permutation[successor], permutation[pivot]
+    reverse!(permutation, pivot + 1, length(permutation))
+    return true
+end
+
+function _werner_permutations(parties::Int)
+    permutation = collect(1:parties)
+    permutations = NTuple{parties,Int}[]
+    while _werner_next_permutation!(permutation)
+        push!(permutations, Tuple(permutation))
+    end
+    return permutations
+end
+
+function _werner_limit(value, name::AbstractString)
+    value === nothing && return nothing
+    return _nonnegative_int(value, name)
+end
+
+@doc raw"""
+    werner_state(
+        dim,
+        alpha::AbstractVector;
+        sparse_output=true,
+        max_permutations=40_320,
+        max_nonzeros=1_000_000,
+        max_dense_entries=1_000_000,
+        max_work=100_000_000,
+        atol=nothing,
+        rtol=nothing,
+    )
+
+Construct the normalized multipartite Werner operator
+
+```math
+\rho =
+\frac{I-\sum_{j=2}^{p!}\alpha_{j-1}P_j}
+     {\operatorname{tr}\left(I-\sum_{j=2}^{p!}\alpha_{j-1}P_j\right)},
+```
+
+where `length(alpha) == p! - 1` and `P_j` follows lexicographic permutation
+order. Every local subsystem has dimension `dim`, and subsystem `1` is the
+slowest-varying tensor factor. A one-entry vector delegates to the verified
+bipartite scalar family.
+
+The coefficient of each permutation must be the conjugate of the coefficient
+of its inverse, making the unnormalized operator exactly Hermitian. Positivity
+is certified without densification when `sum(abs, alpha) <= 1`. Otherwise a
+dense Hermitian eigendecomposition is performed only for BLAS floating types
+and only within `max_dense_entries` and `max_work`; a negative or numerical
+boundary eigenvalue is rejected rather than clipped. The trace must be finite,
+real, and strictly positive. No normalization other than the displayed trace
+division, symmetrization, projection, or coefficient repair is performed.
+
+The implementation intentionally corrects the pinned multipartite loop, which
+overwrites the accumulator at every permutation and therefore retains only the
+last parameter. Permutation count, construction nonzeros, dense validation,
+and work are checked before their corresponding allocations.
+""" function werner_state(
+    dim,
+    alpha::AbstractVector;
+    sparse_output::Bool=true,
+    max_permutations=40_320,
+    max_nonzeros=1_000_000,
+    max_dense_entries=1_000_000,
+    max_work=100_000_000,
+    atol=nothing,
+    rtol=nothing,
+)
+    Base.require_one_based_indexing(alpha)
+    length(alpha) == 1 && return werner_state(dim, only(alpha); sparse_output=sparse_output)
+    dimension = _positive_int(dim, "dim")
+    dimension >= 2 || throw(ArgumentError("dim must be at least 2 for a Werner state"))
+    isempty(alpha) &&
+        throw(ArgumentError("multipartite alpha must contain p! - 1 parameters"))
+    all(parameter -> parameter isa Number && !(parameter isa Bool), alpha) ||
+        throw(ArgumentError("alpha must contain only numeric parameters other than Bool"))
+    all(isfinite, alpha) ||
+        throw(ArgumentError("alpha must contain only finite parameters"))
+
+    permutation_count = try
+        Base.checked_add(length(alpha), 1)
+    catch err
+        err isa OverflowError || rethrow()
+        throw(ArgumentError("length(alpha) + 1 exceeds typemax(Int)"))
+    end
+    parties = _werner_party_count(permutation_count)
+    permutation_limit = _werner_limit(max_permutations, "max_permutations")
+    if permutation_limit !== nothing && permutation_count > permutation_limit
+        throw(
+            ArgumentError(
+                "multipartite Werner construction requires $permutation_count " *
+                "permutations including identity, exceeding " *
+                "max_permutations=$permutation_limit",
+            ),
+        )
+    end
+
+    total_dimension = _checked_power(dimension, parties, "dim")
+    stored_entry_estimate = try
+        Base.checked_mul(permutation_count, total_dimension)
+    catch err
+        err isa OverflowError || rethrow()
+        throw(ArgumentError("the Werner construction nonzero estimate exceeds Int"))
+    end
+    nonzero_limit = _werner_limit(max_nonzeros, "max_nonzeros")
+    if nonzero_limit !== nothing && stored_entry_estimate > nonzero_limit
+        throw(
+            ArgumentError(
+                "multipartite Werner construction may require " *
+                "$stored_entry_estimate stored entries, exceeding " *
+                "max_nonzeros=$nonzero_limit",
+            ),
+        )
+    end
+    work_limit = _werner_limit(max_work, "max_work")
+    if work_limit !== nothing && stored_entry_estimate > work_limit
+        throw(
+            ArgumentError(
+                "multipartite Werner construction requires estimated work " *
+                "$stored_entry_estimate, exceeding max_work=$work_limit",
+            ),
+        )
+    end
+    dense_entries = try
+        Base.checked_mul(total_dimension, total_dimension)
+    catch err
+        err isa OverflowError || rethrow()
+        throw(ArgumentError("the Werner dense entry count exceeds Int"))
+    end
+    dense_limit = _werner_limit(max_dense_entries, "max_dense_entries")
+    if !sparse_output && dense_limit !== nothing && dense_entries > dense_limit
+        throw(
+            ArgumentError(
+                "dense Werner output requires $dense_entries entries, exceeding " *
+                "max_dense_entries=$dense_limit",
+            ),
+        )
+    end
+
+    promoted_parameter_type = promote_type(map(typeof, alpha)...)
+    coefficient_type = typeof(one(promoted_parameter_type) / one(promoted_parameter_type))
+    coefficients = coefficient_type.(alpha)
+    permutations = _werner_permutations(parties)
+    length(permutations) == length(coefficients) ||
+        error("internal multipartite Werner permutation enumeration is inconsistent")
+    permutation_indices = Dict(
+        permutation => index for (index, permutation) in pairs(permutations)
+    )
+    for (index, permutation) in pairs(permutations)
+        inverse_permutation = Tuple(invperm(collect(permutation)))
+        inverse_index = permutation_indices[inverse_permutation]
+        coefficients[index] == conj(coefficients[inverse_index]) || throw(
+            ArgumentError(
+                "alpha[$index] for permutation $permutation must equal the " *
+                "conjugate coefficient of inverse permutation " *
+                "$inverse_permutation; coefficients are never symmetrized",
+            ),
+        )
+    end
+
+    local_dims = ntuple(_ -> dimension, parties)
+    raw = spdiagm(0 => fill(one(coefficient_type), total_dimension))
+    for (coefficient, permutation) in zip(coefficients, permutations)
+        raw -=
+            coefficient * permutation_operator(
+                local_dims, permutation; T=coefficient_type, sparse_output=true
+            )
+    end
+    normalization = tr(raw)
+    isfinite(normalization) ||
+        throw(DomainError(normalization, "multipartite Werner trace must be finite"))
+    isreal(normalization) || throw(
+        DomainError(
+            normalization,
+            "multipartite Werner trace must be exactly real; coefficients are " *
+            "never repaired",
+        ),
+    )
+    real_normalization = real(normalization)
+    real_normalization > zero(real_normalization) || throw(
+        DomainError(
+            real_normalization,
+            "multipartite Werner unnormalized operator must have positive trace",
+        ),
+    )
+
+    coefficient_norm = sum(abs, coefficients)
+    if coefficient_norm > one(coefficient_norm)
+        coefficient_type <: LinearAlgebra.BlasFloat || throw(
+            ArgumentError(
+                "parameters with sum(abs, alpha) > 1 require a dense Hermitian " *
+                "eigendecomposition and therefore Float32, Float64, ComplexF32, " *
+                "or ComplexF64 coefficients",
+            ),
+        )
+        if dense_limit !== nothing && dense_entries > dense_limit
+            throw(
+                ArgumentError(
+                    "PSD validation requires $dense_entries dense entries, " *
+                    "exceeding max_dense_entries=$dense_limit",
+                ),
+            )
+        end
+        spectral_work = try
+            Base.checked_mul(dense_entries, total_dimension)
+        catch err
+            err isa OverflowError || rethrow()
+            throw(ArgumentError("the Werner spectral work estimate exceeds Int"))
+        end
+        total_work = try
+            Base.checked_add(stored_entry_estimate, spectral_work)
+        catch err
+            err isa OverflowError || rethrow()
+            throw(ArgumentError("the Werner total work estimate exceeds Int"))
+        end
+        if work_limit !== nothing && total_work > work_limit
+            throw(
+                ArgumentError(
+                    "PSD validation requires estimated total work $total_work, " *
+                    "exceeding max_work=$work_limit",
+                ),
+            )
+        end
+        eigenvalues = eigvals(Hermitian(Matrix(raw)))
+        minimum_eigenvalue = minimum(eigenvalues)
+        absolute, relative = _tierd_tolerances(
+            typeof(real(zero(coefficient_type))), atol, rtol
+        )
+        scale = maximum(abs, eigenvalues; init=zero(eltype(eigenvalues)))
+        threshold = absolute + relative * scale
+        minimum_eigenvalue >= zero(minimum_eigenvalue) || throw(
+            DomainError(
+                minimum_eigenvalue,
+                if minimum_eigenvalue >= -threshold
+                    "multipartite Werner positivity lies on a numerical boundary; " *
+                    "the operator is not projected or clipped"
+                else
+                    "multipartite Werner parameters produce a non-positive operator"
+                end,
+            ),
+        )
+    end
+
+    result = raw / real_normalization
+    return sparse_output ? result : Matrix(result)
+end
+
 """
     horodecki_state(a; dims=(3, 3))
 

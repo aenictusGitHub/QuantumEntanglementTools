@@ -2,9 +2,10 @@
 
 Status: Tier A decisions below have executable local coverage in the 345-test
 subsystem suite. Channel conventions have Kraus/Choi/superoperator round-trip
-and physicality coverage in the 177-test Tier C suite. Exact-candidate
-cross-platform and authoritative MATLAB validation remain pending.
-Named-basis normalizations not listed below remain unresolved.
+and physicality coverage in the Tier C suite, and the general-map work package
+adds rectangular basis-action, reshuffle, and Hilbert--Schmidt-dual properties.
+Exact-candidate cross-platform and authoritative MATLAB validation remain
+pending. Named-basis normalizations not listed below remain unresolved.
 
 ## Subsystems and indices
 
@@ -71,21 +72,58 @@ observable and therefore mandatory in tests.
 
 ## Choi matrices
 
-The unnormalized Choi representation is
+For a map from `m × n` matrices to `p × q` matrices, let `Eᵢⱼ` denote the
+`m × n` matrix unit. The generalized, unnormalized Choi representation is
+
+```math
+J(\Phi)_{(i,a),(j,b)}=\Phi(E_{ij})_{a,b}.
+```
+
+It has size `(m*p) × (n*q)`, with input index first and output index
+second. For maps between square matrix algebras this is equivalently
 
 ```math
 J(\Phi) = \sum_{i,j} |i\rangle\langle j| \otimes
-          \Phi(|i\rangle\langle j|),
+          \Phi(|i\rangle\langle j|).
 ```
 
-with input factor first and output factor second. Under this convention:
+Under this convention:
 
-- trace preservation means `tr_output(J) = I_input`;
-- `tr(J) = d_input` for a trace-preserving channel;
-- conversions must state input and output dimensions explicitly.
+- a two-sided term `A * X * B'` contributes `vec(A) * vec(B)'`;
+- the matching superoperator term is `kron(conj(B), A)`;
+- trace preservation means `tr_output(J) = I_input` for square algebras;
+- `tr(J) = d_input` for a trace-preserving channel; and
+- conversions must state all four operator-space dimensions when shape does
+  not determine them.
 
 Kraus, Choi, and superoperator round-trip and physicality tests exercise this
-public contract for the implemented Tier C scope.
+public contract. The complete runnable examples are in
+[General maps and rectangular operator spaces](general_maps.md).
+
+## General operator sums and duals
+
+A general paired representation means
+
+```math
+\Phi(X)=\sum_\ell A_\ell X B_\ell^\dagger.
+```
+
+It is not called a Kraus representation and does not imply complete
+positivity. The Hilbert--Schmidt inner product is
+
+```math
+\langle Y,X\rangle_{\mathrm{HS}}=\mathrm{tr}(Y^\dagger X),
+```
+
+so the adjoint map is
+
+```math
+\Phi^\dagger(Y)=\sum_\ell A_\ell^\dagger Y B_\ell.
+```
+
+Complete positivity, Hermiticity preservation, trace preservation, and
+unitality are channel-algebra diagnostics. They are not silently extended to
+genuinely rectangular matrix spaces.
 
 ## Normalization and tolerance
 

@@ -111,16 +111,57 @@ function _majorization_default_rtol(first_values, second_values)
     return default_rtol
 end
 
-function _majorization_scale(first_values, second_values)
-    first_scale = BigInt(0)
-    second_scale = BigInt(0)
+function _majorization_dynamic_accumulator_type(first_values, second_values)
+    values = collect(Iterators.flatten((first_values, second_values)))
+    isempty(values) && return BigInt
+    exact = all(value -> value isa Integer || value isa Rational, values)
+    types = if exact
+        typeof.(_matrix_analysis_widen_exact.(values))
+    else
+        typeof.(values)
+    end
+    return foldl(promote_type, types)
+end
+
+_majorization_widened_type(::Type{T}) where {T<:Integer} = BigInt
+_majorization_widened_type(::Type{T}) where {T<:Rational} = Rational{BigInt}
+
+function _majorization_accumulator_type(
+    first_values::AbstractVector{T1}, second_values::AbstractVector{T2}
+) where {T1,T2}
+    if isconcretetype(T1) && isconcretetype(T2)
+        first_exact = T1 <: Integer || T1 <: Rational
+        second_exact = T2 <: Integer || T2 <: Rational
+        if first_exact && second_exact
+            return promote_type(
+                _majorization_widened_type(T1), _majorization_widened_type(T2)
+            )
+        elseif T1 <: Real && T2 <: Real
+            return promote_type(T1, T2)
+        end
+    end
+    return _majorization_dynamic_accumulator_type(first_values, second_values)
+end
+
+function _majorization_accumulator_value(value, ::Type{T}) where {T}
+    widened = if value isa Integer || value isa Rational
+        _matrix_analysis_widen_exact(value)
+    else
+        value
+    end
+    return convert(T, widened)
+end
+
+function _majorization_scale(first_values, second_values, ::Type{T}) where {T}
+    first_scale = zero(T)
+    second_scale = zero(T)
     for value in first_values
-        first_scale += abs(_matrix_analysis_widen_exact(value))
+        first_scale += abs(_majorization_accumulator_value(value, T))
     end
     for value in second_values
-        second_scale += abs(_matrix_analysis_widen_exact(value))
+        second_scale += abs(_majorization_accumulator_value(value, T))
     end
-    return max(first_scale, second_scale, 1)
+    return max(first_scale, second_scale, one(T))
 end
 
 _matrix_analysis_widen_exact(value::Integer) = BigInt(value)
@@ -167,14 +208,20 @@ function majorizes(
     common_length = max(length(first_values), length(second_values))
     sorted_first = _majorization_pad_and_sort(first_values, common_length)
     sorted_second = _majorization_pad_and_sort(second_values, common_length)
+    accumulator_type = _majorization_accumulator_type(sorted_first, sorted_second)
     tolerance =
-        checked_atol + checked_rtol * _majorization_scale(sorted_first, sorted_second)
+        checked_atol +
+        checked_rtol * _majorization_scale(sorted_first, sorted_second, accumulator_type)
 
-    first_prefix = BigInt(0)
-    second_prefix = BigInt(0)
+    first_prefix = zero(accumulator_type)
+    second_prefix = zero(accumulator_type)
     for position in 1:common_length
-        first_prefix += _matrix_analysis_widen_exact(sorted_first[position])
-        second_prefix += _matrix_analysis_widen_exact(sorted_second[position])
+        first_prefix += _majorization_accumulator_value(
+            sorted_first[position], accumulator_type
+        )
+        second_prefix += _majorization_accumulator_value(
+            sorted_second[position], accumulator_type
+        )
         if position < common_length && first_prefix + tolerance < second_prefix
             return false
         end

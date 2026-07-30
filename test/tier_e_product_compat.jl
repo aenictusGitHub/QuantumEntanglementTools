@@ -137,13 +137,47 @@ const CompatProduct = QuantumEntanglementTools.MATLABCompat
         rectangular_pure = [cos(angle), 0.0, 0.0, 0.0, sin(angle), 0.0]
         @test CompatProduct.EntFormation(rectangular_pure, (2, 3)) ≈
             entanglement_of_formation(rectangular_pure, (2, 3))
+        @test CompatProduct.EntFormation(rectangular_pure) ≈
+            entanglement_of_formation(rectangular_pure, (2, 3))
+        @test CompatProduct.EntFormation(reshape(rectangular_pure, 1, :)) ≈
+            entanglement_of_formation(rectangular_pure, (2, 3))
+
+        exact_rectangular_density = zeros(6, 6)
+        exact_rectangular_density[1, 1] = 0.5
+        exact_rectangular_density[1, 5] = 0.5
+        exact_rectangular_density[5, 1] = 0.5
+        exact_rectangular_density[5, 5] = 0.5
+        @test CompatProduct.EntFormation(exact_rectangular_density) ≈ 1
+        numerical_rectangular_density = rectangular_pure * adjoint(rectangular_pure)
+        @test_throws DomainError CompatProduct.EntFormation(
+            numerical_rectangular_density, (2, 3)
+        )
+        @test CompatProduct.EntFormation(
+            numerical_rectangular_density,
+            (2, 3);
+            psd_boundary_policy=:project,
+            rank_boundary_policy=:project,
+        ) ≈ entanglement_of_formation(rectangular_pure, (2, 3))
         @test_throws ArgumentError CompatProduct.EntFormation(
-            rectangular_pure * adjoint(rectangular_pure), (2, 3)
+            Diagonal([0.5, 0.5, 0.0, 0.0, 0.0, 0.0]), (2, 3)
         )
         @test_throws ArgumentError CompatProduct.EntFormation(0.9bell, (2, 2))
         sparse_bell = sparsevec([1, 4], fill(inv(sqrt(2)), 2), 4)
         @test_throws ArgumentError CompatProduct.EntFormation(sparse_bell, (2, 2))
         @test CompatProduct.EntFormation(sparse_bell, (2, 2); allow_densify=true) ≈ 1
+        sparse_rectangular_density = sparse(exact_rectangular_density)
+        @test_throws ArgumentError CompatProduct.EntFormation(
+            sparse_rectangular_density, (2, 3)
+        )
+        @test CompatProduct.EntFormation(
+            sparse_rectangular_density, (2, 3); allow_densify=true
+        ) ≈ 1
+        @test_throws ArgumentError CompatProduct.EntFormation(
+            bell; psd_boundary_policy=:project
+        )
+        @test_throws ArgumentError CompatProduct.EntFormation(
+            bell_density; rank_boundary_policy=:unsupported
+        )
     end
 
     @testset "structured separable-ball wrapper" begin
