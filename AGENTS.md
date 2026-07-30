@@ -28,13 +28,14 @@ described as an official QETLAB project.
   rows, 0 required internal helpers remain, and there are 0 static completion
   failures.
 - The public API contains 458 public bindings with matching provenance entries.
-- The 8,117-assertion full package suite passed 8,117/8,117, including 48
+- The 8,133-assertion full package suite passed 8,133/8,133, including 48
   tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0. The full
   optional JuMP suite passed 836/836 on both Julia lines. The exact
   EntanglementDetection.jl 0.2.2 extension passed 125/125 focused assertions on
   the current compatible Julia.
-- All 114 declared quick benchmark cases completed locally with `--no-save`;
-  this is execution smoke evidence, not a performance baseline.
+- All 114 declared quick benchmark cases completed for a clean `f32dd233`
+  baseline and the candidate; targeted paired observations remain local
+  diagnostics, not a stable performance baseline.
 - These local and static results do not establish QETLAB/MATLAB parity,
   supported-platform remote CI, comparative performance, API stability,
   release approval, or non-delegable human review. No version has been tagged

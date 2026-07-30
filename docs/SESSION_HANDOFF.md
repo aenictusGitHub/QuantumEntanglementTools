@@ -9,13 +9,12 @@ not a committed or published release.
 
 - Branch: `main`.
 - `HEAD` and `origin/main`:
-  `ec9094dad43a7531b16b1f1d282a490ccba0c543`.
+  `f32dd233e478dd6e2642f11fab088f6c8febc420`.
 - Remote: private `origin` at
   `https://github.com/aenictusGitHub/QuantumEntanglementTools.git`.
-- Worktree: intentionally dirty with 66 tracked paths modified and 224
-  untracked paths at this snapshot. The changes span the QETLAB completion
-  implementation, optional extensions, tests, fixtures, generated ledgers,
-  documentation, CI definitions, and convergence evidence. Use
+- Worktree: intentionally dirty with a bounded performance pass over dense
+  Choi construction and small compound-matrix minors, corresponding regression
+  tests, reconciled assertion counts, and benchmark/handoff evidence. Use
   `git status --short` for the exact live list; do not reset or clean it.
 - No commit, push, tag, release, repository-visibility change, branch-setting
   change, history rewrite, or registry submission was made.
@@ -29,7 +28,7 @@ not a committed or published release.
   completion failures.
 - The runtime API contains 458 exports (328 native/module and 130
   `MATLABCompat`) matched by 458 provenance records.
-- The exact current-tree package corpus passes 8,117/8,117 assertions,
+- The exact current-tree package corpus passes 8,133/8,133 assertions,
   including 48 executable-tutorial assertions, on Julia 1.12.6 and the
   installed Julia 1.10.0.
 - The complete JuMP/Hypatia/SCS extension passes 836/836 assertions on both
@@ -46,9 +45,11 @@ not a committed or published release.
 - Aqua passes 11/11, the representative JET set passes 25/25, independent
   randomized matrix-predicate validation passes 130/130 on both lines, and the
   formatter gate passes.
-- All 114 declared quick benchmark cases completed with `--no-save`. This is
-  execution smoke evidence, not a comparative-performance result or regression
-  baseline.
+- All 114 declared quick benchmark cases completed for a clean
+  `f32dd233e478dd6e2642f11fab088f6c8febc420` baseline and the candidate with
+  one Julia and one BLAS thread. Targeted quick-run minima and allocations
+  improved, but this remains local diagnostic evidence rather than a stable
+  comparative-performance result or regression baseline.
 
 These are bounded local implementation and validation claims. They do not
 establish general MATLAB/QETLAB parity, supported-platform remote CI,
@@ -79,6 +80,16 @@ resource limits, guarded densification, optional solver extensions, and
 status-rich numerical outcomes. Necessary criteria, relaxations, heuristics,
 and numerical feasibility evidence are not promoted to unchecked Boolean
 certificates.
+
+The performance pass preserves every public name and signature. Homogeneous
+dense BLAS-float Kraus and paired operator-sum factors now form Choi matrices
+from compact factor-column products; mixed, exact, arbitrary-precision, and
+sparse inputs retain the previous termwise path. Compound matrices use
+allocation-light, partially pivoted kernels for standard floating-point
+two-by-two and three-by-three minors, exact formulas for widened exact types,
+and the standard-library determinant for other numeric types and larger
+minors. See `docs/BENCHMARK_REPORT.md` for the bounded measurements and
+numerical cross-checks.
 
 In particular, the UPB separable-discrimination path does not claim a
 reachable exact positive certificate for floating solver input. Residual-checked

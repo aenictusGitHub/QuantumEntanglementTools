@@ -6,7 +6,7 @@ At pinned QETLAB revision
 checker passes with 127/127 public rows verified with final status,
 36/36 internal helpers assigned terminal dispositions, no queued rows, and
 458 exported bindings with matching provenance entries. The direct local full
-corpus passes 8,117/8,117 assertions, including 48 executable-tutorial
+corpus passes 8,133/8,133 assertions, including 48 executable-tutorial
 assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
 
 This is package-local implementation and validation evidence. It does not

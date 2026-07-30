@@ -194,6 +194,15 @@ end
         @test QET.apply_channel(input, superoperator) ≈ expected
         @test QET.apply_channel(input, operators) ≈ expected
 
+        rng = MersenneTwister(0x43484f49)
+        dense_operators = [randn(rng, ComplexF64, 4, 3) for _ in 1:5]
+        dense_kraus = QET.KrausRepresentation(dense_operators)
+        dense_choi_reference = sum(
+            vec(operator) * adjoint(vec(operator)) for operator in dense_operators
+        )
+        @test QET.choi_matrix(dense_kraus) ≈ dense_choi_reference
+        @test QET.choi_matrix(dense_kraus) isa Matrix{ComplexF64}
+
         raw_choi = QET.choi_matrix(choi)
         raw_choi[1, 1] = 99
         @test QET.choi_matrix(choi)[1, 1] != 99

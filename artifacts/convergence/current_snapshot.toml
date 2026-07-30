@@ -55,10 +55,10 @@ measurement = "runtime Test.get_test_counts in isolated environment"
 passed = 125
 
 [dynamic_tests.package]
-core_assertions = 8069
-integrated_assertions = 8117
+core_assertions = 8085
+integrated_assertions = 8133
 integrated_broken = 0
-integrated_passed = 8117
+integrated_passed = 8133
 measurement = "runtime Test.get_test_counts"
 tutorial_assertions = 48
 
@@ -98,12 +98,12 @@ tutorial_assertions = 48
     name = "Tier B MATLAB compatibility wrappers"
     passed = 30
     [[dynamic_tests.package.suites]]
-    assertions = 183
+    assertions = 185
     broken = 0
     errored = 0
     failed = 0
     name = "Tier C channel/map representations"
-    passed = 183
+    passed = 185
     [[dynamic_tests.package.suites]]
     assertions = 161
     broken = 0
@@ -448,12 +448,12 @@ tutorial_assertions = 48
     name = "WP2 FilterNormalForm bounded decomposition"
     passed = 148
     [[dynamic_tests.package.suites]]
-    assertions = 136
+    assertions = 150
     broken = 0
     errored = 0
     failed = 0
     name = "Tier E matrix analysis"
-    passed = 136
+    passed = 150
     [[dynamic_tests.package.suites]]
     assertions = 37
     broken = 0
@@ -688,7 +688,7 @@ tutorial_assertions = 48
 
 [generation]
 deterministic = true
-input_sha256 = "dea1b72eccf5a7f6386882d0b4362af88f725bc0962448f578fde00170d70703"
+input_sha256 = "0d709a260a6203e37141caf5c1ab6ff1ce11ebf1ecaa94e93e765a1b67cc6ee3"
 inventory_sha256 = "62d0e94cf73934f4b35af3364b81cdf7468ab1662705e8171d7e46c57ec6a3c5"
 provenance_sha256 = "089804cba784b00946745e4dfb283f6f0772eebbde942dee4f9075561a25eab8"
 script = "scripts/reconcile_project_claims.jl"
@@ -1115,22 +1115,22 @@ unimplemented_markers = []
     path = "ext/entanglement_detection_worker.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1042
+    line = 1074
     nearby_guard_marker = false
     path = "src/channels/channels.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1114
+    line = 1146
     nearby_guard_marker = false
     path = "src/channels/channels.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1240
+    line = 1272
     nearby_guard_marker = false
     path = "src/channels/channels.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1240
+    line = 1272
     nearby_guard_marker = false
     path = "src/channels/channels.jl"
     [[source_audit.densification_sites]]
@@ -1645,12 +1645,12 @@ unimplemented_markers = []
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 532
+    line = 638
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 555
+    line = 661
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
@@ -2027,7 +2027,7 @@ unimplemented_markers = []
 
 [static_test_macros]
 measurement = "static macro occurrences; not an assertion count"
-total = 7120
+total = 7129
 
     [static_test_macros.by_file]
     "test/extensions/entanglement_detection/load_order_probe.jl" = 0
@@ -2078,11 +2078,11 @@ total = 7120
     "test/runtests.jl" = 0
     "test/tier_a_subsystem_kernel.jl" = 229
     "test/tier_b_states_operators_random.jl" = 233
-    "test/tier_c_channels_maps.jl" = 187
+    "test/tier_c_channels_maps.jl" = 189
     "test/tier_d_entanglement_pipeline.jl" = 74
     "test/tier_d_measures_criteria.jl" = 182
     "test/tier_e_coherence.jl" = 59
-    "test/tier_e_matrix_analysis.jl" = 125
+    "test/tier_e_matrix_analysis.jl" = 132
     "test/tier_e_matrix_analysis_compat.jl" = 43
     "test/tier_e_matrix_predicates.jl" = 174
     "test/tier_e_matrix_predicates_compat.jl" = 41

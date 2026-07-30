@@ -388,12 +388,114 @@ function _matrix_analysis_combinations(dimension::Int, order::Int)
     return combinations
 end
 
-function _matrix_analysis_minor_determinant(
-    matrix::AbstractMatrix, row_indices, column_indices, result_type::Type
+function _matrix_analysis_exact_work_type(::Type{T}) where {T}
+    if T <: Integer || T <: Rational
+        return true
+    elseif T <: Complex
+        component_type = typeof(real(zero(T)))
+        return component_type <: Integer || component_type <: Rational
+    end
+    return false
+end
+
+function _matrix_analysis_pivoted_determinant_2x2(a11, a12, a21, a22)
+    if abs(a21) > abs(a11)
+        iszero(a21) && return zero(a21)
+        return -a21 * (a12 - (a11 / a21) * a22)
+    end
+    iszero(a11) && return zero(a11)
+    return a11 * (a22 - (a21 / a11) * a12)
+end
+
+function _matrix_analysis_pivoted_determinant_3x3(
+    a11, a12, a13, a21, a22, a23, a31, a32, a33
 )
+    sign = one(a11)
+    if abs(a21) > abs(a11) && abs(a21) >= abs(a31)
+        a11, a21 = a21, a11
+        a12, a22 = a22, a12
+        a13, a23 = a23, a13
+        sign = -sign
+    elseif abs(a31) > abs(a11) && abs(a31) > abs(a21)
+        a11, a31 = a31, a11
+        a12, a32 = a32, a12
+        a13, a33 = a33, a13
+        sign = -sign
+    end
+    iszero(a11) && return zero(a11)
+
+    multiplier21 = a21 / a11
+    multiplier31 = a31 / a11
+    a22 -= multiplier21 * a12
+    a23 -= multiplier21 * a13
+    a32 -= multiplier31 * a12
+    a33 -= multiplier31 * a13
+
+    if abs(a32) > abs(a22)
+        a22, a32 = a32, a22
+        a23, a33 = a33, a23
+        sign = -sign
+    end
+    iszero(a22) && return zero(a22)
+
+    a33 -= (a32 / a22) * a23
+    return sign * a11 * a22 * a33
+end
+
+function _matrix_analysis_minor_determinant(
+    matrix::AbstractMatrix, row_indices, column_indices, ::Type{R}
+) where {R}
     order = length(row_indices)
-    order == 0 && return one(result_type)
-    work_type = _matrix_analysis_work_type(result_type)
+    order == 0 && return one(R)
+    work_type = _matrix_analysis_work_type(R)
+    if order == 1
+        value = convert(work_type, matrix[row_indices[1], column_indices[1]])
+        return _matrix_analysis_narrow(R, value, "minor determinant")
+    elseif order == 2 && (
+        work_type <: LinearAlgebra.BlasFloat || _matrix_analysis_exact_work_type(work_type)
+    )
+        @inbounds begin
+            row1, row2 = row_indices[1], row_indices[2]
+            column1, column2 = column_indices[1], column_indices[2]
+            a11 = convert(work_type, matrix[row1, column1])
+            a12 = convert(work_type, matrix[row1, column2])
+            a21 = convert(work_type, matrix[row2, column1])
+            a22 = convert(work_type, matrix[row2, column2])
+            value = if work_type <: LinearAlgebra.BlasFloat
+                _matrix_analysis_pivoted_determinant_2x2(a11, a12, a21, a22)
+            else
+                a11 * a22 - a12 * a21
+            end
+        end
+        return _matrix_analysis_narrow(R, value, "minor determinant")
+    elseif order == 3 && (
+        work_type <: LinearAlgebra.BlasFloat || _matrix_analysis_exact_work_type(work_type)
+    )
+        @inbounds begin
+            row1, row2, row3 = row_indices[1], row_indices[2], row_indices[3]
+            column1, column2, column3 = column_indices[1],
+            column_indices[2],
+            column_indices[3]
+            a11 = convert(work_type, matrix[row1, column1])
+            a12 = convert(work_type, matrix[row1, column2])
+            a13 = convert(work_type, matrix[row1, column3])
+            a21 = convert(work_type, matrix[row2, column1])
+            a22 = convert(work_type, matrix[row2, column2])
+            a23 = convert(work_type, matrix[row2, column3])
+            a31 = convert(work_type, matrix[row3, column1])
+            a32 = convert(work_type, matrix[row3, column2])
+            a33 = convert(work_type, matrix[row3, column3])
+            value = if work_type <: LinearAlgebra.BlasFloat
+                _matrix_analysis_pivoted_determinant_3x3(
+                    a11, a12, a13, a21, a22, a23, a31, a32, a33
+                )
+            else
+                a11 * (a22 * a33 - a23 * a32) - a12 * (a21 * a33 - a23 * a31) +
+                a13 * (a21 * a32 - a22 * a31)
+            end
+        end
+        return _matrix_analysis_narrow(R, value, "minor determinant")
+    end
     minor = Matrix{work_type}(undef, order, order)
     @inbounds for column in 1:order, row in 1:order
         minor[row, column] = convert(
@@ -401,7 +503,7 @@ function _matrix_analysis_minor_determinant(
         )
     end
     determinant = LinearAlgebra.det(minor)
-    return _matrix_analysis_narrow(result_type, determinant, "minor determinant")
+    return _matrix_analysis_narrow(R, determinant, "minor determinant")
 end
 
 """
@@ -416,7 +518,11 @@ meaningful zero-by-nonzero shape.
 
 Dense inputs produce dense outputs by default, while sparse inputs produce
 sparse outputs; `sparse_output` may select either representation explicitly.
-Each selected `order × order` minor is materialized independently, but the full
+Order one returns the selected entry directly. Orders two and three use
+allocation-light determinant kernels for standard BLAS floating-point and
+exact element types; floating-point kernels retain partial pivoting. Other
+numeric types at those orders, and all higher-order selected minors, use the
+standard-library determinant on an independently materialized minor. The full
 input is never implicitly densified. Integer and rational minors are evaluated
 in widened exact arithmetic and narrowed only after a representability check.
 The number of determinants is

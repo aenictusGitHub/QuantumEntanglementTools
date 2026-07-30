@@ -12,16 +12,16 @@ merely because a similarly named Julia method exists.
 
 | Area | Evidence-based status |
 |---|---|
-| Repository state | Uncommitted convergence work on `main` at base `ec9094dad43a7531b16b1f1d282a490ccba0c543`; no commit, push, tag, release, visibility, or settings change |
+| Repository state | Uncommitted performance-validation work on `main` at base `f32dd233e478dd6e2642f11fab088f6c8febc420`; no commit, push, tag, release, visibility, or settings change |
 | QETLAB source | Pinned and clean at `d8589610f00cff106537268dee2e2a1153f3a601`; 163 MATLAB files, 127 public functions, 36 private helpers, 503 dependency edges, and no detected cycle |
 | Strict completion ledger | 127/127 public rows are verified with final status; completion queue contains 0 public rows; 36/36 internal helpers have terminal dispositions; 0 required helpers remain; 0 static completion failures |
 | Public API/provenance | 458 runtime exports (328 native/module and 130 `MATLABCompat`) match 458 provenance records |
-| Full package corpus | 8,117/8,117 assertions, including 48 executable-tutorial assertions, pass on Julia 1.12.6 and the installed Julia 1.10.0 |
+| Full package corpus | 8,133/8,133 assertions, including 48 executable-tutorial assertions, pass on Julia 1.12.6 and the installed Julia 1.10.0 |
 | Optional optimization | The complete JuMP/Hypatia/SCS environment passes 836/836 assertions on both installed Julia lines; solver output remains status-rich and is not automatically a certificate |
 | EntanglementDetection.jl | Exact 0.2.2 adapter passes 125/125 assertions on Julia 1.12.6; its effective resolver floor remains Julia 1.11 because of Ket 0.9 |
 | Independent predicates | Randomized spectrum/minor validation passes 130/130 assertions on both installed Julia lines |
 | Executable tutorials | The standalone runner passes 48/48 assertions on both installed Julia lines |
-| Quick benchmarks | All 114 declared quick benchmark cases completed with `--no-save`; this is not a comparative-performance or regression-baseline claim |
+| Quick benchmarks | All 114 declared quick benchmark cases completed for a clean `f32dd233` baseline and the candidate; targeted paired minima and allocations are recorded as local diagnostics, not a stable comparative-performance or regression-baseline claim |
 | Remote/release evidence | Dirty-worktree preflight and isolated archive smoke pass on both installed Julia lines; exact-commit supported-platform CI, Codecov ingestion, maintainer review, and publication decisions remain open |
 
 The strict result is a bounded local repository-evidence claim. It does not

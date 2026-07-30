@@ -10,16 +10,16 @@ historical baseline.
 
 | Item | Current local evidence |
 |---|---|
-| Repository | Dirty `main` worktree based on `ec9094dad43a7531b16b1f1d282a490ccba0c543`; `origin/main` is the same base; no commit or publication action |
+| Repository | Dirty `main` worktree based on `f32dd233e478dd6e2642f11fab088f6c8febc420`; `origin/main` is the same base; no commit or publication action |
 | Julia | 1.12.6 and installed minimum-line binary 1.10.0 |
 | Completion ledger | 127/127 public rows are verified with final status; completion queue contains 0 public rows; 36/36 internal helpers have terminal dispositions; 0 required helpers remain; 0 static completion failures |
 | API/provenance | 458 exports and 458 matching provenance records |
-| Package corpus | 8,117/8,117 assertions including 48 tutorials on both installed Julia lines |
+| Package corpus | 8,133/8,133 assertions including 48 tutorials on both installed Julia lines |
 | JuMP optimization | 836/836 assertions with package-managed Hypatia/SCS on both installed Julia lines |
 | EntanglementDetection.jl | Exact 0.2.2 environment; 125/125 assertions on Julia 1.12.6; effective resolver floor Julia 1.11 |
 | Source-free oracles | 27/27 comparators and 1,347/1,347 assertions on both installed Julia lines; all fixture digests verified |
 | Quality | Aqua 11/11, JET 25/25, formatter gate passing, randomized matrix predicates 130/130 on both lines |
-| Benchmarks | All 114 declared quick benchmark cases completed with `--no-save`; smoke evidence only |
+| Benchmarks | All 114 declared quick benchmark cases completed for a clean `f32dd233` baseline and the candidate with one Julia and one BLAS thread; targeted paired results are diagnostic only |
 | Distribution preflight | Isolated dirty-worktree archive and fresh-depot load smoke pass on Julia 1.12.6 and 1.10.0; not committed-tree release evidence |
 
 `Pkg.test()` initially encountered sandbox-only permission failures when Julia

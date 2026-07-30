@@ -22,13 +22,13 @@ helpers have terminal dispositions, the completion queue contains 0 public
 rows, 0 required internal helpers remain, and 0 static completion failures.
 The package has 458 public bindings with matching provenance entries.
 
-The 8,117-assertion full package suite passed 8,117/8,117, including 48
+The 8,133-assertion full package suite passed 8,133/8,133, including 48
 executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
 The full optional JuMP suite passed 836/836 on both Julia lines. The
 EntanglementDetection.jl extension passed 125/125 focused assertions on the
-current compatible Julia. All 114 declared quick benchmark cases completed
-locally with `--no-save`; this is execution smoke evidence, not a performance
-baseline.
+current compatible Julia. All 114 declared quick benchmark cases completed for
+a clean `f32dd233` baseline and the candidate; targeted paired observations
+remain local diagnostics, not a stable performance baseline.
 
 These static and local results are not QETLAB/MATLAB parity,
 supported-platform remote CI, comparative performance, API stability, release
@@ -73,7 +73,7 @@ been made.
   Their package-owned mappings use explicit structured results and documented
   numerical boundaries; function-specific MATLAB-family oracle coverage is not
   implied.
-- An 8,117-assertion full package suite passing 8,117/8,117 locally on Julia
+- An 8,133-assertion full package suite passing 8,133/8,133 locally on Julia
   1.12.6 and the installed Julia 1.10.0, including 48 executable-tutorial
   assertions, plus consistency checks over 458 public bindings and all 163
   source-reviewed inventory rows.
@@ -88,7 +88,8 @@ been made.
   representatives, published witness reconstruction, a decomposable NPT
   witness, and explicit GHZ phase handling.
 - A benchmark harness containing 114 declared quick cases, all of which
-  completed in the current-tree `--no-save` smoke. This is not a
+  completed for the clean `f32dd233` baseline and performance candidate.
+  Targeted paired observations remain local diagnostics, not a stable
   comparative-performance claim or regression baseline.
 - An optional JuMP extension suite passing 836/836 locally on Julia 1.12.6 and
   the installed Julia 1.10.0.
@@ -109,6 +110,13 @@ been made.
 
 ### Changed
 
+- Dense homogeneous BLAS-float Kraus and operator-sum Choi construction now
+  uses compact factor-column products, while mixed, exact,
+  arbitrary-precision, and sparse inputs retain the prior path.
+- Second- and third-order compound matrices now avoid per-minor matrix
+  allocation for standard BLAS floating-point and exact types. Floating-point
+  kernels retain partial pivoting; other numeric types and larger minors retain
+  the standard-library determinant path.
 - Randomized native and `MATLABCompat` APIs require a leading explicit
   `rng::AbstractRNG`; no public random constructor draws from Julia's global
   stream.

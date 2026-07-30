@@ -2,27 +2,65 @@
 
 Evidence date: 2026-07-30.
 
-Status: local quick smoke only; no comparative performance claim or regression
-threshold.
+Status: paired local quick-run diagnostic; no stable comparative-performance
+claim or regression threshold.
 
 ## Current 114-case quick smoke
 
 <!-- qetlab-current-claims: begin -->
 
 The complete set of 114 declared quick benchmark cases completed with exit
-status zero on Julia 1.12.6 from the dirty convergence worktree based on
-`ec9094dad43a7531b16b1f1d282a490ccba0c543`:
+status zero on Julia 1.12.6 for both the clean baseline
+`f32dd233e478dd6e2642f11fab088f6c8febc420` and the candidate worktree. Both
+runs fixed Julia and BLAS to one thread:
 
 ```sh
-julia --compiled-modules=no --startup-file=no --project=benchmark \
-  benchmark/benchmarks.jl --quick --no-save
+JULIA_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  julia --compiled-modules=no --startup-file=no --project=benchmark \
+  benchmark/benchmarks.jl --quick \
+  --output=/private/tmp/qet-quick-f32dd233-julia1.12.6-t1
+
+JULIA_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  julia --compiled-modules=no --startup-file=no --project=benchmark \
+  benchmark/benchmarks.jl --quick \
+  --output=/private/tmp/qet-quick-candidate-final-julia1.12.6-t1
 ```
 
-Each case produced 20 samples with one evaluation. `--no-save` intentionally
-created no machine-readable result artifact. This run is a broad execution and
-allocation smoke test only: it has no clean committed-tree identity, repeated
-environment study, comparison target, acceptance threshold, or performance
-claim.
+Each case produced 20 samples with one evaluation. The environment was Apple
+arm64 (`apple-m4`), Julia 1.12.6, BenchmarkTools 1.8.0, and ILP64 OpenBLAS
+through libblastrampoline. The candidate differed from the clean baseline only
+in the two optimized source files and their two regression-test files when the
+benchmark metadata was captured.
+
+The targeted observations were:
+
+| Case | Baseline minimum | Candidate minimum | Baseline → candidate memory | Allocations |
+|---|---:|---:|---:|---:|
+| `channels/kraus_to_choi_dephasing_d16` | 789,125 ns | 106,167 ns (7.4× lower) | 16,779,968 → 1,081,584 bytes | 98 → 9 |
+| `channels/operator_sum_to_choi_16x12_to_20x10_terms4` | 108,292 ns | 84,208 ns (1.29× lower) | 4,981,728 → 1,274,432 bytes | 34 → 20 |
+| `matrix_analysis/compound_dense_8_order3` | 2,947,542 ns | 21,792 ns (135× lower) | 1,738,768 → 32,784 bytes | 53,367 → 55 |
+
+Independent same-size checks measured maximum absolute differences of
+`1.11e-16` for the Kraus Choi result, `1.84e-15` for the paired operator-sum
+Choi result, and `3.56e-15` for the order-three compound matrix against the
+previous termwise or standard-library constructions. Exact rational results
+remained exact, `BigFloat` retained the standard-library determinant path, an
+ill-conditioned three-by-three probe agreed exactly with `det`, and sparse
+outputs remained sparse.
+
+The raw JSON/TOML SHA-256 pairs are
+`8f74f49a36fba76a9ba6e53519ac88c8b36cb17c2fe80c47706f0c880080a1d8` /
+`4fc49c1cf77adfbd56311120adeabbaed0c3499e89f5e5dfa34b28f57955d85a`
+for the baseline and
+`54098ff810148f5fa9acd84580c61a66b1c3c98f5b9dfb88e4f408948723c9bd` /
+`b7e2f298f90c5221b688b41a285b699aa66705f7af236b014c50bf5fd8b25db3`
+for the candidate. The files are local temporary artifacts under
+`/private/tmp`; the hashes make accidental substitution detectable but do not
+make them durable repository evidence.
+
+These quick-run minima are diagnostic observations, not stable speedup
+guarantees. There is no repeated-session noise study, acceptance threshold,
+cross-platform comparison, or regression gate.
 
 <!-- qetlab-current-claims: end -->
 

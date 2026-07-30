@@ -15,7 +15,7 @@ backend, performance, or release-approval claim.
   helpers with terminal dispositions, 0 required helpers remaining, and 0
   static completion failures.
 - The API checker matches 458 runtime exports to 458 provenance records.
-- The full package corpus passes 8,117/8,117 assertions, including 48 tutorial
+- The full package corpus passes 8,133/8,133 assertions, including 48 tutorial
   assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
 - The standalone tutorials pass 48/48 and independent matrix-predicate
   validation passes 130/130 on both installed Julia lines.
@@ -31,16 +31,17 @@ backend, performance, or release-approval claim.
   was not run.
 - Aqua passes 11/11 and the representative JET set passes 25/25. The formatter
   gate passes after applying the repository formatter.
-- All 114 declared quick benchmark cases completed with `--no-save`. This
-  execution smoke never constitutes a comparative-performance or
-  regression-baseline claim.
+- All 114 declared quick benchmark cases completed for the clean `f32dd233`
+  baseline and the candidate with one Julia and one BLAS thread. The targeted
+  paired observations remain local diagnostics, not a stable
+  comparative-performance or regression-baseline claim.
 - The dirty-worktree distribution preflight and an isolated fresh-depot archive
   load smoke pass on both installed Julia lines. Dirty mode uses a temporary
   Git index/object store and does not change the repository index; it is not
   exact committed-tree release evidence.
 
 This evidence applies to a dirty local worktree based on
-`ec9094dad43a7531b16b1f1d282a490ccba0c543`. It is not exact committed-tree
+`f32dd233e478dd6e2642f11fab088f6c8febc420`. It is not exact committed-tree
 remote CI, API-stability evidence, release approval, or the maintainer's
 non-delegable review.
 

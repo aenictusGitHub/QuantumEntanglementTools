@@ -217,9 +217,61 @@ end
         @test compound_matrix(transpose(first_factor), 2) ==
             transpose(compound_matrix(first_factor, 2))
 
+        rng = MersenneTwister(0x434f4d50)
+        floating_matrix = randn(rng, 8, 8)
+        row_combinations = QuantumEntanglementTools._matrix_analysis_combinations(8, 3)
+        reference_third = Matrix{Float64}(
+            undef, size(row_combinations, 1), size(row_combinations, 1)
+        )
+        for column in axes(reference_third, 2), row in axes(reference_third, 1)
+            @views reference_third[row, column] = det(
+                floating_matrix[row_combinations[row, :], row_combinations[column, :]]
+            )
+        end
+        @test compound_matrix(floating_matrix, 3) ≈ reference_third atol = 2e-14 rtol =
+            2e-14
+
+        floating_kernel_cases = (
+            ("two-by-two row swap", [0.0 1.0; 2.0 3.0]),
+            ("two-by-two pivot tie", [2.0 1.0; -2.0 3.0]),
+            ("two-by-two zero leading column", [0.0 1.0; 0.0 2.0]),
+            ("two-by-two Float32", Float32[0 1; 2 3]),
+            (
+                "three-by-three final-row first pivot",
+                [1.0 2.0 3.0; 2.0 4.0 1.0; 4.0 0.0 2.0],
+            ),
+            ("three-by-three first-pivot tie", [1.0 2.0 3.0; 4.0 1.0 0.0; -4.0 2.0 5.0]),
+            ("three-by-three second-pivot swap", [4.0 0.0 2.0; 2.0 1.0 4.0; 1.0 3.0 5.0]),
+            ("three-by-three zero leading column", [0.0 1.0 2.0; 0.0 3.0 4.0; 0.0 5.0 6.0]),
+            ("three-by-three complex pivots", ComplexF64[1+im 2 0; 4-im 1 2im; 2 3+im 5]),
+        )
+        for (description, kernel_matrix) in floating_kernel_cases
+            @testset "$description" begin
+                minor_order = size(kernel_matrix, 1)
+                component_type = typeof(real(zero(eltype(kernel_matrix))))
+                scale = max(one(component_type), opnorm(kernel_matrix, Inf)^minor_order)
+                tolerance = component_type(256) * eps(component_type)
+                @test isapprox(
+                    compound_matrix(kernel_matrix, minor_order)[1, 1],
+                    det(kernel_matrix);
+                    atol=tolerance * scale,
+                    rtol=tolerance,
+                )
+            end
+        end
+        @test eltype(compound_matrix(Float32[0 1; 2 3], 2)) == Float32
+
         rational_matrix = Rational{Int}[1//2 2//3; -3//4 5//7]
         @test compound_matrix(rational_matrix, 2)[1, 1] == det(rational_matrix)
         @test eltype(compound_matrix(rational_matrix, 2)) == Rational{Int}
+        rational_third = Rational{Int}[
+            1//2 2//3 -1//5
+            -3//4 5//7 2//9
+            4//3 -2//5 7//11
+        ]
+        @test compound_matrix(rational_third, 3)[1, 1] == det(rational_third)
+        bigfloat_third = BigFloat[1 2 3; 4 5 7; 8 11 13]
+        @test compound_matrix(bigfloat_third, 3)[1, 1] == det(bigfloat_third)
         complex_matrix = Complex{Int}[1 + im 2; 3im 4 - im]
         @test compound_matrix(complex_matrix, 2)[1, 1] ==
             complex_matrix[1, 1] * complex_matrix[2, 2] -
@@ -231,6 +283,9 @@ end
         @test compound_matrix(Matrix{Number}([1 2; 3 5]), 2) == reshape([-1], 1, 1)
 
         @test_throws OverflowError compound_matrix([typemax(Int) 0; 0 2], 2)
+        @test_throws OverflowError compound_matrix(
+            Matrix(Diagonal([typemax(Int), 2, 1])), 3
+        )
         sparse_compound = compound_matrix(sparse(matrix), 2)
         @test issparse(sparse_compound)
         @test Matrix(sparse_compound) == compound_matrix(matrix, 2)

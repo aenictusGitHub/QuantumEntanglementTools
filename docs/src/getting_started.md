@@ -11,7 +11,7 @@ internal helpers assigned terminal dispositions, no queued rows, and 458
 exported bindings with matching provenance entries. The API may still change
 before publication or in later `0.x` releases.
 
-The direct local full corpus passes 8,117/8,117 assertions, including 48
+The direct local full corpus passes 8,133/8,133 assertions, including 48
 executable-tutorial assertions, on Julia 1.12.6 and the installed Julia
 1.10.0. This is local implementation and validation evidence, not
 MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,

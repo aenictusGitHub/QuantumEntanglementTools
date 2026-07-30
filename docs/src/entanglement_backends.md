@@ -10,7 +10,7 @@ At pinned QETLAB revision
 checker records 127/127 public rows with final `verified` status, 36/36 internal
 helpers with terminal dispositions, no queued rows, and 458 exported bindings
 with matching provenance entries. The direct local full corpus passes
-8,117/8,117 assertions, including 48 executable-tutorial assertions, on Julia
+8,133/8,133 assertions, including 48 executable-tutorial assertions, on Julia
 1.12.6 and the installed Julia 1.10.0. This evidence does not establish
 MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,
 API stability, release approval, or human review.

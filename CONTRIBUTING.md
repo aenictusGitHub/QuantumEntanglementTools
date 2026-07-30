@@ -28,13 +28,13 @@ helpers have terminal dispositions, the completion queue contains 0 public
 rows, 0 required internal helpers remain, and 0 static completion failures.
 The public API has 458 public bindings with matching provenance entries.
 
-The 8,117-assertion full package suite passed 8,117/8,117, including 48
+The 8,133-assertion full package suite passed 8,133/8,133, including 48
 executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
 The full optional JuMP suite passed 836/836 on both Julia lines. The
 EntanglementDetection.jl extension passed 125/125 focused assertions on the
-current compatible Julia. All 114 declared quick benchmark cases completed
-locally with `--no-save`; this is execution smoke evidence, not a performance
-baseline.
+current compatible Julia. All 114 declared quick benchmark cases completed for
+a clean `f32dd233` baseline and the candidate; targeted paired observations
+remain local diagnostics, not a stable performance baseline.
 
 These runs and static checks are development evidence, not QETLAB/MATLAB
 parity, supported-platform remote CI, comparative performance, API stability,

@@ -812,7 +812,29 @@ function _column_vector(operator::SparseMatrixCSC)
     return sparsevec(indices, copy(values), length(operator))
 end
 
-function _kraus_to_choi(operators)
+function _factorized_choi_eligible(operators, ::Type{T}) where {T}
+    T <: LinearAlgebra.BlasFloat || return false
+    return all(operator -> !issparse(operator) && eltype(operator) === T, operators)
+end
+
+function _factorized_choi_eligible(left_operators, right_operators, ::Type{T}) where {T}
+    return _factorized_choi_eligible(left_operators, T) &&
+           _factorized_choi_eligible(right_operators, T)
+end
+
+function _factor_columns(operators, ::Type{T}) where {T<:LinearAlgebra.BlasFloat}
+    columns = Matrix{T}(undef, length(first(operators)), length(operators))
+    for (index, operator) in enumerate(operators)
+        copyto!(@view(columns[:, index]), vec(operator))
+    end
+    return columns
+end
+
+function _kraus_to_choi(operators, ::Type{T}) where {T}
+    if _factorized_choi_eligible(operators, T)
+        columns = _factor_columns(operators, T)
+        return columns * adjoint(columns)
+    end
     terms = Base.map(operators) do operator
         vector = _column_vector(operator)
         return vector * adjoint(vector)
@@ -825,7 +847,12 @@ function _kraus_to_superoperator(operators)
     return reduce(+, terms)
 end
 
-function _operator_sum_to_choi(left_operators, right_operators)
+function _operator_sum_to_choi(left_operators, right_operators, ::Type{T}) where {T}
+    if _factorized_choi_eligible(left_operators, right_operators, T)
+        left_columns = _factor_columns(left_operators, T)
+        right_columns = _factor_columns(right_operators, T)
+        return left_columns * adjoint(right_columns)
+    end
     terms = Base.map(left_operators, right_operators) do left, right
         return _column_vector(left) * adjoint(_column_vector(right))
     end
@@ -847,6 +874,10 @@ end
 Convert between map representations. Choi/superoperator conversion is an
 exact index reshuffle and preserves sparse storage. Kraus-to-matrix conversion
 preserves sparse storage when every Kraus operator is sparse.
+Homogeneous dense `Float32`, `Float64`, `ComplexF32`, and `ComplexF64` factor
+collections form Choi matrices through a compact factor-column product;
+mixed-precision, exact, arbitrary-precision, and sparse collections retain the
+termwise conversion path.
 
 Choi-to-Kraus conversion is defined only when complete positivity is
 established by the structured diagnostic. A numerical boundary is rejected,
@@ -862,13 +893,14 @@ end
 
 function choi_representation(map::KrausRepresentation)
     operators = _validated_kraus_operators(map)
-    return ChoiRepresentation(_kraus_to_choi(operators), operator_space(map))
+    return ChoiRepresentation(_kraus_to_choi(operators, eltype(map)), operator_space(map))
 end
 
 function choi_representation(map::OperatorSumRepresentation)
     left_operators, right_operators = _validated_operator_sum_factors(map)
     return ChoiRepresentation(
-        _operator_sum_to_choi(left_operators, right_operators), operator_space(map)
+        _operator_sum_to_choi(left_operators, right_operators, eltype(map)),
+        operator_space(map),
     )
 end
 
