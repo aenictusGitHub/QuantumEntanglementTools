@@ -30,6 +30,27 @@ end
     @test run_load_order_probe("core_first")
     @test run_load_order_probe("backend_first")
     @test isempty(Test.detect_ambiguities(QET, JuMP, extension_module(); recursive=false))
+
+    status = QET.backend_status()
+    @test status.optimization.installed === true
+    @test status.optimization.installation_status === :confirmed_loaded
+    @test status.optimization.extension_loaded
+    @test status.optimization.ready_for_configuration
+    @test !status.optimization.ready
+    configured = QET.backend_status(
+        QET.JuMPBackend(
+            Hypatia.Optimizer;
+            optimizer_name="Hypatia",
+            optimizer_version=Base.pkgversion(Hypatia),
+            allow_densify=true,
+        ),
+    )
+    @test configured.configured
+    @test configured.ready
+    @test configured.optimizer_name == "Hypatia"
+    @test configured.optimizer_version == Base.pkgversion(Hypatia)
+    @test configured.allow_densify
+    @test occursin("ready", configured.message)
 end
 
 function hypatia_backend(; options=NamedTuple(), kwargs...)

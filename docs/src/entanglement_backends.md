@@ -8,10 +8,10 @@ package-certified conclusions.
 At pinned QETLAB revision
 `d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
 checker records 127/127 public rows with final `verified` status, 36/36 internal
-helpers with terminal dispositions, no queued rows, and 458 exported bindings
+helpers with terminal dispositions, no queued rows, and 467 exported bindings
 with matching provenance entries. The direct local full corpus passes
-8,133/8,133 assertions, including 48 executable-tutorial assertions, on Julia
-1.12.6 and the installed Julia 1.10.0. This evidence does not establish
+8,360/8,360 assertions: 8,276 core plus 84 executable-tutorial
+assertions, on Julia 1.12.6 and the installed Julia 1.10.0. This evidence does not establish
 MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,
 API stability, release approval, or human review.
 
@@ -36,6 +36,21 @@ whose `CriterionStatus` is `CriterionEntanglementDetected`,
 boundary, numerical tolerance, and optional witness. A satisfied necessary
 condition is not silently relabeled `separable`.
 
+The common interpretation helpers reduce status-vocabulary memorization while
+leaving every original field untouched:
+
+```julia
+conclusion(result)     # conservative Symbol such as :entangled or :unknown
+is_conclusive(result)  # did this result reach a terminal domain conclusion?
+is_certified(result)   # is there a package-recognized mathematical certificate?
+explain(result)        # human-readable reason, including optimization warnings
+```
+
+`is_conclusive` for an `OptimizationResult` describes the solver-domain
+terminal outcome only; it does not imply `is_certified`. Rich REPL and notebook
+displays show the certificate, method, reason, attempt history, residuals, and
+warnings, while the compact `show` representation remains stable for logs.
+
 For practical constructions and complete output examples, start with
 [Separability by example](separability_examples.md). The general density-matrix
 entry point `is_separable(rho, dims; ...)` is certificate-first: it always
@@ -53,6 +68,10 @@ packages. `AbstractEntanglementBackend` and `AbstractEntanglementMethod` are
 dispatch interfaces for future extensions. `NativePPT` is the validated
 configuration for the currently supported explicit
 `detect_entanglement(state, dims, method)` call.
+
+Call `backend_status()` for side-effect-free readiness diagnostics covering the
+native, JuMP, and optional EntanglementDetection integrations. It reports
+loading or Julia-version remediation without importing an optional dependency.
 
 For a density matrix, `analyze_entanglement(...;
 strategy=:certificates_first)` runs:
@@ -122,7 +141,7 @@ candidate evidence inside an uncertified `unknown` report. Timeouts, backend
 exceptions, process failures, and invalid structured responses are also
 `unknown`, never mathematical negatives.
 
-The dedicated suite passes 125/125 assertions locally on Julia 1.12.6,
+The dedicated suite passes 130/130 assertions locally on Julia 1.12.6,
 including both load orders, method ambiguities, a live search, explicit
 real-to-complex representation conversion, caller-state preservation, bounded
 TERM-to-KILL escalation, interrupt cleanup, response validation, and

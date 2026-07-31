@@ -53,6 +53,61 @@ function Base.getindex(matrix::WP6ReadCountingMatrix, row::Int, column::Int)
 end
 
 @testset "WP6 separability and local discrimination core" begin
+    @testset "separability strategy discovery" begin
+        strategies = SeparabilityQET.available_separability_strategies()
+        @test strategies == (
+            :ppt,
+            :low_rank_ppt,
+            :realignment,
+            :centered_realignment,
+            :reduction,
+            :qubit_qudit,
+            :rank4_chow,
+            :separable_ball,
+            :rank_one_identity,
+            :operator_schmidt_rank,
+            :positive_maps,
+            :filter_covariance,
+            :symmetric_extension,
+            :symmetric_inner_extension,
+            :randomized_subtraction,
+        )
+        @test length(unique(strategies)) == length(strategies)
+        @test SeparabilityQET._separability_strategies(:full) == strategies
+        @test SeparabilityQET._separability_strategies(:qetlab_deterministic) ==
+            filter(!=(:randomized_subtraction), strategies)
+
+        ppt = SeparabilityQET.describe_strategy(:ppt)
+        @test ppt.name === :ppt
+        @test ppt.deterministic
+        @test !ppt.rng_required
+        @test ppt.cost === :spectral_cubic
+        @test ppt.certificate_directions == (:entangled, :separable)
+        @test !ppt.optional_dependency
+        @test ppt.dependency === nothing
+
+        randomized = SeparabilityQET.describe_strategy(:randomized_subtraction)
+        @test !randomized.deterministic
+        @test randomized.rng_required
+        @test randomized.certificate_directions == (:separable,)
+        @test occursin("Explicit-RNG", randomized.description)
+
+        outer = SeparabilityQET.describe_strategy(:symmetric_extension)
+        @test outer.optional_dependency
+        @test outer.dependency === :optimization_backend
+        @test outer.certificate_directions == (:entangled,)
+        inner = SeparabilityQET.describe_strategy(:symmetric_inner_extension)
+        @test inner.certificate_directions == (:separable,)
+
+        conservative = SeparabilityQET.describe_strategy(:rank_one_identity)
+        @test isempty(conservative.certificate_directions)
+        @test occursin("never promoted", conservative.description)
+
+        @test_throws ArgumentError SeparabilityQET.describe_strategy("ppt")
+        @test_throws ArgumentError SeparabilityQET.describe_strategy(:full)
+        @test_throws ArgumentError SeparabilityQET.describe_strategy(:not_a_strategy)
+    end
+
     @testset "local-discrimination validation and theorem branch" begin
         rho = Matrix{Float64}(I, 4, 4) / 4
         trivial = SeparabilityQET.local_distinguishability((rho,), (2, 2))
@@ -222,6 +277,17 @@ end
         @test_throws ArgumentError SeparabilityQET.is_separable(
             Diagonal([0.4, 0.1, 0.2, 0.2999999999]), (2, 2)
         )
+        trace_error = try
+            SeparabilityQET.is_separable(Diagonal([0.4, 0.1, 0.2, 0.3000000001]), (2, 2))
+            nothing
+        catch error
+            error
+        end
+        @test trace_error isa ArgumentError
+        trace_message = sprint(showerror, trace_error)
+        @test occursin("trace(rho)=", trace_message)
+        @test occursin("unit-trace residual", trace_message)
+        @test occursin("validate_density_matrix", trace_message)
 
         sparse_product = SeparabilityQET.is_separable(
             sparse(diagonal), (2, 2); allow_densify=true

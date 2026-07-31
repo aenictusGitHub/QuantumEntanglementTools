@@ -104,7 +104,7 @@ one.
 The package-owned extension calls the documented public backend API only in a
 fresh Julia child process. It supplies no logfile or backend-parallelism option,
 contains failures as uncertified `unknown` reports, and never promotes the
-backend's heuristic Boolean to a certificate. The local 125-assertion extension
+backend's heuristic Boolean to a certificate. The local 130-assertion extension
 suite covers caller RNG/stdout/logger/BLAS preservation, load order, lifecycle,
 timeout escalation, and structured response handling on Julia 1.12.6. This is
 engineering evidence for the stated isolation boundary, not a legal conclusion,

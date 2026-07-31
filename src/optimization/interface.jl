@@ -961,7 +961,9 @@ function solve_optimization(
         problem,
         OptimizationBackendUnavailable,
         :backend_unavailable,
-        "no optimization backend was supplied; load JuMP and pass an explicit JuMPBackend",
+        "no optimization backend was supplied; add and load JuMP plus a solver, " *
+        "then pass an explicit JuMPBackend. Call backend_status() for readiness " *
+        "and remediation details",
     )
 end
 
@@ -972,7 +974,9 @@ function _solve_optional_optimization(
         problem,
         OptimizationBackendUnavailable,
         :extension_unavailable,
-        "the JuMP package extension is not loaded; load JuMP before solving",
+        "a JuMPBackend was supplied, but the JuMP package extension is not loaded; " *
+        "run `using JuMP` in the active environment before solving, then inspect " *
+        "backend_status(backend)",
     )
 end
 

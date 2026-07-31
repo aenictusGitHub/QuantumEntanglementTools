@@ -106,8 +106,8 @@
 
 .qet-generator input[type="number"],
 .qet-generator input[type="text"],
+.qet-generator input[type="file"],
 .qet-generator select {
-    appearance: none;
     background: var(--qet-panel);
     border: 1px solid #8999a9;
     border-radius: 0.42rem;
@@ -116,6 +116,27 @@
     inline-size: 100%;
     min-block-size: 2.55rem;
     padding: 0.45rem 0.65rem;
+}
+
+.qet-generator input[type="text"],
+.qet-generator select {
+    appearance: none;
+}
+
+.qet-generator input[type="file"] {
+    padding: 0.35rem;
+}
+
+.qet-generator input[type="file"]::file-selector-button {
+    background: var(--qet-canvas);
+    border: 1px solid #7d8c9b;
+    border-radius: 0.35rem;
+    color: var(--qet-text);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    margin-right: 0.65rem;
+    padding: 0.3rem 0.6rem;
 }
 
 .qet-generator select {
@@ -133,6 +154,7 @@
 .qet-generator input:focus-visible,
 .qet-generator select:focus-visible,
 .qet-generator button:focus-visible,
+.qet-generator summary:focus-visible,
 .qet-generator__code:focus-visible {
     outline: 3px solid #e5a900;
     outline-offset: 2px;
@@ -169,6 +191,18 @@
     gap: 0.25rem;
 }
 
+.qet-generator__analysis-group {
+    border-top: 1px solid var(--qet-border);
+    margin-top: 0.9rem;
+    padding-top: 0.8rem;
+}
+
+.qet-generator__analysis-group h3 {
+    color: var(--qet-text);
+    font-size: 0.98rem;
+    margin: 0 0 0.35rem;
+}
+
 .qet-generator__check {
     align-items: start;
     border-radius: 0.4rem;
@@ -188,6 +222,10 @@
     margin-left: 1.4rem;
 }
 
+.qet-generator__check--standalone {
+    margin-top: 0.7rem;
+}
+
 .qet-generator__check input {
     accent-color: var(--qet-accent);
     block-size: 1rem;
@@ -195,10 +233,43 @@
     margin: 0.2rem 0 0;
 }
 
-.qet-generator__tolerances {
+.qet-generator__nested-field {
+    margin: 0.15rem 0 0.55rem 1.75rem;
+}
+
+.qet-generator__fixed-choice {
+    margin: 0.7rem 0 0;
+}
+
+.qet-generator__resource-plan {
+    background: var(--qet-accent-soft);
+    border: 1px solid #9bc2dd;
+    border-radius: 0.5rem;
+    color: var(--qet-text);
+    font-size: 0.88rem;
+    margin-top: 0.9rem;
+    padding: 0.7rem 0.8rem;
+}
+
+.qet-generator__resource-plan--warning {
+    background: var(--qet-error-soft);
+    border-color: var(--qet-error);
+}
+
+.qet-generator__advanced {
     border-top: 1px solid var(--qet-border);
-    margin-top: 0.8rem;
+    margin-top: 0.9rem;
     padding-top: 0.8rem;
+}
+
+.qet-generator__advanced summary {
+    color: var(--qet-accent-strong);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.qet-generator__tolerances {
+    margin-top: 0.8rem;
 }
 
 .qet-generator__errors {
@@ -220,11 +291,26 @@
     margin: 0.4rem 0 0 1.2rem;
 }
 
+.qet-generator__errors a {
+    color: inherit;
+    text-decoration-thickness: 0.1em;
+}
+
 .qet-generator__form-actions,
-.qet-generator__output-actions {
+.qet-generator__output-actions,
+.qet-generator__config-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.55rem;
+}
+
+.qet-generator__file-field {
+    margin-top: 0.8rem;
+}
+
+.qet-generator__config-status {
+    min-block-size: 1.4rem;
+    padding: 0.55rem 0 0;
 }
 
 .qet-generator__button {
@@ -275,7 +361,7 @@
     padding: 1rem;
 }
 
-.qet-generator__output-heading h2 {
+.qet-generator__output-heading h3 {
     color: var(--qet-text);
     font-size: 1.15rem;
     margin: 0;
@@ -335,7 +421,7 @@
     background: var(--qet-code);
     border-radius: 0;
     color: var(--qet-code-text);
-    font-size: 0.78rem;
+    font-size: 0.84rem;
     line-height: 1.48;
     margin: 0;
     max-block-size: 52rem;
@@ -343,6 +429,15 @@
     padding: 1rem;
     tab-size: 4;
     white-space: pre;
+}
+
+.qet-generator__output--stale .qet-generator__code {
+    opacity: 0.72;
+}
+
+.qet-generator__output--stale .qet-generator__status {
+    color: var(--qet-accent-strong);
+    font-weight: 700;
 }
 
 .qet-generator__code code {
@@ -374,8 +469,13 @@
     }
 
     .qet-generator__output-actions .qet-generator__button,
-    .qet-generator__form-actions .qet-generator__button {
+    .qet-generator__form-actions .qet-generator__button,
+    .qet-generator__config-actions .qet-generator__button {
         flex: 1 1 auto;
+    }
+
+    .qet-generator__nested-field {
+        margin-left: 0.7rem;
     }
 }
 
@@ -396,6 +496,17 @@ html.theme--catppuccin-macchiato .qet-generator {
     --qet-error: #ff9d9d;
     --qet-error-soft: #452426;
     --qet-success-soft: #183b32;
+}
+
+html.theme--documenter-dark .qet-generator__button--primary,
+html.theme--catppuccin-mocha .qet-generator__button--primary,
+html.theme--catppuccin-frappe .qet-generator__button--primary,
+html.theme--catppuccin-macchiato .qet-generator__button--primary,
+html.theme--documenter-dark .qet-generator__button--primary:not(:disabled):hover,
+html.theme--catppuccin-mocha .qet-generator__button--primary:not(:disabled):hover,
+html.theme--catppuccin-frappe .qet-generator__button--primary:not(:disabled):hover,
+html.theme--catppuccin-macchiato .qet-generator__button--primary:not(:disabled):hover {
+    color: #091923;
 }
 
 html.theme--documenter-dark .qet-generator__notices,
@@ -419,14 +530,20 @@ html.theme--catppuccin-macchiato .qet-generator__chip {
     .qet-generator select,
     .qet-generator button,
     .qet-generator__section,
-    .qet-generator__output {
+    .qet-generator__output,
+    .qet-generator__resource-plan {
         border: 1px solid CanvasText;
     }
 
     .qet-generator input:focus-visible,
     .qet-generator select:focus-visible,
     .qet-generator button:focus-visible,
+    .qet-generator summary:focus-visible,
     .qet-generator__code:focus-visible {
         outline: 3px solid Highlight;
+    }
+
+    .qet-generator__output--stale .qet-generator__code {
+        opacity: 1;
     }
 }

@@ -1498,26 +1498,209 @@ function local_distinguishability(
     )
 end
 
-const _SEPARABILITY_DETERMINISTIC_STRATEGIES = (
-    :ppt,
-    :low_rank_ppt,
-    :realignment,
-    :centered_realignment,
-    :reduction,
-    :qubit_qudit,
-    :rank4_chow,
-    :separable_ball,
-    :rank_one_identity,
-    :operator_schmidt_rank,
-    :positive_maps,
-    :filter_covariance,
-    :symmetric_extension,
-    :symmetric_inner_extension,
+const _SEPARABILITY_STRATEGY_METADATA = (
+    (
+        name=:ppt,
+        deterministic=true,
+        rng_required=false,
+        cost=:spectral_cubic,
+        certificate_directions=(:entangled, :separable),
+        optional_dependency=false,
+        dependency=nothing,
+        description="PPT spectral test; it certifies entanglement generally and separability only in the 2×2 and 2×3 theorem domains.",
+    ),
+    (
+        name=:low_rank_ppt,
+        deterministic=true,
+        rng_required=false,
+        cost=:multiple_spectral_cubic,
+        certificate_directions=(:separable,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="PPT plus global and marginal rank conditions giving a sufficient separability theorem.",
+    ),
+    (
+        name=:realignment,
+        deterministic=true,
+        rng_required=false,
+        cost=:svd_cubic,
+        certificate_directions=(:entangled,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Realignment cross-norm violation test; satisfying it is inconclusive.",
+    ),
+    (
+        name=:centered_realignment,
+        deterministic=true,
+        rng_required=false,
+        cost=:svd_cubic,
+        certificate_directions=(:entangled,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Centered realignment covariance violation test; a non-violation is inconclusive.",
+    ),
+    (
+        name=:reduction,
+        deterministic=true,
+        rng_required=false,
+        cost=:multiple_spectral_cubic,
+        certificate_directions=(:entangled,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Reduction-map positivity test on both local sides; a robust violation certifies entanglement.",
+    ),
+    (
+        name=:qubit_qudit,
+        deterministic=true,
+        rng_required=false,
+        cost=:multiple_spectral_cubic,
+        certificate_directions=(:separable,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Sufficient qubit–qudit separability theorems for states with a two-dimensional local factor.",
+    ),
+    (
+        name=:rank4_chow,
+        deterministic=true,
+        rng_required=false,
+        cost=:high_algebraic,
+        certificate_directions=(:entangled, :separable),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Rank-four 3×3 PPT Chow-form analysis, restricted to its validated theorem domain.",
+    ),
+    (
+        name=:separable_ball,
+        deterministic=true,
+        rng_required=false,
+        cost=:spectral_cubic,
+        certificate_directions=(:separable,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Gurvits–Barnum sufficient ball around the maximally mixed state.",
+    ),
+    (
+        name=:rank_one_identity,
+        deterministic=true,
+        rng_required=false,
+        cost=:spectral_cubic,
+        certificate_directions=(),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Conservative rank-one identity-perturbation diagnostic; floating eigensolver equality is never promoted to a certificate.",
+    ),
+    (
+        name=:operator_schmidt_rank,
+        deterministic=true,
+        rng_required=false,
+        cost=:svd_cubic,
+        certificate_directions=(:separable,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="PPT plus exactly represented operator-Schmidt rank at most two.",
+    ),
+    (
+        name=:positive_maps,
+        deterministic=true,
+        rng_required=false,
+        cost=:multiple_spectral_cubic,
+        certificate_directions=(:entangled,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="A dimension-dependent collection of positive-map PSD violation tests.",
+    ),
+    (
+        name=:filter_covariance,
+        deterministic=true,
+        rng_required=false,
+        cost=:bounded_iterative,
+        certificate_directions=(:entangled,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Bounded filter-normal-form and covariance-matrix violation analysis.",
+    ),
+    (
+        name=:symmetric_extension,
+        deterministic=true,
+        rng_required=false,
+        cost=:semidefinite_optimization,
+        certificate_directions=(:entangled,),
+        optional_dependency=true,
+        dependency=:optimization_backend,
+        description="Outer symmetric-extension hierarchy; only a validated separating dual certifies entanglement.",
+    ),
+    (
+        name=:symmetric_inner_extension,
+        deterministic=true,
+        rng_required=false,
+        cost=:semidefinite_optimization,
+        certificate_directions=(:separable,),
+        optional_dependency=true,
+        dependency=:optimization_backend,
+        description="Inner symmetric-extension hierarchy; validated inner-cone membership certifies separability.",
+    ),
+    (
+        name=:randomized_subtraction,
+        deterministic=false,
+        rng_required=true,
+        cost=:bounded_randomized_iterative,
+        certificate_directions=(:separable,),
+        optional_dependency=false,
+        dependency=nothing,
+        description="Explicit-RNG product-projector subtraction followed by a validated separable-ball certificate.",
+    ),
 )
 
-const _SEPARABILITY_ALL_STRATEGIES = (
-    _SEPARABILITY_DETERMINISTIC_STRATEGIES..., :randomized_subtraction
+const _SEPARABILITY_DETERMINISTIC_STRATEGIES = Tuple(
+    metadata.name for metadata in _SEPARABILITY_STRATEGY_METADATA if metadata.deterministic
 )
+
+const _SEPARABILITY_ALL_STRATEGIES = Tuple(
+    metadata.name for metadata in _SEPARABILITY_STRATEGY_METADATA
+)
+
+"""
+    available_separability_strategies()
+
+Return every strategy accepted by [`is_separable`](@ref), in execution-order
+grouping. Use [`describe_strategy`](@ref) to inspect certificate direction,
+dominant cost, optional dependencies, and explicit-RNG requirements.
+
+The aliases `:qetlab_deterministic` and `:full` accepted by `is_separable` are
+presets, not individual strategies, and therefore are not included.
+"""
+available_separability_strategies() = _SEPARABILITY_ALL_STRATEGIES
+
+"""
+    describe_strategy(strategy)
+
+Return stable package-owned metadata for one separability strategy. The
+`certificate_directions` tuple lists conclusions that the implementation can
+certify; an omitted direction remains inconclusive. `cost` is a qualitative
+description of the dominant computation rather than a performance guarantee.
+"""
+function describe_strategy(strategy)
+    strategy isa Symbol ||
+        throw(ArgumentError("strategy must be a Symbol; got $(repr(strategy))"))
+    if strategy in (:qetlab_deterministic, :full)
+        throw(
+            ArgumentError(
+                "$strategy is an is_separable preset, not an individual strategy; " *
+                "call available_separability_strategies() for the accepted names",
+            ),
+        )
+    end
+    index = findfirst(
+        metadata -> metadata.name === strategy, _SEPARABILITY_STRATEGY_METADATA
+    )
+    isnothing(index) && throw(
+        ArgumentError(
+            "unsupported separability strategy $strategy; available strategies are " *
+            "$(available_separability_strategies())",
+        ),
+    )
+    return _SEPARABILITY_STRATEGY_METADATA[index]
+end
 
 function _separability_strategies(strategies)
     values = if strategies === :qetlab_deterministic
@@ -1543,8 +1726,12 @@ function _separability_strategies(strategies)
     length(unique(values)) == length(values) ||
         throw(ArgumentError("separability strategies must not contain duplicates"))
     unsupported = setdiff(values, _SEPARABILITY_ALL_STRATEGIES)
-    isempty(unsupported) ||
-        throw(ArgumentError("unsupported separability strategies: $(Tuple(unsupported))"))
+    isempty(unsupported) || throw(
+        ArgumentError(
+            "unsupported separability strategies: $(Tuple(unsupported)); " *
+            "call available_separability_strategies() for accepted names",
+        ),
+    )
     return values
 end
 
@@ -1569,11 +1756,16 @@ function _separability_prepare(
         operation="is_separable",
     )
     represented_trace = _sepopt_represented_trace(rho)
+    represented_trace_residual = abs(represented_trace - one(represented_trace))
     iszero(imag(represented_trace)) &&
     real(represented_trace) == one(real(represented_trace)) || throw(
         ArgumentError(
             "is_separable requires an exactly represented unit-trace state; " *
-            "a trace accepted only by atol/rtol is not eligible for a certificate",
+            "trace(rho)=$represented_trace and the exact unit-trace residual is " *
+            "$represented_trace_residual. " *
+            "a trace accepted only by atol/rtol is not eligible for a certificate" *
+            ". Run validate_density_matrix(rho, dims; atol=..., rtol=...) for " *
+            "non-mutating diagnostics.",
         ),
     )
     layout = _tierd_bipartite_layout(dims, size(rho, 1))
@@ -2976,7 +3168,29 @@ function _is_separable(
 end
 
 """
-    is_separable(rho, dims; strategies=:qetlab_deterministic, ...)
+    is_separable(
+        rho,
+        dims;
+        strategies=:qetlab_deterministic,
+        backend=NoOptimizationBackend(),
+        extension_orders=(2,),
+        extension_ppt=true,
+        extension_bosonic=true,
+        atol=nothing,
+        rtol=nothing,
+        allow_densify=false,
+        max_dense_entries=1_000_000,
+        max_work=1_000_000_000,
+        max_extension_order=6,
+        max_filter_iterations=10_000,
+        max_filter_condition_number=nothing,
+        max_filter_entries=10_000_000,
+        max_filter_work=1_000_000_000,
+        max_subtractions=16,
+        max_product_restarts=8,
+        max_product_iterations=32,
+        limits=OptimizationLimits(),
+    )
     is_separable(rng::AbstractRNG, rho, dims; strategies=:full, ...)
 
 Run an ordered, certificate-first reconstruction of QETLAB's composite
@@ -2991,6 +3205,23 @@ The no-RNG method rejects `:randomized_subtraction`. The RNG method is the only
 route that can run that bounded heuristic; it never touches Julia's default
 random stream. Inputs must already be normalized density matrices and are
 never symmetrized, normalized, clipped, or otherwise repaired.
+
+Call [`available_separability_strategies`](@ref) for the accepted individual
+strategy names and [`describe_strategy`](@ref) for certificate directions,
+dominant cost, optional dependencies, and RNG requirements. `backend` is used
+only by explicitly selected optimization strategies. `extension_orders`,
+`extension_ppt`, `extension_bosonic`, `max_extension_order`, and `limits`
+control those hierarchy models. `atol` and `rtol` control numerical
+classification; sparse spectral work additionally requires
+`allow_densify=true` and remains bounded by `max_dense_entries`.
+
+`max_work` bounds the composite deterministic work budget.
+`max_filter_iterations`, `max_filter_condition_number`, `max_filter_entries`,
+and `max_filter_work` bound filter-covariance analysis. `max_subtractions`,
+`max_product_restarts`, and `max_product_iterations` bound the explicit-RNG
+subtraction heuristic. Exhausting any resource budget yields structured
+`:unknown` evidence or a documented resource error; it never produces a
+negative mathematical result.
 """
 function is_separable(rho::AbstractMatrix{<:Number}, dims; kwargs...)
     return _is_separable(nothing, rho, dims; kwargs...)

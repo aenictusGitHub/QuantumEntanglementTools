@@ -1,6 +1,6 @@
 # Porting status
 
-Last updated: 2026-07-30.
+Last updated: 2026-07-31.
 
 This is the human-readable status summary. The generated upstream inventory is
 the authoritative function ledger once reviewed. A function is not complete
@@ -12,16 +12,18 @@ merely because a similarly named Julia method exists.
 
 | Area | Evidence-based status |
 |---|---|
-| Repository state | Uncommitted performance-validation work on `main` at base `f32dd233e478dd6e2642f11fab088f6c8febc420`; no commit, push, tag, release, visibility, or settings change |
+| Repository state | Uncommitted tutorial, user-experience, and schema-2 generator integration work on `main` at base `a50f516ad7887adcc468d649ccd28307477b18e5`; no commit, push, tag, release, visibility, or settings change in this pass |
 | QETLAB source | Pinned and clean at `d8589610f00cff106537268dee2e2a1153f3a601`; 163 MATLAB files, 127 public functions, 36 private helpers, 503 dependency edges, and no detected cycle |
 | Strict completion ledger | 127/127 public rows are verified with final status; completion queue contains 0 public rows; 36/36 internal helpers have terminal dispositions; 0 required helpers remain; 0 static completion failures |
-| Public API/provenance | 458 runtime exports (328 native/module and 130 `MATLABCompat`) match 458 provenance records |
-| Full package corpus | 8,133/8,133 assertions, including 48 executable-tutorial assertions, pass on Julia 1.12.6 and the installed Julia 1.10.0 |
-| Optional optimization | The complete JuMP/Hypatia/SCS environment passes 836/836 assertions on both installed Julia lines; solver output remains status-rich and is not automatically a certificate |
-| EntanglementDetection.jl | Exact 0.2.2 adapter passes 125/125 assertions on Julia 1.12.6; its effective resolver floor remains Julia 1.11 because of Ket 0.9 |
+| Public API/provenance | 467 runtime exports (337 native/module and 130 `MATLABCompat`) match 467 provenance records |
+| Full package corpus | 8,360/8,360 assertions—8,276 core plus 84 executable-tutorial assertions—pass on Julia 1.12.6 and the installed Julia 1.10.0 |
+| Optional optimization | The complete JuMP/Hypatia/SCS environment passes 846/846 assertions on both installed Julia lines; solver output remains status-rich and is not automatically a certificate |
+| EntanglementDetection.jl | Exact 0.2.2 adapter passes 130/130 assertions on Julia 1.12.6; its effective resolver floor remains Julia 1.11 because of Ket 0.9 |
+| User-facing diagnostics | Additive result interpretation, density validation, strategy/backend discovery, task-first documentation, and rendered Pages deployment preserve existing function names and certificate boundaries |
+| Interactive generator | Schema 2 provides 11 bounded families, nine curated presets, five additional analysis routes, four fixed core separability profiles, resource planning, and strict versioned JSON portability; 178 JavaScriptCore checks pass, and the 13-module generated Julia bundle completes on Julia 1.12.6 and 1.10.0 |
 | Independent predicates | Randomized spectrum/minor validation passes 130/130 assertions on both installed Julia lines |
-| Executable tutorials | The standalone runner passes 48/48 assertions on both installed Julia lines |
-| Quick benchmarks | All 114 declared quick benchmark cases completed for a clean `f32dd233` baseline and the candidate; targeted paired minima and allocations are recorded as local diagnostics, not a stable comparative-performance or regression-baseline claim |
+| Executable tutorials | Seven standalone scripts pass 84/84 assertions on both installed Julia lines; 36 assertions cover the new seeded Schmidt and exact Tiles-UPB workflows |
+| Quick benchmarks | All 114 declared quick benchmark cases completed for the clean `f32dd233` baseline and the candidate now committed as `a50f516`; targeted paired minima and allocations are recorded as local diagnostics, not a stable comparative-performance or regression-baseline claim |
 | Remote/release evidence | Dirty-worktree preflight and isolated archive smoke pass on both installed Julia lines; exact-commit supported-platform CI, Codecov ingestion, maintainer review, and publication decisions remain open |
 
 The strict result is a bounded local repository-evidence claim. It does not
@@ -31,13 +33,43 @@ non-delegable review.
 
 <!-- qetlab-current-claims: end -->
 
+The usability layer is additive: existing status fields and computational entry
+points remain available. The new helpers explain rather than reclassify
+results, density validation never repairs input, and readiness diagnostics do
+not load optional packages or turn solver availability into a mathematical
+conclusion. The browser generator uses those same conservative semantics:
+necessary tests remain one-sided, `unknown` remains explicit, optional
+backends are only inspected, and generated separability searches use fixed
+dependency-free strategy tuples and resource limits.
+
 ## Milestones
 
 | Milestone | Status | Exit evidence still required |
 |---|---|---|
 | M0--M6 — architecture and work packages | Local implementation and focused evidence complete | Exact-tree remote/platform evidence and human review remain release gates |
 | M7 — QETLAB completeness sweep | Local static objective reached: 127/127 public rows and 36/36 helpers are terminal | MATLAB equivalence is not claimed; keep source-free fixtures supplemental to analytic/property evidence |
-| M8 — release convergence | In progress; local release gates are being refreshed for this dirty worktree | Format, docs, benchmark, release/archive, exact committed-tree CI, legal/API review, and non-delegable maintainer review |
+| M8 — release convergence | In progress; result ergonomics, validation/discovery helpers, schema-2 generator, task-first docs, Pages deployment, and local exact-tree gates are integrated | Exact committed-tree CI, legal/API review, and non-delegable maintainer review |
+
+## Generator capability evidence (2026-07-31)
+
+The browser-local generator now supports 11 curated families, including an
+exact `BigInt`/`Rational{BigInt}` Tiles-UPB complement and locally seeded
+Hilbert--Schmidt or Bures random density matrices. Five new routes expose
+non-mutating validation, marginals, pure-state Schmidt data, bounded
+separability reports, and backend readiness. Four separability profiles expand
+only to explicit dependency-free strategies; no free-form Julia identifier,
+optional solver, or implicit random source can enter generated code.
+
+Schema-1 configurations migrate with every new analysis and output option
+disabled. Schema 2 rejects unknown keys, non-finite or out-of-range values,
+future versions, and JSON over 16 KiB measured as UTF-8. The UI adds a live
+resource estimate, accessible field errors, stale-output protection, and local
+copy/download/load controls without browser persistence or network transfer.
+
+The JavaScriptCore/JXA harness passes 178 checks. Its 13 generated Julia modules
+contain 130 structural and runtime assertions and complete on Julia 1.12.6 and
+Julia 1.10.0. Strict Documenter builds also pass on both lines; only the
+previously recorded HTML/search-index size warnings remain.
 
 ## Completion vocabulary
 

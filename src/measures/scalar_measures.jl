@@ -297,6 +297,496 @@ function _tierd_density_analysis(
     )
 end
 
+"""
+    DensityMatrixValidationReport
+
+Non-mutating diagnostics returned by [`validate_density_matrix`](@ref).
+
+`status` is `:valid`, `:valid_within_tolerance`, `:invalid`, or
+`:incomplete`. An incomplete report means that the structural checks ran but
+positive-semidefiniteness could not be decided safely, for example because a
+sparse spectral calculation was not explicitly authorized. `valid` is true
+only when every required check, including positive-semidefiniteness, completed
+successfully.
+
+No corrected or normalized matrix is stored in the report.
+"""
+struct DensityMatrixValidationReport{D,TV,NR,IR,HR,ME,VT,ST,M<:Tuple}
+    status::Symbol
+    valid::Bool
+    complete::Bool
+    shape::Tuple{Int,Int}
+    dimensions::D
+    expected_dimension::Union{Nothing,Int}
+    square::Bool
+    nonempty::Bool
+    dimension_match::Bool
+    one_based_indexing::Bool
+    finite::Union{Nothing,Bool}
+    exactly_hermitian::Union{Nothing,Bool}
+    hermitian_within_tolerance::Union{Nothing,Bool}
+    normalized::Union{Nothing,Bool}
+    positive_semidefinite::Union{Nothing,Bool}
+    trace_value::TV
+    trace_residual::NR
+    trace_imaginary_residual::IR
+    hermiticity_residual::HR
+    minimum_eigenvalue::ME
+    validation_tolerance::VT
+    spectral_tolerance::ST
+    sparse::Bool
+    spectral_densification_required::Bool
+    densification_permitted::Bool
+    dense_entries::BigInt
+    max_dense_entries::Union{Nothing,BigInt}
+    spectral_analysis::Symbol
+    boundary_uncertain::Bool
+    messages::M
+end
+
+function Base.show(io::IO, report::DensityMatrixValidationReport)
+    return print(
+        io,
+        "DensityMatrixValidationReport(status=",
+        report.status,
+        ", shape=",
+        report.shape,
+        ", dims=",
+        report.dimensions,
+        ", spectral_analysis=",
+        report.spectral_analysis,
+        ")",
+    )
+end
+
+function _density_validation_display(value)
+    value === true && return "pass"
+    value === false && return "fail"
+    return "not checked"
+end
+
+function Base.show(io::IO, ::MIME"text/plain", report::DensityMatrixValidationReport)
+    println(io, "Density-matrix validation: ", uppercase(String(report.status)))
+    println(
+        io,
+        "  Shape and dimensions: ",
+        report.dimension_match ? "pass" : "fail",
+        "  (shape ",
+        report.shape,
+        ", dims ",
+        report.dimensions,
+        ")",
+    )
+    println(io, "  Finite entries:       ", _density_validation_display(report.finite))
+    println(
+        io,
+        "  Hermitian:            ",
+        _density_validation_display(report.hermitian_within_tolerance),
+        if isnothing(report.hermiticity_residual)
+            ""
+        else
+            "  (maximum residual $(report.hermiticity_residual))"
+        end,
+    )
+    println(
+        io,
+        "  Unit trace:           ",
+        _density_validation_display(report.normalized),
+        isnothing(report.trace_value) ? "" : "  (trace $(report.trace_value))",
+    )
+    println(
+        io,
+        "  Positive semidefinite:",
+        " ",
+        _density_validation_display(report.positive_semidefinite),
+        if isnothing(report.minimum_eigenvalue)
+            ""
+        else
+            "  (minimum eigenvalue $(report.minimum_eigenvalue))"
+        end,
+    )
+    println(io, "  Spectral analysis:    ", report.spectral_analysis)
+    isempty(report.messages) && return nothing
+    println(io, "  Guidance:")
+    for message in report.messages
+        println(io, "    - ", message)
+    end
+    return nothing
+end
+
+function _density_validation_limit(value)
+    value === nothing && return nothing
+    value isa Integer && !(value isa Bool) && value >= 0 ||
+        throw(ArgumentError("max_dense_entries must be a nonnegative integer or `nothing`"))
+    return BigInt(value)
+end
+
+function _density_validation_real_zero(::Type{T}) where {T}
+    return try
+        zero(typeof(abs(zero(T))))
+    catch error
+        error isa InterruptException && rethrow()
+        0.0
+    end
+end
+
+function _density_validation_tolerances(::Type{T}, atol, rtol) where {T}
+    checked_atol = _tierd_validate_tolerance(atol, "atol")
+    checked_rtol = _tierd_validate_tolerance(rtol, "rtol")
+    real_zero = _density_validation_real_zero(T)
+    default_rtol = if typeof(real_zero) <: AbstractFloat
+        sqrt(eps(typeof(real_zero)))
+    else
+        zero(real_zero)
+    end
+    return promote(
+        checked_atol === nothing ? zero(real_zero) : checked_atol,
+        checked_rtol === nothing ? default_rtol : checked_rtol,
+    )
+end
+
+function _density_validation_values(rho::AbstractMatrix)
+    return issparse(rho) ? nonzeros(rho) : rho
+end
+
+function _density_validation_hermiticity_residual(rho::AbstractMatrix, initial)
+    if issparse(rho)
+        difference = rho - adjoint(rho)
+        return maximum(abs, nonzeros(difference); init=initial)
+    end
+    residual = initial
+    for column in axes(rho, 2), row in axes(rho, 1)
+        residual = max(residual, abs(rho[row, column] - conj(rho[column, row])))
+    end
+    return residual
+end
+
+function _density_validation_trace(rho::AbstractMatrix)
+    indices = axes(rho, 1)
+    first_index = first(indices)
+    value = rho[first_index, first_index]
+    for index in Iterators.drop(indices, 1)
+        value += rho[index, index]
+    end
+    return value
+end
+
+"""
+    validate_density_matrix(
+        rho,
+        dims;
+        atol=nothing,
+        rtol=nothing,
+        allow_densify=false,
+        max_dense_entries=1_000_000,
+    ) -> DensityMatrixValidationReport
+
+Inspect whether `rho` is a density matrix on the explicitly supplied subsystem
+dimensions. The report records shape and dimension agreement, finite entries,
+trace and Hermiticity residuals, and positive-semidefiniteness when it can be
+computed safely.
+
+Sparse non-diagonal matrices are never converted to dense storage unless
+`allow_densify=true`, and the conversion is additionally guarded by
+`max_dense_entries`. Exact diagonal matrices can be checked without
+densification. The dependency-free spectral path otherwise supports
+`Float32`, `Float64`, `ComplexF32`, and `ComplexF64`; unsupported element types
+produce an `:incomplete` report rather than an implicit precision-changing
+conversion.
+
+This function never mutates, normalizes, symmetrizes, clips, or otherwise
+repairs `rho`. Invalid matrix data is reported structurally; invalid keyword
+arguments still throw `ArgumentError`.
+"""
+function validate_density_matrix(
+    rho::AbstractMatrix{<:Number},
+    dims;
+    atol=nothing,
+    rtol=nothing,
+    allow_densify::Bool=false,
+    max_dense_entries=1_000_000,
+)
+    absolute, relative = _density_validation_tolerances(eltype(rho), atol, rtol)
+    dense_limit = _density_validation_limit(max_dense_entries)
+    shape = size(rho)
+    square = shape[1] == shape[2]
+    nonempty = square && shape[1] > 0
+    dense_entries = BigInt(shape[1]) * BigInt(shape[2])
+    sparse_input = issparse(rho)
+    messages = String[]
+
+    one_based = try
+        Base.require_one_based_indexing(rho)
+        true
+    catch error
+        error isa InterruptException && rethrow()
+        push!(messages, "rho must use one-based indexing; received axes $(axes(rho)).")
+        false
+    end
+
+    layout = try
+        _as_layout(dims)
+    catch error
+        error isa InterruptException && rethrow()
+        push!(messages, "dims are invalid: $(sprint(showerror, error)).")
+        nothing
+    end
+    dimensions = isnothing(layout) ? nothing : layout.dims
+    expected_dimension = isnothing(layout) ? nothing : layout.total_dimension
+    dimension_match =
+        !isnothing(expected_dimension) &&
+        square &&
+        shape == (expected_dimension, expected_dimension)
+
+    square || push!(messages, "rho must be square; got size $shape.")
+    if square && !nonempty
+        push!(messages, "rho must have positive dimension; got size $shape.")
+    end
+    if !isnothing(expected_dimension) && !dimension_match
+        push!(
+            messages,
+            "prod(dims)=$expected_dimension requires a " *
+            "($expected_dimension, $expected_dimension) matrix; got $shape.",
+        )
+    end
+
+    finite = nothing
+    trace_value = nothing
+    trace_residual = nothing
+    trace_imaginary_residual = nothing
+    hermiticity_residual = nothing
+    validation_tolerance = nothing
+    exactly_hermitian = nothing
+    hermitian_within_tolerance = nothing
+    normalized = nothing
+    diagonal_input = false
+
+    if one_based && square && nonempty
+        finite = try
+            all(isfinite, _density_validation_values(rho))
+        catch error
+            error isa InterruptException && rethrow()
+            push!(
+                messages,
+                "finite-entry diagnostics are unavailable for eltype $(eltype(rho)): " *
+                "$(sprint(showerror, error)).",
+            )
+            nothing
+        end
+        finite === false &&
+            push!(messages, "rho contains non-finite entries; replace them explicitly.")
+
+        if finite === true
+            entry_scale = maximum(
+                abs,
+                _density_validation_values(rho);
+                init=_density_validation_real_zero(eltype(rho)),
+            )
+            validation_tolerance = _tierd_threshold(entry_scale, absolute, relative)
+            trace_value = _density_validation_trace(rho)
+            trace_imaginary_residual = abs(imag(trace_value))
+            trace_residual = abs(real(trace_value) - one(real(trace_value)))
+            normalized =
+                trace_imaginary_residual <= validation_tolerance &&
+                trace_residual <= validation_tolerance
+            normalized || push!(
+                messages,
+                "trace(rho)=$trace_value is not one and real within tolerance " *
+                "$validation_tolerance. The input was not normalized.",
+            )
+            if normalized && (!iszero(trace_residual) || !iszero(trace_imaginary_residual))
+                push!(
+                    messages,
+                    "the trace is accepted only within tolerance; certificate APIs " *
+                    "may require an exactly represented real unit trace.",
+                )
+            end
+
+            hermiticity_residual = _density_validation_hermiticity_residual(
+                rho, zero(entry_scale)
+            )
+            exactly_hermitian = iszero(hermiticity_residual)
+            hermitian_within_tolerance = hermiticity_residual <= validation_tolerance
+            hermitian_within_tolerance || push!(
+                messages,
+                "rho is not Hermitian within tolerance $validation_tolerance; " *
+                "the maximum residual is $hermiticity_residual. No Hermitian " *
+                "part was substituted.",
+            )
+            diagonal_input = try
+                isdiag(rho)
+            catch error
+                error isa InterruptException && rethrow()
+                false
+            end
+        end
+    end
+
+    positive_semidefinite = nothing
+    minimum_eigenvalue = nothing
+    spectral_tolerance = nothing
+    spectral_analysis = :skipped_invalid_structure
+
+    structural_ready =
+        one_based &&
+        square &&
+        nonempty &&
+        dimension_match &&
+        finite === true &&
+        hermitian_within_tolerance === true
+    spectral_densification_required = sparse_input && !diagonal_input
+
+    if structural_ready && exactly_hermitian !== true
+        spectral_analysis = :skipped_nonexact_hermitian
+        push!(
+            messages,
+            "positive-semidefiniteness was not computed because rho is not " *
+            "exactly Hermitian. Diagnostics do not symmetrize the input.",
+        )
+    elseif structural_ready && diagonal_input
+        diagonal_values = real.(diag(rho))
+        minimum_eigenvalue = minimum(diagonal_values)
+        spectral_scale = max(
+            maximum(abs, diagonal_values; init=zero(minimum_eigenvalue)),
+            one(minimum_eigenvalue),
+        )
+        spectral_tolerance = _tierd_threshold(spectral_scale, absolute, relative)
+        positive_semidefinite = minimum_eigenvalue >= -spectral_tolerance
+        spectral_analysis = :diagonal
+    elseif structural_ready && sparse_input && !allow_densify
+        spectral_analysis = :requires_densification_opt_in
+        push!(
+            messages,
+            "positive-semidefiniteness of this sparse non-diagonal matrix " *
+            "requires dense spectral work; pass allow_densify=true to authorize it.",
+        )
+    elseif structural_ready && dense_limit !== nothing && dense_entries > dense_limit
+        spectral_analysis = :resource_limit
+        push!(
+            messages,
+            "spectral analysis needs $dense_entries dense entries, exceeding " *
+            "max_dense_entries=$dense_limit.",
+        )
+    elseif structural_ready && !(eltype(rho) <: LinearAlgebra.BlasFloat)
+        spectral_analysis = :unsupported_eltype
+        push!(
+            messages,
+            "positive-semidefiniteness for non-diagonal input requires Float32, " *
+            "Float64, ComplexF32, or ComplexF64 in the dependency-free core; " *
+            "got eltype $(eltype(rho)). No precision conversion was performed.",
+        )
+    elseif structural_ready
+        try
+            # Work on an owned copy so neither factorization nor wrapper
+            # construction can alter the caller's matrix.
+            eigenvalues = eigvals(Hermitian(Matrix(rho)))
+            minimum_eigenvalue = minimum(eigenvalues)
+            spectral_scale = max(
+                maximum(abs, eigenvalues; init=zero(minimum_eigenvalue)),
+                one(minimum_eigenvalue),
+            )
+            spectral_tolerance = _tierd_threshold(spectral_scale, absolute, relative)
+            positive_semidefinite = minimum_eigenvalue >= -spectral_tolerance
+            spectral_analysis = :eigendecomposition
+        catch error
+            error isa InterruptException && rethrow()
+            spectral_analysis = :spectral_failure
+            push!(
+                messages,
+                "positive-semidefiniteness could not be computed: " *
+                "$(sprint(showerror, error)). The input was not modified.",
+            )
+        end
+    end
+
+    positive_semidefinite === false && push!(
+        messages,
+        "rho is not positive semidefinite within spectral tolerance " *
+        "$spectral_tolerance; the minimum eigenvalue is $minimum_eigenvalue. " *
+        "No eigenvalue was clipped.",
+    )
+
+    definitely_invalid =
+        !one_based ||
+        !square ||
+        !nonempty ||
+        !dimension_match ||
+        finite === false ||
+        hermitian_within_tolerance === false ||
+        normalized === false ||
+        positive_semidefinite === false
+    complete = spectral_analysis in (:diagonal, :eigendecomposition)
+    valid =
+        complete &&
+        !definitely_invalid &&
+        finite === true &&
+        hermitian_within_tolerance === true &&
+        normalized === true &&
+        positive_semidefinite === true
+    boundary_uncertain =
+        valid && (
+            !iszero(trace_residual) ||
+            !iszero(trace_imaginary_residual) ||
+            !iszero(hermiticity_residual) ||
+            minimum_eigenvalue < zero(minimum_eigenvalue)
+        )
+    status = if valid
+        boundary_uncertain ? :valid_within_tolerance : :valid
+    elseif definitely_invalid
+        :invalid
+    else
+        :incomplete
+    end
+    if valid
+        pushfirst!(
+            messages,
+            if boundary_uncertain
+                "rho passes every requested check within tolerance; a boundary-sensitive " *
+                "certificate routine may still return unknown."
+            else
+                "rho passes every requested density-matrix check."
+            end,
+        )
+    elseif status === :incomplete
+        pushfirst!(
+            messages, "rho was not declared valid because the spectral check is incomplete."
+        )
+    end
+
+    return DensityMatrixValidationReport(
+        status,
+        valid,
+        complete,
+        shape,
+        dimensions,
+        expected_dimension,
+        square,
+        nonempty,
+        dimension_match,
+        one_based,
+        finite,
+        exactly_hermitian,
+        hermitian_within_tolerance,
+        normalized,
+        positive_semidefinite,
+        trace_value,
+        trace_residual,
+        trace_imaginary_residual,
+        hermiticity_residual,
+        minimum_eigenvalue,
+        validation_tolerance,
+        spectral_tolerance,
+        sparse_input,
+        spectral_densification_required,
+        allow_densify,
+        dense_entries,
+        dense_limit,
+        spectral_analysis,
+        boundary_uncertain,
+        Tuple(messages),
+    )
+end
+
 function _tierd_validate_pure_state(
     psi::AbstractVector{<:Number}; atol=nothing, rtol=nothing, operation::AbstractString
 )

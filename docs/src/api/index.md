@@ -1,17 +1,32 @@
 # API reference
 
-At pinned QETLAB revision
-`d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
-checker passes with 127/127 public rows carrying final `verified` status, 36/36
-internal helpers assigned terminal dispositions, no queued rows, and 458
-exported bindings with matching provenance entries. The direct local full
-corpus passes 8,133/8,133 assertions, including 48 executable-tutorial
-assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
+The reference covers the Julia-native API and the isolated `MATLABCompat`
+namespace. If you do not yet know a function name, start from the task rather
+than scanning the full export list.
 
-The reference below covers all exported native operations and compatibility
-wrappers. These results establish local implementation and validation evidence,
-not MATLAB/QETLAB parity, remote supported-platform CI, comparative
-performance, API stability, release approval, or human review.
+## Choose by task
+
+| Task | Start with | Result or guide |
+|---|---|---|
+| Tensor, trace, transpose, swap, or permute subsystems | `tensor_product`, `partial_trace`, `partial_transpose`, `swap_subsystems`, `permute_subsystems` | [Conventions](../conventions.md) |
+| Construct a named or random state | `bell_state`, `ghz_state`, `random_state_vector`, `random_density_matrix` | [States and random objects](../states_operators_random.md) |
+| Classify a bipartite pure state | `analyze_entanglement(psi, dims)` | `EntanglementReport` |
+| Run one entanglement criterion | `ppt_criterion`, `realignment_criterion`, `reduction_criterion` | `CriterionResult` |
+| Seek a composite separability or entanglement certificate | `is_separable(rho, dims; strategies=...)` | [Separability and local discrimination](../separability_optimization.md) |
+| Test the sufficient separable ball | `in_separable_ball(rho, dims)` | `SeparableBallResult` |
+| Validate a density matrix without repairing it | `validate_density_matrix(rho, dims)` | `DensityMatrixValidationReport` |
+| Interpret a common structured result | `conclusion`, `is_conclusive`, `is_certified`, `explain` | Conservative conclusion and explanation |
+| Work with channels and representations | `choi_representation`, `superoperator_representation`, `partial_map` | [General maps](../general_maps.md) |
+| Build an optimization model | A problem-specific `*_model` constructor | [Optimization architecture](../optimization_architecture.md) |
+| Use QETLAB-style names during migration | `MATLABCompat` | [Migration from QETLAB](../migration_from_qetlab.md) |
+
+For certificate-bearing APIs, inspect the complete structured result. A
+criterion pass is not necessarily a separability proof, and `unknown` is not a
+negative mathematical conclusion. The
+[five-minute quick start](../getting_started.md) shows these distinctions with
+live output.
+
+## Important cross-cutting behavior
 
 Randomized constructors and randomized lower-bound routines such as
 `random_superoperator`, `induced_matrix_norm`, and
@@ -119,11 +134,27 @@ a runnable example, and complexity for important operations.
 
 Internal helpers are not public merely because Documenter can render them.
 
-The generated reference is split by domain so each page remains
-comfortably below Documenter's strict HTML-size limit:
+## Reference by domain
+
+The generated reference is split by domain so each page remains comfortably
+below Documenter's strict HTML-size limit:
 
 - [Julia-native core and analysis](native.md)
 - [Julia-native channels and general maps](native_channels.md)
 - [Julia-native entanglement analysis](native_entanglement.md)
 - [Julia-native optimization models](native_optimization.md)
 - [MATLAB compatibility namespace](matlab_compat.md)
+
+## Validation scope
+
+At pinned QETLAB revision
+`d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
+checker passes with 127/127 public rows carrying final `verified` status, 36/36
+internal helpers assigned terminal dispositions, no queued rows, and 467
+exported bindings with matching provenance entries. The direct local full
+corpus passes 8,360/8,360 assertions: 8,276 core plus 84
+executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
+
+These results establish local implementation and validation evidence, not
+MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,
+API stability, release approval, or human review.

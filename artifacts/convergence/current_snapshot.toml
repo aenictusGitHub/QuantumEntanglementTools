@@ -4,11 +4,11 @@ schema_version = 1
 
 [api]
 matlab_compat_exports = 130
-native_exports = 328
-project_native_bindings = 179
-provenance_entries = 458
+native_exports = 337
+project_native_bindings = 188
+provenance_entries = 467
 qetlab_provenance_bindings = 279
-total_exports = 458
+total_exports = 467
 
     [api.gaps]
     exports_without_docs = []
@@ -46,21 +46,21 @@ strict_pass = true
 terminal_helpers = 36
 
 [dynamic_tests.entanglement_detection_extension]
-assertions = 125
+assertions = 130
 backend_version = "0.2.2"
 broken = 0
 errored = 0
 failed = 0
 measurement = "runtime Test.get_test_counts in isolated environment"
-passed = 125
+passed = 130
 
 [dynamic_tests.package]
-core_assertions = 8085
-integrated_assertions = 8133
+core_assertions = 8276
+integrated_assertions = 8360
 integrated_broken = 0
-integrated_passed = 8133
+integrated_passed = 8360
 measurement = "runtime Test.get_test_counts"
-tutorial_assertions = 48
+tutorial_assertions = 84
 
     [[dynamic_tests.package.suites]]
     assertions = 345
@@ -146,6 +146,13 @@ tutorial_assertions = 48
     failed = 0
     name = "Tier D density-matrix scalar measures"
     passed = 30
+    [[dynamic_tests.package.suites]]
+    assertions = 78
+    broken = 0
+    errored = 0
+    failed = 0
+    name = "Tier D density-matrix validation diagnostics"
+    passed = 78
     [[dynamic_tests.package.suites]]
     assertions = 11
     broken = 0
@@ -343,12 +350,19 @@ tutorial_assertions = 48
     name = "WP2 multipartite Werner states"
     passed = 36
     [[dynamic_tests.package.suites]]
-    assertions = 68
+    assertions = 91
     broken = 0
     errored = 0
     failed = 0
     name = "Tier D native entanglement certificate pipeline"
-    passed = 68
+    passed = 91
+    [[dynamic_tests.package.suites]]
+    assertions = 62
+    broken = 0
+    errored = 0
+    failed = 0
+    name = "Common human-facing result interface"
+    passed = 62
     [[dynamic_tests.package.suites]]
     assertions = 54
     broken = 0
@@ -630,12 +644,12 @@ tutorial_assertions = 48
     name = "WP5 copositivity and clique-number compatibility mappings"
     passed = 21
     [[dynamic_tests.package.suites]]
-    assertions = 211
+    assertions = 239
     broken = 0
     errored = 0
     failed = 0
     name = "WP6 separability and local discrimination core"
-    passed = 211
+    passed = 239
     [[dynamic_tests.package.suites]]
     assertions = 42
     broken = 0
@@ -679,18 +693,18 @@ tutorial_assertions = 48
     name = "QETLAB completion checker"
     passed = 37
     [[dynamic_tests.package.suites]]
-    assertions = 48
+    assertions = 84
     broken = 0
     errored = 0
     failed = 0
     name = "Executable tutorials"
-    passed = 48
+    passed = 84
 
 [generation]
 deterministic = true
-input_sha256 = "0d709a260a6203e37141caf5c1ab6ff1ce11ebf1ecaa94e93e765a1b67cc6ee3"
+input_sha256 = "16fd69e0f01981466cf33b46d7a00c71de7b04ce1b39d37a02fff36e32929062"
 inventory_sha256 = "62d0e94cf73934f4b35af3364b81cdf7468ab1662705e8171d7e46c57ec6a3c5"
-provenance_sha256 = "089804cba784b00946745e4dfb283f6f0772eebbde942dee4f9075561a25eab8"
+provenance_sha256 = "303bf7adf870bb6c4061886a806fe3432fd6f7e3eee988494d979e66572ba525"
 script = "scripts/reconcile_project_claims.jl"
 status_overlay_sha256 = "40eae81340d3241aa12d844794ee67417a97b5aa84a18567c3c090b7551edd4d"
 
@@ -1046,32 +1060,32 @@ source_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
 checked_files = ["AGENTS.md", "README.md", "CHANGELOG.md", "CONTRIBUTING.md", "CITATION.cff", "CITATION.bib", "docs/BENCHMARK_REPORT.md", "docs/BUILD_ENVIRONMENT.md", "docs/CONVERGENCE_AUDIT.md", "docs/FULL_QETLAB_BASELINE.md", "docs/INVENTORY_REVIEW.md", "docs/JULIA_CORE_AUDIT.md", "docs/PORTING_STATUS.md", "docs/QETLAB_COMPLETION_PLAN.md", "docs/RELEASE_CHECKLIST.md", "docs/ROADMAP.md", "docs/SESSION_HANDOFF.md", "docs/VALIDATION_REPORT.md", "docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/getting_started.md", "docs/src/index.md", "docs/src/migration_from_qetlab.md"]
 mismatch_count = 0
 mismatches = []
-recognized_claim_count = 70
+recognized_claim_count = 78
 
     [maintained_claims.recognized_claims_by_file]
-    "AGENTS.md" = 6
+    "AGENTS.md" = 7
     "CHANGELOG.md" = 7
     "CITATION.bib" = 0
     "CITATION.cff" = 0
-    "CONTRIBUTING.md" = 7
+    "CONTRIBUTING.md" = 8
     "README.md" = 7
     "docs/BENCHMARK_REPORT.md" = 1
-    "docs/BUILD_ENVIRONMENT.md" = 8
+    "docs/BUILD_ENVIRONMENT.md" = 9
     "docs/CONVERGENCE_AUDIT.md" = 1
     "docs/FULL_QETLAB_BASELINE.md" = 1
     "docs/INVENTORY_REVIEW.md" = 1
     "docs/JULIA_CORE_AUDIT.md" = 1
-    "docs/PORTING_STATUS.md" = 11
+    "docs/PORTING_STATUS.md" = 12
     "docs/QETLAB_COMPLETION_PLAN.md" = 1
     "docs/RELEASE_CHECKLIST.md" = 1
     "docs/ROADMAP.md" = 3
     "docs/SESSION_HANDOFF.md" = 8
-    "docs/VALIDATION_REPORT.md" = 3
-    "docs/src/api/index.md" = 0
+    "docs/VALIDATION_REPORT.md" = 4
+    "docs/src/api/index.md" = 1
     "docs/src/entanglement_backends.md" = 1
-    "docs/src/getting_started.md" = 0
+    "docs/src/getting_started.md" = 1
     "docs/src/index.md" = 0
-    "docs/src/migration_from_qetlab.md" = 2
+    "docs/src/migration_from_qetlab.md" = 3
 
 [project]
 core_dependency_count = 4
@@ -1085,8 +1099,8 @@ weak_dependency_count = 2
 [source_audit]
 compatibility_wrapper_bypass_candidate_count = 0
 compatibility_wrapper_bypass_candidates = []
-densification_call_count = 183
-densification_without_nearby_guard_marker_count = 161
+densification_call_count = 184
+densification_without_nearby_guard_marker_count = 162
 documented_independent_compatibility_implementation_count = 2
 duplicate_public_definition_candidate_count = 0
 duplicate_public_definition_candidates = []
@@ -1350,7 +1364,7 @@ unimplemented_markers = []
     path = "src/entanglement/absolute_ppt.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 696
+    line = 824
     nearby_guard_marker = true
     path = "src/entanglement/backend_interface.jl"
     [[source_audit.densification_sites]]
@@ -1390,52 +1404,52 @@ unimplemented_markers = []
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1583
+    line = 1775
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1583
+    line = 1775
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1648
+    line = 1840
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1721
+    line = 1913
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1722
+    line = 1914
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1723
+    line = 1915
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 1801
+    line = 1993
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1902
-    nearby_guard_marker = false
-    path = "src/entanglement/separability_optimization.jl"
-    [[source_audit.densification_sites]]
-    call = "collect"
     line = 2094
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 3459
+    line = 2286
+    nearby_guard_marker = false
+    path = "src/entanglement/separability_optimization.jl"
+    [[source_audit.densification_sites]]
+    call = "collect"
+    line = 3690
     nearby_guard_marker = false
     path = "src/entanglement/separability_optimization.jl"
     [[source_audit.densification_sites]]
@@ -1705,7 +1719,12 @@ unimplemented_markers = []
     path = "src/measures/scalar_measures.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 871
+    line = 682
+    nearby_guard_marker = false
+    path = "src/measures/scalar_measures.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 1361
     nearby_guard_marker = false
     path = "src/measures/scalar_measures.jl"
     [[source_audit.densification_sites]]
@@ -2027,11 +2046,11 @@ unimplemented_markers = []
 
 [static_test_macros]
 measurement = "static macro occurrences; not an assertion count"
-total = 7129
+total = 7381
 
     [static_test_macros.by_file]
     "test/extensions/entanglement_detection/load_order_probe.jl" = 0
-    "test/extensions/entanglement_detection/runtests.jl" = 100
+    "test/extensions/entanglement_detection/runtests.jl" = 105
     "test/extensions/jump_optimization/absolute_ppt.jl" = 24
     "test/extensions/jump_optimization/channel_optimization.jl" = 81
     "test/extensions/jump_optimization/coherence_optimization.jl" = 54
@@ -2041,7 +2060,7 @@ total = 7129
     "test/extensions/jump_optimization/nonlocal_games.jl" = 107
     "test/extensions/jump_optimization/polynomial_sos.jl" = 40
     "test/extensions/jump_optimization/psd_constraint.jl" = 27
-    "test/extensions/jump_optimization/runtests.jl" = 103
+    "test/extensions/jump_optimization/runtests.jl" = 114
     "test/extensions/jump_optimization/separability.jl" = 77
     "test/extensions/jump_optimization/sk_norms.jl" = 49
     "test/extensions/jump_optimization/state_discrimination.jl" = 44
@@ -2075,12 +2094,13 @@ total = 7129
     "test/oracle/compare_twirl_oracle.jl" = 4
     "test/oracle/compare_upb_catalog_oracle.jl" = 17
     "test/qetlab_completion_checker.jl" = 35
+    "test/result_interface.jl" = 67
     "test/runtests.jl" = 0
     "test/tier_a_subsystem_kernel.jl" = 229
     "test/tier_b_states_operators_random.jl" = 233
     "test/tier_c_channels_maps.jl" = 189
-    "test/tier_d_entanglement_pipeline.jl" = 74
-    "test/tier_d_measures_criteria.jl" = 182
+    "test/tier_d_entanglement_pipeline.jl" = 97
+    "test/tier_d_measures_criteria.jl" = 261
     "test/tier_e_coherence.jl" = 59
     "test/tier_e_matrix_analysis.jl" = 132
     "test/tier_e_matrix_analysis_compat.jl" = 43
@@ -2126,7 +2146,7 @@ total = 7129
     "test/wp5_copositivity_clique.jl" = 188
     "test/wp5_copositivity_clique_compat.jl" = 22
     "test/wp5_polynomial_sos.jl" = 54
-    "test/wp6_separability.jl" = 216
+    "test/wp6_separability.jl" = 245
     "test/wp6_separability_compat.jl" = 46
     "test/wp7_sk_norms.jl" = 134
     "test/wp7_sk_norms_compat.jl" = 21
@@ -2134,12 +2154,14 @@ total = 7129
     "test/wp9_nonlocal_games_compat.jl" = 31
     "tutorials/entanglement_certificates.jl" = 0
     "tutorials/local_channel_noise.jl" = 0
-    "tutorials/runtests.jl" = 54
+    "tutorials/qetlab_intro_schmidt.jl" = 0
+    "tutorials/qetlab_intro_tiles.jl" = 0
+    "tutorials/runtests.jl" = 92
     "tutorials/separability_examples.jl" = 0
     "tutorials/subsystem_reductions.jl" = 0
     "tutorials/symmetric_sappt_witnesses.jl" = 0
 
 [tutorials]
-count = 5
+count = 7
 runner = "tutorials/runtests.jl"
-scripts = ["entanglement_certificates.jl", "local_channel_noise.jl", "separability_examples.jl", "subsystem_reductions.jl", "symmetric_sappt_witnesses.jl"]
+scripts = ["entanglement_certificates.jl", "local_channel_noise.jl", "qetlab_intro_schmidt.jl", "qetlab_intro_tiles.jl", "separability_examples.jl", "subsystem_reductions.jl", "symmetric_sappt_witnesses.jl"]

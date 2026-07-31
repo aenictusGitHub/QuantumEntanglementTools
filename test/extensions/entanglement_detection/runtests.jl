@@ -48,6 +48,13 @@ end
             !capabilities.source_integrity_enforced &&
             capabilities.transport_trust === :same_version_local_worker &&
             !capabilities.resource_sandboxed
+        status = QETED.backend_status()
+        optional = status.entanglement.entanglement_detection
+        @test optional.loaded
+        @test optional.ready
+        @test optional.version == v"0.2.2"
+        @test optional.dependency === :EntanglementDetection
+        @test occursin("uncertified", optional.message)
         @test isempty(
             Test.detect_ambiguities(
                 QETED, EntanglementDetection, extension; recursive=false

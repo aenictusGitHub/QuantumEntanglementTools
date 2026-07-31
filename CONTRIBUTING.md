@@ -26,15 +26,18 @@ The pinned inventory revision is
 127/127 public rows are verified with the required final status, 36/36 internal
 helpers have terminal dispositions, the completion queue contains 0 public
 rows, 0 required internal helpers remain, and 0 static completion failures.
-The public API has 458 public bindings with matching provenance entries.
+The public API has 467 public bindings (337 native/module and 130
+`MATLABCompat`) with matching provenance entries.
 
-The 8,133-assertion full package suite passed 8,133/8,133, including 48
-executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
-The full optional JuMP suite passed 836/836 on both Julia lines. The
-EntanglementDetection.jl extension passed 125/125 focused assertions on the
+The 8,360-assertion full package suite passed 8,360/8,360: 8,276 core
+assertions plus 84 executable-tutorial assertions, including 36 for the
+two QETLAB-introduction workflows. It passes on Julia 1.12.6 and the installed
+Julia 1.10.0. The full optional JuMP suite passed 846/846 on both Julia lines. The
+EntanglementDetection.jl extension passed 130/130 focused assertions on the
 current compatible Julia. All 114 declared quick benchmark cases completed for
-a clean `f32dd233` baseline and the candidate; targeted paired observations
-remain local diagnostics, not a stable performance baseline.
+the clean `f32dd233` baseline and the candidate now committed as `a50f516`;
+targeted paired observations remain local diagnostics, not a stable performance
+baseline.
 
 These runs and static checks are development evidence, not QETLAB/MATLAB
 parity, supported-platform remote CI, comparative performance, API stability,
@@ -100,7 +103,7 @@ against `UpstreamManifest.toml`. The runtime adapter enforces the package
 version, not a source-tree hash, so controlled validation environments are
 responsible for source integrity. Run this optional environment on Julia 1.11
 or later; its Ket 0.9 dependency does not currently resolve on the core
-package's Julia 1.10 minimum. The dedicated extension suite passes 125/125
+package's Julia 1.10 minimum. The dedicated extension suite passes 130/130
 locally on Julia 1.12.6. The six-job Julia 1.11/1.12 Linux/macOS/Windows
 workflow passed at predecessor commit `6bf8d61`; a rerun on the exact current
 commit remains required.

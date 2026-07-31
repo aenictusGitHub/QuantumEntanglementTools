@@ -7,6 +7,7 @@ solver failure, iteration limit, or tolerance boundary into a Boolean answer.
 The optional optimization layer is explicit:
 
 ```julia
+using JuMP
 using Hypatia
 using QuantumEntanglementTools
 

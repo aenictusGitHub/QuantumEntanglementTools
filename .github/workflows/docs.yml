@@ -13,6 +13,7 @@ on:
       - "Project.toml"
       - "README.md"
       - "scripts/check_docs_math_compat.jl"
+      - "scripts/check_optional_backend_docs.jl"
       - ".github/workflows/docs.yml"
   pull_request:
     paths:
@@ -22,6 +23,7 @@ on:
       - "Project.toml"
       - "README.md"
       - "scripts/check_docs_math_compat.jl"
+      - "scripts/check_optional_backend_docs.jl"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -80,6 +82,14 @@ jobs:
           test -f docs/build/assets/qet_code_generator.css
           test -f docs/build/assets/qet_code_generator_core.js
           test -f docs/build/assets/qet_code_generator_ui.js
+      - name: Upload GitHub Pages artifact
+        if: >-
+          matrix.julia-version == '1' &&
+          github.ref == 'refs/heads/main' &&
+          github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: docs/build
       - name: Upload rendered site
         if: matrix.julia-version == '1'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -88,3 +98,24 @@ jobs:
           path: docs/build
           if-no-files-found: error
           retention-days: 7
+
+  deploy:
+    name: Deploy documentation to GitHub Pages
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - name: Deploy rendered documentation
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

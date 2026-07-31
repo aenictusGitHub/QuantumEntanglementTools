@@ -28,6 +28,39 @@ const QETPipeline = QuantumEntanglementTools
         @test :ppt in capabilities.methods
         @test capabilities.conclusions == (:entangled, :separable, :unknown)
 
+        status = QETPipeline.backend_status()
+        @test status.entanglement.native.ready
+        @test status.entanglement.native.loaded
+        @test status.entanglement.native.name === :native
+        optional_entanglement = status.entanglement.entanglement_detection
+        @test !optional_entanglement.loaded
+        @test !optional_entanglement.ready
+        @test optional_entanglement.dependency === :EntanglementDetection
+        @test optional_entanglement.load_hint == "using EntanglementDetection"
+        @test occursin("EntanglementDetection.jl", optional_entanglement.message)
+        optimization = status.optimization
+        @test optimization.name === :jump
+        @test optimization.installed === nothing
+        @test optimization.installation_status === :not_probed
+        @test !optimization.extension_loaded
+        @test !optimization.ready_for_configuration
+        @test !optimization.ready
+        @test occursin("using JuMP", optimization.message)
+
+        no_backend = QETPipeline.backend_status(QETPipeline.NoOptimizationBackend())
+        @test no_backend.name === :none
+        @test !no_backend.configured
+        @test !no_backend.ready
+
+        configured_without_extension = QETPipeline.backend_status(
+            QETPipeline.JuMPBackend(() -> nothing; optimizer_name="probe")
+        )
+        @test configured_without_extension.name === :jump
+        @test configured_without_extension.configured
+        @test !configured_without_extension.ready
+        @test configured_without_extension.optimizer_name == "probe"
+        @test occursin("not loaded", configured_without_extension.message)
+
         method = QETPipeline.NativePPT(
             systems=(1,), atol=1.0f-7, rtol=2.0f-6, allow_densify=true
         )

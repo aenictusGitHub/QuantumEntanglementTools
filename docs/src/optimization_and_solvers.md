@@ -81,7 +81,14 @@ result = solve_optimization(problem)
 ```
 
 After adding JuMP and an SDP solver to the active environment, pass their
-factory explicitly. Hypatia is illustrative; it is not a core dependency:
+factory explicitly. Hypatia is illustrative; it is not a core dependency.
+From the Julia package prompt opened with `]`, run
+
+```text
+add JuMP Hypatia
+```
+
+Then construct and inspect the backend explicitly:
 
 ```julia
 using QuantumEntanglementTools
@@ -98,6 +105,9 @@ backend = JuMPBackend(
     atol=1e-7,
     rtol=1e-7,
 )
+readiness = backend_status(backend)
+@assert readiness.configured
+
 result = solve_optimization(problem, backend)
 ```
 
@@ -105,6 +115,12 @@ Optimizer options pass through JuMP's public attribute API. A coordinate
 `initial_point` in the problem becomes a JuMP warm start. Unsupported options,
 malformed factories, missing cones, and backend exceptions become structured
 results rather than mathematical negatives.
+
+If this setup does not solve, inspect `backend_status()` and
+`backend_status(backend)` before changing the mathematical model. The first
+reports whether the JuMP extension is ready for configuration; the second
+reports whether the explicit backend is configured. Solver availability is
+confirmed only by attempting a solve.
 
 ## Result contract
 

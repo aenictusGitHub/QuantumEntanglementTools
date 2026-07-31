@@ -537,6 +537,131 @@ function available_entanglement_backends()
 end
 
 """
+    backend_status()
+    backend_status(backend)
+
+Return readiness diagnostics for the package's known entanglement and
+optimization backends. The zero-argument method returns named
+`entanglement` and `optimization` records and includes optional integrations
+even when they are not loaded. It never imports a package or changes extension
+state.
+
+`ready=false` describes backend availability only. It is never a mathematical
+conclusion about a state.
+"""
+function backend_status(::NativeEntanglementBackend)
+    backend = NativeEntanglementBackend()
+    capabilities = backend_capabilities(backend)
+    return (
+        name=:native,
+        descriptor=backend,
+        loaded=true,
+        ready=true,
+        version=capabilities.version,
+        optional_dependency=false,
+        dependency=nothing,
+        load_hint=nothing,
+        capabilities,
+        message="the dependency-free native entanglement backend is ready",
+    )
+end
+
+function backend_status(::EntanglementDetectionBackend)
+    backend = EntanglementDetectionBackend()
+    capabilities = backend_capabilities(backend)
+    loaded = capabilities.loaded
+    julia_supported = VERSION >= capabilities.minimum_resolvable_julia
+    ready = loaded && julia_supported
+    message = if ready
+        "EntanglementDetection.jl $(capabilities.version) is loaded; its heuristic candidates remain uncertified"
+    elseif !julia_supported
+        "EntanglementDetection.jl requires Julia $(capabilities.minimum_resolvable_julia) or newer in the supported extension environment; this process runs Julia $VERSION"
+    else
+        "EntanglementDetection.jl is not loaded; add it to the active environment and run `using EntanglementDetection` to activate the extension"
+    end
+    return (
+        name=:entanglement_detection,
+        descriptor=backend,
+        loaded,
+        ready,
+        version=capabilities.version,
+        optional_dependency=true,
+        dependency=:EntanglementDetection,
+        load_hint="using EntanglementDetection",
+        capabilities,
+        message,
+    )
+end
+
+function _jump_optimization_extension()
+    return Base.get_extension(@__MODULE__, :QuantumEntanglementToolsJuMPExt)
+end
+
+function _optimization_extension_status()
+    loaded = !isnothing(_jump_optimization_extension())
+    return (
+        name=:jump,
+        package=:JuMP,
+        installed=loaded ? true : nothing,
+        installation_status=loaded ? :confirmed_loaded : :not_probed,
+        extension_loaded=loaded,
+        configured=false,
+        ready_for_configuration=loaded,
+        ready=false,
+        optimizer_required=true,
+        load_hint="using JuMP",
+        message=if loaded
+            "the JuMP extension is loaded; construct an explicit JuMPBackend with a solver optimizer"
+        else
+            "the JuMP extension is not loaded and installation is not probed; add JuMP to the active environment, run `using JuMP`, then construct an explicit JuMPBackend with a solver optimizer"
+        end,
+    )
+end
+
+function backend_status(::NoOptimizationBackend)
+    extension = _optimization_extension_status()
+    return merge(
+        extension,
+        (
+            name=:none,
+            configured=false,
+            ready=false,
+            message="NoOptimizationBackend is explicit solver-free mode; configure a backend before requesting an optimization solve",
+        ),
+    )
+end
+
+function backend_status(backend::JuMPBackend)
+    extension = _optimization_extension_status()
+    return merge(
+        extension,
+        (
+            name=:jump,
+            configured=true,
+            ready=extension.extension_loaded,
+            optimizer_name=backend.optimizer_name,
+            optimizer_version=backend.optimizer_version,
+            allow_densify=backend.allow_densify,
+            message=if extension.extension_loaded
+                "the JuMP extension and optimizer configuration are ready; solver availability is confirmed only when a solve is attempted"
+            else
+                "a JuMPBackend is configured, but the JuMP extension is not loaded; add JuMP to the active environment and run `using JuMP`"
+            end,
+        ),
+    )
+end
+
+function backend_status()
+    return (
+        entanglement=(
+            native=backend_status(NativeEntanglementBackend()),
+            entanglement_detection=backend_status(EntanglementDetectionBackend()),
+        ),
+        optimization=_optimization_extension_status(),
+    )
+end
+
+"""
     detect_entanglement(state, dims, method)
 
 Run one explicitly selected entanglement method and return an
@@ -552,8 +677,11 @@ function detect_entanglement(
     _as_layout(dims)
     return throw(
         ArgumentError(
-            "EntanglementDetection.jl is not loaded; load it explicitly with " *
-            "`using EntanglementDetection` before using EntanglementDetectionSearch",
+            "EntanglementDetection.jl is not loaded. On Julia 1.11 or newer, add " *
+            "version 0.2.2 to the active environment and run " *
+            "`using EntanglementDetection` before using " *
+            "EntanglementDetectionSearch; inspect " *
+            "backend_status().entanglement.entanglement_detection for readiness",
         ),
     )
 end

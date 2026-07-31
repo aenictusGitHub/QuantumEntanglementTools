@@ -9,6 +9,7 @@ heuristics, numerical boundaries, and resource-limited `unknown` outcomes.
 Modules = [QuantumEntanglementTools]
 Pages = [
     "entanglement/backend_interface.jl",
+    "result_interface.jl",
     "entanglement/criteria.jl",
     "entanglement/block_positivity.jl",
     "entanglement/entangling_gate.jl",

@@ -597,8 +597,8 @@ specification = "docs/src/migration_from_qetlab.md"
 implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-typed-result-and-explicit-sparse-densification-gate"
 status = "implemented"
 verification_status = "local_phase_independent_reconstruction_shape_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
-tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
-docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl", "tutorials/qetlab_intro_schmidt.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "schmidt_k_norm"
@@ -631,8 +631,8 @@ specification = "docs/src/migration_from_qetlab.md"
 implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-explicit-numerical-rank-tolerances"
 status = "implemented"
 verification_status = "local_rank_threshold_sparse_wrapper_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
-tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl"]
-docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md"]
+tests = ["test/tier_d_measures_criteria.jl", "test/oracle/compare_tier_d_oracle.jl", "tutorials/qetlab_intro_schmidt.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/entanglement_backends.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "concurrence"
@@ -665,8 +665,8 @@ specification = "docs/src/entanglement_backends.md"
 implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source-with-structured-tri-state-result"
 status = "implemented"
 verification_status = "local_certificate_boundary_witness_sparse_pipeline_benchmark_and_octave_fixture_tests_pass_matlab_not_run"
-tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl", "test/oracle/compare_tier_d_oracle.jl"]
-docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl", "test/oracle/compare_tier_d_oracle.jl", "tutorials/qetlab_intro_tiles.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "realignment_criterion"
@@ -679,8 +679,8 @@ specification = "docs/src/entanglement_backends.md"
 implementation_kind = "independent-project-native-necessary-criterion"
 status = "implemented"
 verification_status = "local_certificate_boundary_no_false_separability_sparse_pipeline_and_benchmark_tests_pass"
-tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl"]
-docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md"]
+tests = ["test/tier_d_measures_criteria.jl", "test/tier_d_entanglement_pipeline.jl", "tutorials/qetlab_intro_tiles.jl"]
+docs = ["docs/src/api/index.md", "docs/src/entanglement_backends.md", "docs/src/migration_from_qetlab.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "reduction_criterion"
@@ -1491,8 +1491,8 @@ specification = "docs/src/states_operators_random.md"
 implementation_kind = "explicit-rng-independent-julia-implementation-of-pinned-public-contract"
 status = "implemented"
 verification_status = "local_seeded_norm_schmidt_rank_reproducibility_and_global_rng_isolation_tests_pass"
-tests = ["test/tier_b_states_operators_random.jl"]
-docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md"]
+tests = ["test/tier_b_states_operators_random.jl", "tutorials/qetlab_intro_schmidt.jl"]
+docs = ["docs/src/api/index.md", "docs/src/states_operators_random.md", "docs/src/migration_from_qetlab.md", "docs/src/reproducibility.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "random_density_matrix"
@@ -1655,8 +1655,8 @@ specification = "http://www.qetlab.com/Tensor"
 implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
 status = "implemented"
 verification_status = "local_tests_pass_matlab_parity_not_established"
-tests = ["test/tier_a_subsystem_kernel.jl"]
-docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/conventions.md"]
+tests = ["test/tier_a_subsystem_kernel.jl", "tutorials/qetlab_intro_schmidt.jl", "tutorials/qetlab_intro_tiles.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/conventions.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "tensor_power"
@@ -1689,8 +1689,8 @@ specification = "http://www.qetlab.com/TensorSum"
 implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
 status = "implemented"
 verification_status = "local_tests_pass_matlab_parity_not_established"
-tests = ["test/tier_a_subsystem_kernel.jl"]
-docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md"]
+tests = ["test/tier_a_subsystem_kernel.jl", "tutorials/qetlab_intro_schmidt.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "kronecker_sum"
@@ -1808,8 +1808,8 @@ specification = "http://www.qetlab.com/PartialTranspose"
 implementation_kind = "independent-julia-reimplementation-from-pinned-spec-and-source"
 status = "implemented"
 verification_status = "local_analytic_and_property_tests_pass_matlab_parity_not_established"
-tests = ["test/tier_a_subsystem_kernel.jl"]
-docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/conventions.md"]
+tests = ["test/tier_a_subsystem_kernel.jl", "tutorials/qetlab_intro_tiles.jl"]
+docs = ["docs/src/api/index.md", "docs/src/migration_from_qetlab.md", "docs/src/conventions.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "realign"
@@ -4561,6 +4561,132 @@ tests = ["test/wp2_polynomial_foundations.jl"]
 docs = ["docs/src/api/matlab_compat.md", "docs/src/polynomial_foundations.md", "docs/src/migration_from_qetlab.md"]
 
 [[functions]]
+julia_name = "DensityMatrixValidationReport"
+public_module = "QuantumEntanglementTools"
+public_kind = "type"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native non-mutating diagnostic record for density-matrix structure, residuals, spectral-check completeness, sparse densification policy, and actionable remediation."
+specification = "docs/src/getting_started.md"
+implementation_kind = "independent-project-native-structured-input-diagnostic"
+status = "implemented"
+verification_status = "local-valid-invalid-boundary_sparse_exact_generic_nonmutation_resource_display_and-invalid-option-tests-pass"
+tests = ["test/tier_d_measures_criteria.jl"]
+docs = ["docs/src/getting_started.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "validate_density_matrix"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/measures/scalar_measures.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native read-only density-matrix diagnostic that makes shape, trace, Hermiticity, positivity, tolerance, and densification decisions inspectable without repairing input."
+specification = "docs/src/getting_started.md"
+implementation_kind = "independent-project-native-nonmutating-validation-api"
+status = "implemented"
+verification_status = "local-valid-invalid-boundary_sparse_exact_generic_nonmutation_resource_display_and-invalid-option-tests-pass"
+tests = ["test/tier_d_measures_criteria.jl"]
+docs = ["docs/src/getting_started.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "conclusion"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/result_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native conservative interpretation layer over existing status-rich entanglement, criterion, separable-ball, and optimization results."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-result-interpretation-interface"
+status = "implemented"
+verification_status = "local-entanglement_criterion_ball_optimization_conservative-mapping_and-rich-display-tests-pass-on-julia-1.12.6-and-1.10.0"
+tests = ["test/result_interface.jl"]
+docs = ["README.md", "docs/src/getting_started.md", "docs/src/entanglement_backends.md", "docs/src/api/index.md", "docs/src/api/native_entanglement.md"]
+
+[[functions]]
+julia_name = "is_conclusive"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/result_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native query that distinguishes a terminal domain or solver outcome from an unknown result without implying a mathematical certificate."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-result-query"
+status = "implemented"
+verification_status = "local-entanglement_criterion_ball_optimization_unknown-and-terminal-tests-pass-on-julia-1.12.6-and-1.10.0"
+tests = ["test/result_interface.jl"]
+docs = ["README.md", "docs/src/getting_started.md", "docs/src/entanglement_backends.md", "docs/src/api/index.md", "docs/src/api/native_entanglement.md"]
+
+[[functions]]
+julia_name = "is_certified"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/result_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native query preserving the package's existing certificate semantics across common structured result types."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-certificate-query"
+status = "implemented"
+verification_status = "local-positive_negative_unknown_and_solver-certificate-tests-pass-on-julia-1.12.6-and-1.10.0"
+tests = ["test/result_interface.jl"]
+docs = ["README.md", "docs/src/getting_started.md", "docs/src/entanglement_backends.md", "docs/src/api/index.md", "docs/src/api/native_entanglement.md"]
+
+[[functions]]
+julia_name = "explain"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/result_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native human-readable explanation query that retains result messages and surfaces optimization warnings without reclassification."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-result-explanation-interface"
+status = "implemented"
+verification_status = "local-message_warning_nonmutation_and-rich-display-tests-pass-on-julia-1.12.6-and-1.10.0"
+tests = ["test/result_interface.jl"]
+docs = ["README.md", "docs/src/getting_started.md", "docs/src/entanglement_backends.md", "docs/src/api/index.md", "docs/src/api/native_entanglement.md"]
+
+[[functions]]
+julia_name = "available_separability_strategies"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/separability_optimization.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native side-effect-free discovery of every individual strategy accepted by the composite certificate-first separability pipeline."
+specification = "docs/src/separability_optimization.md"
+implementation_kind = "independent-project-native-strategy-discovery"
+status = "implemented"
+verification_status = "local-order_completeness_determinism_rng_dependency_and-preset-separation-tests-pass"
+tests = ["test/wp6_separability.jl"]
+docs = ["docs/src/separability_optimization.md", "docs/src/api/native_optimization.md"]
+
+[[functions]]
+julia_name = "describe_strategy"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/separability_optimization.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native metadata lookup for separability-strategy cost class, certificate directions, optional dependency, RNG requirement, and user-facing description."
+specification = "docs/src/separability_optimization.md"
+implementation_kind = "independent-project-native-strategy-metadata"
+status = "implemented"
+verification_status = "local-all-strategy_metadata_content_invalid_symbol_and-preset-rejection-tests-pass"
+tests = ["test/wp6_separability.jl"]
+docs = ["docs/src/separability_optimization.md", "docs/src/api/native_optimization.md"]
+
+[[functions]]
+julia_name = "backend_status"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/entanglement/backend_interface.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native side-effect-free readiness and remediation diagnostics for native entanglement, optional EntanglementDetection, and optional JuMP optimization integrations."
+specification = "docs/src/entanglement_backends.md"
+implementation_kind = "independent-project-native-backend-readiness-diagnostic"
+status = "implemented"
+verification_status = "local-core-absence_configuration_and-dedicated-JuMP-and-EntanglementDetection-extension-readiness-tests-pass"
+tests = ["test/tier_d_entanglement_pipeline.jl", "test/extensions/jump_optimization/runtests.jl", "test/extensions/entanglement_detection/runtests.jl"]
+docs = ["docs/src/entanglement_backends.md", "docs/src/optimization_and_solvers.md", "docs/src/entanglement_detection_extension.md", "docs/src/api/native_entanglement.md"]
+
+[[functions]]
 julia_name = "BellScenario"
 public_module = "QuantumEntanglementTools"
 public_kind = "type"
@@ -5324,8 +5450,8 @@ specification = "docs/src/separability_optimization.md"
 implementation_kind = "independent-julia-source-informed-composite-certificate-first-separability-analysis_with-exact-and-sufficient-theorems_necessary-tests_positive-maps_filter-covariance_explicit-rng-bounded-product-subtraction_outer-and-inner-hierarchies_and-no-boolean-collapse"
 status = "implemented"
 verification_status = "local-211-native-42-compatibility-72-hypatia-scs-and-26-source-free-octave-oracle-assertions-pass-on-julia-1.10-and-1.12_matlab-and-cvx-not-run"
-tests = ["test/wp6_separability.jl", "test/wp6_separability_compat.jl", "test/extensions/jump_optimization/separability.jl", "test/oracle/compare_separability_oracle.jl"]
-docs = ["docs/src/api/native_optimization.md", "docs/src/separability_optimization.md", "docs/src/separability_examples.md", "docs/src/migration_from_qetlab.md"]
+tests = ["test/wp6_separability.jl", "test/wp6_separability_compat.jl", "test/extensions/jump_optimization/separability.jl", "test/oracle/compare_separability_oracle.jl", "tutorials/qetlab_intro_tiles.jl"]
+docs = ["docs/src/api/native_optimization.md", "docs/src/separability_optimization.md", "docs/src/separability_examples.md", "docs/src/migration_from_qetlab.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "LocalDistinguishability"
@@ -7068,8 +7194,8 @@ specification = "docs/src/upb_catalog.md"
 implementation_kind = "independent-julia-source-informed-full-executable-family-and-dimension-catalog_with-stable-local-global-result_explicit-rng_bounded-full-spark-searches_family-provenance_typed-arithmetic_allocation-and-work-limits_private-one-factorization_and-reviewed-source-defect-corrections"
 status = "implemented"
 verification_status = "local-1056-focused-family_dimension_product_orthogonality_unextendibility_qubit-graph_rng_precision-resource-invalid-public-wrapper-and-julia-1.10-tests_plus-17-deterministic-pinned-octave-fixtures-137-parity-assertions-and-eight-upstream-defect-assertions-pass-on-both-lines_matlab-not-run"
-tests = ["test/wp2_upb_catalog.jl", "test/oracle/compare_upb_catalog_oracle.jl"]
-docs = ["docs/src/api/native_entanglement.md", "docs/src/upb_catalog.md", "docs/src/migration_from_qetlab.md"]
+tests = ["test/wp2_upb_catalog.jl", "test/oracle/compare_upb_catalog_oracle.jl", "tutorials/qetlab_intro_tiles.jl"]
+docs = ["docs/src/api/native_entanglement.md", "docs/src/upb_catalog.md", "docs/src/migration_from_qetlab.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "UPB"
@@ -7349,8 +7475,8 @@ specification = "docs/src/is_upb.md"
 implementation_kind = "independent-julia-source-informed-full-definition-upb-analysis_with-exact-rational-or-tolerance-aware-factorization_lazy-guarded-ordered-partition-search_compact-hermitian-extension-witnesses_and-structured-unknown"
 status = "implemented"
 verification_status = "local-146-focused-tests-pass-on-julia-1.12.6-and-1.10.11_plus-10-pinned-octave-fixtures-and-33-native-wrapper-agreement-and-reviewed-discrepancy-assertions-pass-on-both-lines_matlab-not-run"
-tests = ["test/wp2_is_upb.jl", "test/oracle/compare_is_upb_oracle.jl"]
-docs = ["docs/src/api/native.md", "docs/src/is_upb.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md"]
+tests = ["test/wp2_is_upb.jl", "test/oracle/compare_is_upb_oracle.jl", "tutorials/qetlab_intro_tiles.jl"]
+docs = ["docs/src/api/native.md", "docs/src/is_upb.md", "docs/src/product_analysis.md", "docs/src/migration_from_qetlab.md", "docs/src/tutorials.md"]
 
 [[functions]]
 julia_name = "IsUPB"

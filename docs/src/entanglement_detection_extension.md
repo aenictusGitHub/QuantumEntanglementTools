@@ -19,6 +19,7 @@ using EntanglementDetection
 backends = available_entanglement_backends()
 backend = only(filter(b -> b isa EntanglementDetectionBackend, backends))
 backend_capabilities(backend)
+backend_status(backend)
 ```
 
 The capability record reports `side_effect_free=false` for the upstream
@@ -124,7 +125,7 @@ therefore starts at Julia 1.11.
 
 ## Validation scope
 
-The dedicated suite passes 125/125 assertions locally on Julia 1.12.6. It
+The dedicated suite passes 130/130 assertions locally on Julia 1.12.6. It
 covers both load orders, repeated loading, method ambiguities, configuration
 and density validation, real-to-complex representation conversion, a live
 heuristic search, preservation of caller RNG, stdout, logger, and BLAS state,

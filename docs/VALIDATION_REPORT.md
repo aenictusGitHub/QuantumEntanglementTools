@@ -14,16 +14,18 @@ backend, performance, or release-approval claim.
   final status, completion queue containing 0 public rows, 36/36 internal
   helpers with terminal dispositions, 0 required helpers remaining, and 0
   static completion failures.
-- The API checker matches 458 runtime exports to 458 provenance records.
-- The full package corpus passes 8,133/8,133 assertions, including 48 tutorial
-  assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
-- The standalone tutorials pass 48/48 and independent matrix-predicate
+- The API checker matches 467 runtime exports (337 native/module and 130
+  `MATLABCompat`) to 467 provenance records.
+- The full package corpus passes 8,360/8,360 assertions: 8,276
+  core assertions plus 84 executable-tutorial assertions, on Julia 1.12.6 and
+  the installed Julia 1.10.0.
+- Seven standalone tutorials pass 84/84 and independent matrix-predicate
   validation passes 130/130 on both installed Julia lines.
-- The complete JuMP/Hypatia/SCS environment passes 836/836 assertions on both
+- The complete JuMP/Hypatia/SCS environment passes 846/846 assertions on both
   installed Julia lines. Numerical solver outcomes retain status, residual,
   bound, and certificate metadata and are not automatically mathematical
   certificates.
-- The EntanglementDetection.jl 0.2.2 adapter passes 125/125 assertions on Julia
+- The EntanglementDetection.jl 0.2.2 adapter passes 130/130 assertions on Julia
   1.12.6. Its candidate evidence remains conservatively `unknown`.
 - All 27 source-free oracle comparators pass 1,347/1,347 assertions on both
   installed Julia lines, and every fixture SHA-256 is verified. These
@@ -32,7 +34,8 @@ backend, performance, or release-approval claim.
 - Aqua passes 11/11 and the representative JET set passes 25/25. The formatter
   gate passes after applying the repository formatter.
 - All 114 declared quick benchmark cases completed for the clean `f32dd233`
-  baseline and the candidate with one Julia and one BLAS thread. The targeted
+  baseline and the candidate now committed as `a50f516`, with one Julia and one
+  BLAS thread. The targeted
   paired observations remain local diagnostics, not a stable
   comparative-performance or regression-baseline claim.
 - The dirty-worktree distribution preflight and an isolated fresh-depot archive
@@ -41,7 +44,7 @@ backend, performance, or release-approval claim.
   exact committed-tree release evidence.
 
 This evidence applies to a dirty local worktree based on
-`f32dd233e478dd6e2642f11fab088f6c8febc420`. It is not exact committed-tree
+`a50f516ad7887adcc468d649ccd28307477b18e5`. It is not exact committed-tree
 remote CI, API-stability evidence, release approval, or the maintainer's
 non-delegable review.
 

@@ -5,8 +5,58 @@ include("local_channel_noise.jl")
 include("entanglement_certificates.jl")
 include("separability_examples.jl")
 include("symmetric_sappt_witnesses.jl")
+include("qetlab_intro_schmidt.jl")
+include("qetlab_intro_tiles.jl")
 
 @testset "Executable tutorials" begin
+    @testset "QETLAB introduction: Schmidt decomposition" begin
+        output = IOBuffer()
+        result = TutorialQETLABIntroSchmidt.run(; io=output)
+
+        @test result.local_dimensions == (3, 3)
+        @test result.state_dimension == 9
+        @test result.term_count == 3
+        @test result.numerical_schmidt_rank == 3
+        @test result.coefficients_nonnegative
+        @test result.coefficients_descending
+        @test result.replay_exact
+        @test result.normalization_error <= 1e-12
+        @test result.coefficient_normalization_error <= 1e-12
+        @test result.left_orthogonality_error <= 1e-12
+        @test result.right_orthogonality_error <= 1e-12
+        @test result.manual_reconstruction_error <= 1e-12
+        @test result.tensor_sum_reconstruction_error <= 1e-12
+        @test result.reconstruction_agreement_error <= 1e-12
+    end
+
+    @testset "QETLAB introduction: Tiles bound entanglement" begin
+        output = IOBuffer()
+        result = TutorialQETLABIntroTiles.run(; io=output)
+
+        @test result.catalog_family === :tiles
+        @test result.local_dimensions == (3, 3)
+        @test result.product_vector_count == 5
+        @test result.catalog_projector_error <= 1e-14
+        @test result.upb_status === :upb
+        @test result.upb_reason === :unextendible
+        @test result.upb_certificate === :exact
+        @test result.partitions_examined == 20
+        @test result.complement_rank == 4
+        @test result.exact_trace == 1
+        @test result.exact_projector
+        @test result.exact_density_operator
+        @test result.exact_ppt
+        @test result.exact_range_entanglement
+        @test result.bound_entangled
+        @test result.numeric_ppt_status === TutorialQETLABIntroTiles.CriterionUnknown
+        @test result.entanglement_status === :entangled
+        @test result.entanglement_certified
+        @test result.entanglement_method === :realignment
+        @test result.entanglement_certificate === :realignment_cross_norm_violation
+        @test result.attempts == (:ppt => :unknown, :realignment => :entangled)
+        @test result.realignment_margin > result.realignment_tolerance
+    end
+
     @testset "subsystem reductions" begin
         output = IOBuffer()
         result = TutorialSubsystemReductions.run(; io=output)

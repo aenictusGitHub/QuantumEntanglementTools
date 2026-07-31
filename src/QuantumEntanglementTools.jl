@@ -155,6 +155,7 @@ export SubsystemLayout,
     UPBConstructionUnavailable,
     UPBResourceLimitError,
     SeparableBallResult,
+    DensityMatrixValidationReport,
     CriterionStatus,
     CriterionResult,
     CriterionEntanglementDetected,
@@ -202,6 +203,7 @@ export SubsystemLayout,
     random_superoperator,
     twirl,
     purity,
+    validate_density_matrix,
     renyi_entropy,
     von_neumann_entropy,
     fidelity,
@@ -266,10 +268,17 @@ export SubsystemLayout,
     NativePPT,
     EntanglementAttempt,
     EntanglementReport,
+    conclusion,
+    is_conclusive,
+    is_certified,
+    explain,
     detect_entanglement,
     analyze_entanglement,
     is_separable,
+    available_separability_strategies,
+    describe_strategy,
     backend_capabilities,
+    backend_status,
     available_entanglement_backends,
     MATLABCompat
 
@@ -321,6 +330,7 @@ include("entanglement/criteria.jl")
 include("entanglement/absolute_ppt.jl")
 include("entanglement/symmetric_extensions.jl")
 include("entanglement/backend_interface.jl")
+include("result_interface.jl")
 include("entanglement/separability_optimization.jl")
 include("nonlocal_games/scenarios.jl")
 include("nonlocal_games/npa.jl")

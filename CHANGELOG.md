@@ -20,15 +20,19 @@ The inventory is pinned to QETLAB revision
 127/127 public rows are verified with the required final status, 36/36 internal
 helpers have terminal dispositions, the completion queue contains 0 public
 rows, 0 required internal helpers remain, and 0 static completion failures.
-The package has 458 public bindings with matching provenance entries.
+The package has 467 public bindings (337 native/module and 130
+`MATLABCompat`) with matching provenance entries.
 
-The 8,133-assertion full package suite passed 8,133/8,133, including 48
-executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
-The full optional JuMP suite passed 836/836 on both Julia lines. The
-EntanglementDetection.jl extension passed 125/125 focused assertions on the
+The 8,360-assertion full package suite passed 8,360/8,360: the core accounts
+for 8,276 assertions, and the seven executable tutorials account for 84/84
+assertions (48 existing plus 36 for the two new workflows), on Julia
+1.12.6 and the installed Julia 1.10.0. The full optional JuMP suite passed
+846/846 on both Julia lines. The
+EntanglementDetection.jl extension passed 130/130 focused assertions on the
 current compatible Julia. All 114 declared quick benchmark cases completed for
-a clean `f32dd233` baseline and the candidate; targeted paired observations
-remain local diagnostics, not a stable performance baseline.
+the clean `f32dd233` baseline and the candidate now committed as `a50f516`;
+targeted paired observations remain local diagnostics, not a stable performance
+baseline.
 
 These static and local results are not QETLAB/MATLAB parity,
 supported-platform remote CI, comparative performance, API stability, release
@@ -56,6 +60,14 @@ been made.
 - Tier D scalar measures, structured entanglement criteria, and a
   certificate-first native entanglement pipeline that preserves inconclusive
   outcomes.
+- Additive `conclusion`, `is_conclusive`, `is_certified`, and `explain`
+  helpers, with readable rich displays for status-bearing result types.
+- Non-mutating `validate_density_matrix` diagnostics that report trace,
+  Hermiticity, positivity, subsystem, and sparse-storage issues without
+  repairing caller input.
+- Public separability-strategy metadata and side-effect-free backend readiness
+  discovery through `available_separability_strategies`, `describe_strategy`,
+  and `backend_status`.
 - Tier E coherence measures and rank analysis, including a documented correction
   of the pinned QETLAB coherence-rank implementation discrepancy.
 - Tier E operator Schmidt, structured product-analysis,
@@ -73,14 +85,16 @@ been made.
   Their package-owned mappings use explicit structured results and documented
   numerical boundaries; function-specific MATLAB-family oracle coverage is not
   implied.
-- An 8,133-assertion full package suite passing 8,133/8,133 locally on Julia
-  1.12.6 and the installed Julia 1.10.0, including 48 executable-tutorial
-  assertions, plus consistency checks over 458 public bindings and all 163
-  source-reviewed inventory rows.
-- Five deterministic executable tutorials for subsystem reductions, local
+- An 8,360-assertion full package suite passing 8,360/8,360 locally on Julia
+  1.12.6 and the installed Julia 1.10.0, comprising 8,276 core
+  assertions and 84/84 executable-tutorial assertions (48 existing plus 36 for
+  the two new workflows), plus consistency checks over 467 public bindings and
+  all 163 source-reviewed inventory rows.
+- Seven deterministic executable tutorials for subsystem reductions, local
   channel noise, separability certificates, symmetric SAPPT states and
-  constructive witnesses, and certificate-aware entanglement analysis. The
-  exact scripts run standalone, in `Pkg.test()`, and during the strict
+  constructive witnesses, certificate-aware entanglement analysis, seeded
+  Schmidt decomposition and reconstruction, and Tiles-UPB bound entanglement.
+  The exact scripts run standalone, in `Pkg.test()`, and during the strict
   documentation build.
 - A research example for the symmetric state family in Phys. Rev. A 111,
   042418 (2025), including an exact 19-term separable decomposition at the
@@ -88,16 +102,27 @@ been made.
   representatives, published witness reconstruction, a decomposable NPT
   witness, and explicit GHZ phase handling.
 - A benchmark harness containing 114 declared quick cases, all of which
-  completed for the clean `f32dd233` baseline and performance candidate.
+  completed for the clean `f32dd233` baseline and performance candidate now
+  committed as `a50f516`.
   Targeted paired observations remain local diagnostics, not a stable
   comparative-performance claim or regression baseline.
-- An optional JuMP extension suite passing 836/836 locally on Julia 1.12.6 and
+- An optional JuMP extension suite passing 846/846 locally on Julia 1.12.6 and
   the installed Julia 1.10.0.
 - An optional EntanglementDetection.jl 0.2.2 extension that runs heuristic
   searches only in an isolated child Julia process, preserves candidate results
   as uncertified evidence, and contains backend failures as `:unknown` reports.
-  Its 125 focused assertions cover load order, caller-state isolation, bounded
+  Its 130 focused assertions cover load order, caller-state isolation, bounded
   termination, malformed IPC, and post-launch output-capture failure cleanup.
+- Task-first onboarding, grouped documentation navigation, progressive
+  tutorials, copyable examples, and a GitHub Pages deployment for the rendered
+  equations and browser-local code generator.
+- A schema-2 browser code generator with 11 bounded state families and nine
+  curated workflows, including exact Tiles-UPB and explicit-seed random-state
+  construction; density validation, marginals, Schmidt diagnostics, bounded
+  core separability profiles, backend readiness, conservative result helpers,
+  structural assertions, live resource estimates, stale-output protection,
+  and strict 16 KiB versioned JSON import/export. Schema-1 configurations
+  migrate without enabling new analyses.
 - A development disclosure recording substantial OpenAI Codex assistance
   without treating that disclosure as evidence of the maintainer's required
   human review.

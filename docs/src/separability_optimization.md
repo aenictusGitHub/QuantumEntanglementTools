@@ -175,11 +175,35 @@ report = is_separable(
 The method never uses Julia's global random stream. Exhausting a search or
 work budget produces `:unknown`, not a negative mathematical result.
 
+## Discovering strategies
+
+The accepted individual strategy names are available at the REPL:
+
+```@example separability-strategy-discovery
+using QuantumEntanglementTools
+
+strategies = available_separability_strategies()
+ppt = describe_strategy(:ppt)
+
+(
+    count=length(strategies),
+    ppt_certificate_directions=ppt.certificate_directions,
+    ppt_cost=ppt.cost,
+    ppt_rng_required=ppt.rng_required,
+)
+```
+
+Each metadata record states its qualitative dominant cost, certificate
+directions, optional dependency, and explicit-RNG requirement. The
+`:qetlab_deterministic` and `:full` spellings are pipeline presets rather than
+individual strategy names.
+
 ## Symmetric-extension certificates
 
 Outer and inner hierarchies need an explicit optional optimization backend:
 
 ```julia
+using JuMP
 using Hypatia
 using QuantumEntanglementTools
 

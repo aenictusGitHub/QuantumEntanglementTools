@@ -283,6 +283,7 @@ package-owned feasibility model:
 
 ```julia
 using QuantumEntanglementTools
+using JuMP
 using Hypatia
 
 backend = JuMPBackend(

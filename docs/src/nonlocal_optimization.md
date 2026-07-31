@@ -111,6 +111,7 @@ Install an optimization backend in the optional JuMP environment. For
 example, with Hypatia:
 
 ```julia
+using JuMP
 using Hypatia
 using QuantumEntanglementTools
 

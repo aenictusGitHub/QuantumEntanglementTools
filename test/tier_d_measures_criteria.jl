@@ -123,6 +123,136 @@ end
     )
 end
 
+@testset "Tier D density-matrix validation diagnostics" begin
+    bell = [0.5 0.0 0.0 0.5; 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0; 0.5 0.0 0.0 0.5]
+    original = copy(bell)
+    report = QETD.validate_density_matrix(bell, (2, 2))
+    @test report isa QETD.DensityMatrixValidationReport
+    @test report.status === :valid
+    @test report.valid
+    @test report.complete
+    @test report.shape == (4, 4)
+    @test report.dimensions == (2, 2)
+    @test report.expected_dimension == 4
+    @test report.dimension_match
+    @test report.finite === true
+    @test report.exactly_hermitian === true
+    @test report.normalized === true
+    @test report.positive_semidefinite === true
+    @test report.minimum_eigenvalue >= -report.spectral_tolerance
+    @test report.spectral_analysis === :eigendecomposition
+    @test !report.spectral_densification_required
+    @test bell == original
+    @test occursin("status=valid", sprint(show, report))
+    @test occursin("passes", only(report.messages))
+    rich_display = sprint(show, MIME("text/plain"), report)
+    @test occursin("Density-matrix validation: VALID", rich_display)
+    @test occursin("Shape and dimensions: pass", rich_display)
+    @test occursin("Positive semidefinite: pass", rich_display)
+    @test occursin("Guidance:", rich_display)
+
+    bad_trace = QETD.validate_density_matrix(Diagonal([0.6, 0.5, 0.0, 0.0]), (2, 2))
+    @test bad_trace.status === :invalid
+    @test !bad_trace.valid
+    @test bad_trace.complete
+    @test bad_trace.normalized === false
+    @test bad_trace.positive_semidefinite === true
+    @test occursin("not one", join(bad_trace.messages, " "))
+
+    negative = QETD.validate_density_matrix(Diagonal([1.1, -0.1]), (2,))
+    @test negative.status === :invalid
+    @test negative.positive_semidefinite === false
+    @test negative.minimum_eigenvalue == -0.1
+    @test occursin("No eigenvalue was clipped", join(negative.messages, " "))
+
+    wrong_dims = QETD.validate_density_matrix(Matrix{Float64}(I, 2, 2) / 2, (2, 2))
+    @test wrong_dims.status === :invalid
+    @test !wrong_dims.dimension_match
+    @test wrong_dims.spectral_analysis === :skipped_invalid_structure
+    @test occursin("prod(dims)=4", join(wrong_dims.messages, " "))
+
+    nonhermitian = QETD.validate_density_matrix([0.5 0.1; 0.0 0.5], (2,))
+    @test nonhermitian.status === :invalid
+    @test nonhermitian.hermitian_within_tolerance === false
+    @test nonhermitian.minimum_eigenvalue === nothing
+    @test occursin("No Hermitian part", join(nonhermitian.messages, " "))
+
+    near_hermitian = ComplexF64[0.5 1.0e-10; 0.0 0.5]
+    conservative = QETD.validate_density_matrix(near_hermitian, (2,); atol=2e-10, rtol=0)
+    @test conservative.status === :incomplete
+    @test conservative.hermitian_within_tolerance === true
+    @test conservative.exactly_hermitian === false
+    @test conservative.spectral_analysis === :skipped_nonexact_hermitian
+    @test near_hermitian == ComplexF64[0.5 1.0e-10; 0.0 0.5]
+
+    sparse_state = sparse([0.5 0.1; 0.1 0.5])
+    sparse_snapshot = copy(sparse_state)
+    sparse_report = QETD.validate_density_matrix(sparse_state, (2,))
+    @test sparse_report.status === :incomplete
+    @test sparse_report.sparse
+    @test sparse_report.spectral_densification_required
+    @test sparse_report.positive_semidefinite === nothing
+    @test sparse_report.spectral_analysis === :requires_densification_opt_in
+    @test occursin("allow_densify=true", join(sparse_report.messages, " "))
+    @test sparse_state == sparse_snapshot
+    sparse_display = sprint(show, MIME("text/plain"), sparse_report)
+    @test occursin("INCOMPLETE", sparse_display)
+    @test occursin("Positive semidefinite: not checked", sparse_display)
+    @test occursin("allow_densify=true", sparse_display)
+
+    sparse_opt_in = QETD.validate_density_matrix(sparse_state, (2,); allow_densify=true)
+    @test sparse_opt_in.valid
+    @test sparse_opt_in.spectral_analysis === :eigendecomposition
+    @test sparse_opt_in.densification_permitted
+    sparse_limited = QETD.validate_density_matrix(
+        sparse_state, (2,); allow_densify=true, max_dense_entries=3
+    )
+    @test sparse_limited.status === :incomplete
+    @test sparse_limited.spectral_analysis === :resource_limit
+
+    sparse_diagonal = sparse(Diagonal([0.5, 0.5]))
+    diagonal_report = QETD.validate_density_matrix(sparse_diagonal, (2,))
+    @test diagonal_report.valid
+    @test diagonal_report.spectral_analysis === :diagonal
+    @test !diagonal_report.spectral_densification_required
+
+    exact_diagonal = QETD.validate_density_matrix(
+        Diagonal(Rational{Int}[1 // 3, 2 // 3]), (2,)
+    )
+    @test exact_diagonal.valid
+    @test exact_diagonal.minimum_eigenvalue == 1 // 3
+    exact_nondiagonal = QETD.validate_density_matrix(
+        Rational{Int}[1//2 1//4; 1//4 1//2], (2,)
+    )
+    @test exact_nondiagonal.status === :incomplete
+    @test exact_nondiagonal.spectral_analysis === :unsupported_eltype
+
+    tolerance_boundary = QETD.validate_density_matrix(
+        Diagonal([-1.0e-10, 0.5, 0.3, 0.2000000001]), (2, 2); atol=1e-9, rtol=0
+    )
+    @test tolerance_boundary.status === :valid_within_tolerance
+    @test tolerance_boundary.valid
+    @test tolerance_boundary.boundary_uncertain
+    @test tolerance_boundary.minimum_eigenvalue < 0
+
+    nonfinite = QETD.validate_density_matrix([1.0 NaN; NaN 0.0], (2,))
+    @test nonfinite.status === :invalid
+    @test nonfinite.finite === false
+    @test nonfinite.trace_value === nothing
+
+    zero_based = QETD.validate_density_matrix(
+        _TierDZeroBasedMatrix(Matrix{Float64}(I, 2, 2) / 2), (2,)
+    )
+    @test zero_based.status === :invalid
+    @test !zero_based.one_based_indexing
+    @test_throws ArgumentError QETD.validate_density_matrix(
+        Matrix{Float64}(I, 2, 2) / 2, (2,); atol=-1
+    )
+    @test_throws ArgumentError QETD.validate_density_matrix(
+        Matrix{Float64}(I, 2, 2) / 2, (2,); max_dense_entries=-1
+    )
+end
+
 @testset "Tier D negativity and logarithmic negativity" begin
     bell = [1.0, 0.0, 0.0, 1.0] / sqrt(2)
     product = [1.0, 0.0, 0.0, 0.0]
