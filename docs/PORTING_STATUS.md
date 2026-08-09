@@ -12,15 +12,15 @@ merely because a similarly named Julia method exists.
 
 | Area | Evidence-based status |
 |---|---|
-| Repository state | Uncommitted release-hardening work on `main` at base `8b2fcbafc646c528aade8bbf695b1112e45511a9`; `origin/main` is the same base, and no commit, push, tag, release, visibility, or settings change was made in this pass |
+| Repository state | `main` and `origin/main` are at `c69185f46c7027906e07d4965ed58dbfeab6457f`; five GitHub Pages implementation/evidence files, two status records, and the reconciled generated snapshot are uncommitted locally. No commit, push, tag, release, visibility change, or branch-setting change was made by the coding agent; the repository owner enabled GitHub Actions as the Pages source |
 | QETLAB source | Pinned and clean at `d8589610f00cff106537268dee2e2a1153f3a601`; 163 MATLAB files, 127 public functions, 36 private helpers, 503 dependency edges, and no detected cycle |
 | Strict completion ledger | 127/127 public rows are verified with final status; completion queue contains 0 public rows; 36/36 internal helpers have terminal dispositions; 0 required helpers remain; 0 static completion failures |
 | Public API/provenance | 477 runtime exports (347 native/module and 130 `MATLABCompat`) match 477 provenance records |
 | Full package corpus | 9,484/9,484 assertions—9,400 core plus 84 executable-tutorial assertions—pass on Julia 1.12.6 and the installed Julia 1.10.11 |
 | Optional optimization | The complete JuMP/Hypatia/SCS environment passes 847/847 assertions on both installed Julia lines; solver output remains status-rich and is not automatically a certificate |
 | EntanglementDetection.jl | Exact 0.2.2 adapter passes 141/141 assertions on Julia 1.12.6; its effective resolver floor remains Julia 1.11 because of Ket 0.9 |
-| User-facing diagnostics | Additive result interpretation, density validation, strategy/backend discovery, symmetric multiqubit/multiqudit coordinates, task-first documentation, and rendered Pages deployment preserve existing function names and certificate boundaries |
-| Interactive generator | Schema 2 provides 11 bounded families, nine curated presets, five additional analysis routes, four fixed core separability profiles, resource planning, and strict versioned JSON portability; 178 JavaScriptCore checks pass, and the 13-module generated Julia bundle completes on Julia 1.12.6 and 1.10.0 |
+| User-facing diagnostics | Additive result interpretation, density validation, strategy/backend discovery, symmetric multiqubit/multiqudit coordinates, and task-first documentation preserve existing function names and certificate boundaries; the Pages source is enabled, but the first successful post-fix deployment remains pending |
+| Interactive generator | Schema 2 provides 11 bounded families, nine curated presets, five additional analysis routes, four fixed core separability profiles, resource planning, and strict versioned JSON portability; 178 JavaScriptCore checks pass, and the 13-module generated Julia bundle completes on Julia 1.12.6 and 1.10.11 |
 | Independent predicates | Randomized spectrum/minor validation passes 130/130 assertions on both installed Julia lines |
 | Executable tutorials | Seven standalone scripts pass 84/84 assertions on both installed Julia lines; 36 assertions cover the new seeded Schmidt and exact Tiles-UPB workflows |
 | Quick benchmarks | All 114 declared quick benchmark cases completed without failure on the current uncommitted worktree; this is local smoke evidence only, and targeted paired minima remain diagnostics rather than a stable comparative baseline |
@@ -48,7 +48,7 @@ dependency-free strategy tuples and resource limits.
 |---|---|---|
 | M0--M6 — architecture and work packages | Local implementation and focused evidence complete | Exact-tree remote/platform evidence and human review remain release gates |
 | M7 — QETLAB completeness sweep | Local static objective reached: 127/127 public rows and 36/36 helpers are terminal | MATLAB equivalence is not claimed; keep source-free fixtures supplemental to analytic/property evidence |
-| M8 — release convergence | In progress; result ergonomics, validation/discovery helpers, schema-2 generator, task-first docs, Pages deployment, and local exact-tree gates are integrated | Exact committed-tree CI, legal/API review, and non-delegable maintainer review |
+| M8 — release convergence | In progress; result ergonomics, validation/discovery helpers, schema-2 generator, task-first docs, the Pages workflow, and local exact-tree gates are integrated; the Pages source is enabled | A successful exact-commit Pages deployment, exact committed-tree CI, legal/API review, and non-delegable maintainer review |
 
 ## Generator capability evidence (2026-07-31)
 
@@ -68,7 +68,7 @@ copy/download/load controls without browser persistence or network transfer.
 
 The JavaScriptCore/JXA harness passes 178 checks. Its 13 generated Julia modules
 contain 130 structural and runtime assertions and complete on Julia 1.12.6 and
-Julia 1.10.0. Strict Documenter builds also pass on both lines; only the
+Julia 1.10.11. Strict Documenter builds also pass on both lines; only the
 previously recorded HTML/search-index size warnings remain.
 
 ## Completion vocabulary
@@ -97,6 +97,25 @@ The focused suite passes 1,014/1,014 on Julia 1.12.6 and 1.10.11. This addition
 does not change the pinned QETLAB inventory or claim a QETLAB compatibility
 mapping for these project-native functions.
 
+## GitHub Pages deployment repair (2026-08-09)
+
+The project and code-generator URLs returned 404 because Pages was not yet
+provisioned and the latest Documentation workflow failed before upload and
+deployment. The owner has now selected GitHub Actions as the Pages source. The
+local repair removes the platform-sensitive numerical dependency from the live
+Tiles example by retaining the exact boundary-state proof while applying the
+independent realignment calculation to a fixed, exactly defined full-rank
+depolarized neighbor. It also corrects the documented workflow artifact name.
+
+The focused example and all 84 tutorial assertions pass on Julia 1.12.6 and
+1.10.11. The 178-check JavaScriptCore/JXA generator harness, its generated
+13-module Julia smoke on both Julia lines, strict CI-shaped Documenter builds
+on both lines, the formatter gate, and `git diff --check` pass. The remote
+branch remains at `c69185f46c7027906e07d4965ed58dbfeab6457f`; the five
+implementation/evidence files, two status records, and reconciled generated
+snapshot are uncommitted, so the live site is expected to remain unavailable
+until an authorized push triggers a successful Documentation deployment.
+
 ## Remaining gates
 
 The formatter, local documentation, benchmark smoke, claim reconciliation,
@@ -105,8 +124,9 @@ archive smoke have been completed for this worktree.
 
 1. Have the maintainer perform the non-delegable mathematical, API, provenance,
    licensing, and generated-change review.
-2. Only with explicit authorization, commit and push, then require exact-SHA
-   supported-platform CI and accepted Codecov ingestion.
+2. Only with explicit authorization, commit and push the Pages repair, require
+   the exact-SHA Documentation deployment and supported-platform CI, verify the
+   live root and `/code_generator/` routes, and confirm Codecov ingestion.
 3. Treat tagging, a private GitHub release, public visibility, and General
    registration as separate, explicitly authorized decisions.
 

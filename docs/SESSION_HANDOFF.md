@@ -9,20 +9,19 @@ not a committed or published release.
 
 - Branch: `main`.
 - `HEAD` and `origin/main`:
-  `8b2fcbafc646c528aade8bbf695b1112e45511a9`.
+  `c69185f46c7027906e07d4965ed58dbfeab6457f`.
 - Remote: private `origin` at
   `https://github.com/aenictusGitHub/QuantumEntanglementTools.git`.
-- Worktree: intentionally dirty with release-hardening changes layered on the
-  previously committed tutorials, user-experience work, and schema-2 browser
-  generator. The current pass adds stricter release/oracle gates, provenance
-  enforcement, bounded combinatorial resources, non-projecting Choi-to-Kraus
-  conversion, bounded optional-backend output, and GitHub maintenance/release
-  scaffolding, plus ten project-native symmetric-state APIs with exact
-  occupation indexing, multiqudit Dicke states, compressed collective
-  operators, split isometries, and direct reductions. Use `git status --short`
-  for the exact live list; do not reset or clean it.
+- Worktree: intentionally dirty with a bounded GitHub Pages repair in five
+  implementation/evidence files: `tutorials/qetlab_intro_tiles.jl`,
+  `tutorials/runtests.jl`, `docs/src/tutorials.md`,
+  `docs/src/code_generator.md`, and `docs/test/code_generator_cases.js`, plus
+  this handoff, `docs/PORTING_STATUS.md`, and the reconciled generated
+  `artifacts/convergence/current_snapshot.toml`. Use `git status --short` for
+  the exact live list; do not reset or clean it.
 - No commit, push, tag, release, repository-visibility change, branch-setting
-  change, history rewrite, or registry submission was made.
+  change, history rewrite, or registry submission was made by the coding
+  agent. The repository owner enabled **GitHub Actions** as the Pages source.
 - Pinned QETLAB source:
   `d8589610f00cff106537268dee2e2a1153f3a601`, with 163 MATLAB files,
   127 public functions, 36 internal helpers, 503 dependency edges, and no
@@ -46,7 +45,7 @@ not a committed or published release.
   both installed Julia lines, with fixture SHA-256 files verified. MATLAB was
   not run.
 - Strict documentation builds pass on both installed Julia lines. The math
-  compatibility scan covers 55 Markdown files, 302 inline spans, and 128
+  compatibility scan covers 56 Markdown files, 324 inline spans, and 132
   display blocks. The schema-2 browser generator passes 178/178 JavaScriptCore
   checks; its 13-module Julia bundle contains 130 structural and runtime
   assertions and completes on both lines.
@@ -123,10 +122,11 @@ The documentation now starts from user tasks, orders tutorials progressively,
 and checks that every copyable `JuMPBackend` example imports JuMP explicitly.
 The `main` documentation workflow packages and deploys the rendered
 Documenter site, including equations and the browser-local code generator.
-Deployment still requires the repository owner to select **GitHub Actions** as
-the Pages source after this work is committed and pushed. On a private
-repository, Pages availability and site visibility depend on the GitHub plan
-and repository settings.
+The repository owner selected **GitHub Actions** as the Pages source on
+2026-08-09. The site still needs an authorized push of the local repair and a
+successful post-push Documentation workflow before its root and code-generator
+routes can be verified. On a private repository, Pages availability and site
+visibility depend on the GitHub plan and repository settings.
 
 The generator now has 11 bounded state families and nine curated workflows.
 The new families are an exact-arithmetic Tiles-UPB complement and seeded
@@ -306,9 +306,11 @@ julia --compiled-modules=no --startup-file=no --project=. \
 - `cffconvert` was not installed, so schema-tool validation of `CITATION.cff`
   remains a release-checklist item. The package release preflight's metadata
   consistency checks passed.
-- No Pages deployment was attempted because this worktree was not committed or
-  pushed. After pushing, select **Settings → Pages → GitHub Actions**. Treat
-  site visibility as a separate decision for this private repository.
+- The repository owner selected **Settings → Pages → GitHub Actions**.
+  Enabling the source did not trigger a workflow. The local Pages repair has
+  not been committed or pushed, so no successful post-fix deployment exists
+  yet; treat site visibility as a separate decision for this private
+  repository.
 - Documentation emitted only size warnings: five API/migration pages exceeded
   100 KiB but remained below the 200 KiB hard limit; `search_index.js`
   exceeded the 500 KiB warning threshold.
@@ -336,6 +338,39 @@ canonical sparse copy before resource rejection, and nontrivial split/reduction
 construction materializes guarded occupation workspaces. These are documented
 resource limitations, not silent densification or correctness fallbacks.
 
+## GitHub Pages deployment repair (2026-08-09)
+
+The public project root and code-generator route returned HTTP 404 because the
+Pages site had not been provisioned and the latest Documentation workflow
+failed before artifact upload and deployment. Both supported Julia jobs failed
+in the live Tiles tutorial when a platform-dependent boundary classification
+left `entanglement_report.evidence` equal to `nothing`.
+
+The local repair keeps the exact rank-four PPT/range-criterion proof unchanged
+and keeps its floating PPT result explicitly `unknown`. It runs the independent
+realignment certificate on a fixed full-rank state obtained by mixing exactly
+`1//1024` of the separable maximally mixed state into the Tiles state. The
+neighbor remains PPT by exact partial-transpose equality, has a safely positive
+eigenvalue floor, and retains a robust realignment violation. Assertions now
+validate report status, method, and evidence type before dereferencing the
+evidence. The generator documentation also names the workflow's actual
+run-specific `documentation-<run-id>-<run-attempt>` artifact.
+
+Focused Tiles runs and the complete 84-assertion tutorial suite pass on Julia
+1.12.6 and 1.10.11. The 178-check JavaScriptCore/JXA generator harness and its
+13-module generated Julia smoke pass on both Julia lines. Strict CI-shaped
+Documenter builds pass on both lines after the normal version-specific ignored
+manifest refresh; they emit only the previously recorded HTML/search-index size
+warnings. The formatter gate and `git diff --check` pass. Node.js was
+unavailable, so the documented JavaScriptCore/JXA fallback was used.
+
+The remote `main` branch remains at
+`c69185f46c7027906e07d4965ed58dbfeab6457f`. The five implementation/evidence
+repair files, two status records, and reconciled generated snapshot remain
+uncommitted locally. A specifically authorized commit and push will trigger the
+next Documentation workflow; only after that workflow succeeds should the live
+root and `/code_generator/` routes be treated as deployed.
+
 ## Remaining external gates
 
 There is no remaining public QETLAB row or required private helper in the local
@@ -344,9 +379,10 @@ this implementation task:
 
 1. maintainer mathematical, API, provenance, licensing, generated-ledger, and
    release review;
-2. an explicitly authorized commit and push;
-3. selection of **GitHub Actions** as the repository's Pages source, followed
-   by verification of the deployed site's intended access level;
+2. an explicitly authorized commit and push of the Pages repair, followed by a
+   successful exact-commit Documentation workflow and verification of the live
+   root and `/code_generator/` routes;
+3. verification of the deployed site's intended access level;
 4. exact-commit supported-platform CI, Codecov ingestion, and archive
    validation;
 5. separate explicit decisions for tagging, a private GitHub release, public

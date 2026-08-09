@@ -22,7 +22,8 @@ end
 Construct the normalized state on the orthogonal complement of the two-qutrit
 Tiles UPB. Exact rational arithmetic proves that it is PPT, the exact UPB
 certificate supplies the range-criterion entanglement proof, and the numerical
-criterion pipeline independently detects entanglement by realignment.
+criterion pipeline independently detects entanglement by realignment for a
+fixed full-rank depolarized neighbor.
 """
 function run(; io::IO=stdout)
     # Each column pair is one unnormalized local product vector. Integer input
@@ -73,16 +74,28 @@ function run(; io::IO=stdout)
     catalog_projector = catalog.global_vectors * adjoint(catalog.global_vectors)
     catalog_projector_error = maximum(abs, catalog_projector - Float64.(projector))
 
-    # A rank-four PPT state is on the zero-eigenvalue boundary, so the floating
+    # The rank-four PPT state is on the zero-eigenvalue boundary, so the floating
     # PPT criterion deliberately returns `CriterionUnknown`. The exact equality
-    # above is the PPT proof; the next strategy supplies an independent,
-    # numerically robust entanglement certificate.
-    rho = Float64.(rho_exact)
-    numeric_ppt = ppt_criterion(rho, (3, 3); systems=(2,), atol=1e-12, rtol=0)
+    # above is the PPT proof. A fixed depolarized neighbor moves the independent
+    # numerical pipeline away from that eigensolver boundary while preserving
+    # PPT exactly and retaining a robust realignment violation.
+    rho_boundary = Float64.(rho_exact)
+    numeric_ppt = ppt_criterion(rho_boundary, (3, 3); systems=(2,), atol=1e-12, rtol=0)
+    depolarizing_weight = BigInt(1) // BigInt(1024)
+    maximally_mixed_exact = Matrix{Rational{BigInt}}(I, 9, 9) / 9
+    rho_neighbor_exact =
+        (1 - depolarizing_weight) * rho_exact + depolarizing_weight * maximally_mixed_exact
+    rho_neighbor = Float64.(rho_neighbor_exact)
+    neighbor_minimum_eigenvalue = eigmin(Hermitian(rho_neighbor))
+    neighbor_ppt = ppt_criterion(rho_neighbor, (3, 3); systems=(2,), atol=1e-12, rtol=0)
     entanglement_report = is_separable(
-        rho, (3, 3); strategies=(:ppt, :realignment), atol=1e-12, rtol=0
+        rho_neighbor, (3, 3); strategies=(:ppt, :realignment), atol=1e-12, rtol=0
     )
     attempts = _attempt_summary(entanglement_report)
+    @assert entanglement_report.status === :entangled
+    @assert entanglement_report.certified
+    @assert entanglement_report.method === :realignment
+    @assert entanglement_report.evidence isa CriterionResult
     realignment_evidence = entanglement_report.evidence
     realignment_margin = realignment_evidence.value - realignment_evidence.threshold
 
@@ -95,6 +108,12 @@ function run(; io::IO=stdout)
     @assert exact_ppt
     @assert exact_range_entanglement
     @assert bound_entangled
+    @assert tr(rho_neighbor_exact) == 1
+    @assert partial_transpose(rho_neighbor_exact, (3, 3); systems=(2,)) ==
+        rho_neighbor_exact
+    @assert tr(rho_neighbor) == 1
+    @assert neighbor_minimum_eigenvalue > 1e-5
+    @assert neighbor_ppt.status === CriterionSatisfied
     @assert catalog.family === :tiles
     @assert catalog.dimensions == (3, 3)
     @assert catalog.cardinality == 5
@@ -125,7 +144,9 @@ function run(; io::IO=stdout)
     )
     println(
         io,
-        "Separability analysis: ",
+        "Full-rank depolarized neighbor: PPT=",
+        neighbor_ppt.status,
+        ", separability analysis=",
         entanglement_report.status,
         " via ",
         entanglement_report.certificate_kind,
@@ -150,6 +171,10 @@ function run(; io::IO=stdout)
         exact_range_entanglement=exact_range_entanglement,
         bound_entangled=bound_entangled,
         numeric_ppt_status=numeric_ppt.status,
+        entanglement_input=:full_rank_depolarized_neighbor,
+        depolarizing_weight=depolarizing_weight,
+        neighbor_minimum_eigenvalue=neighbor_minimum_eigenvalue,
+        neighbor_ppt_status=neighbor_ppt.status,
         entanglement_status=entanglement_report.status,
         entanglement_certified=entanglement_report.certified,
         entanglement_method=entanglement_report.method,

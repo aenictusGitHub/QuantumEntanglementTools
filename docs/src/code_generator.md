@@ -10,7 +10,8 @@ and fixed choices; it does not accept or evaluate arbitrary Julia code.
 > [live rendered documentation](https://aenictusgithub.github.io/QuantumEntanglementTools/code_generator/).
 > If Pages has not yet been enabled for a new checkout, open the
 > [Documentation workflow](https://github.com/aenictusGitHub/QuantumEntanglementTools/actions/workflows/docs.yml),
-> download and unzip its `documentation` artifact, then open
+> download and unzip its
+> `documentation-<run-id>-<run-attempt>` artifact, then open
 > `code_generator/index.html`. Artifacts are retained for seven days.
 >
 > To build the same documentation from a local checkout, run:

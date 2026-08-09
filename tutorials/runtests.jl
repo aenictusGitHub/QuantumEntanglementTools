@@ -48,7 +48,11 @@ include("qetlab_intro_tiles.jl")
         @test result.exact_ppt
         @test result.exact_range_entanglement
         @test result.bound_entangled
-        @test result.numeric_ppt_status === TutorialQETLABIntroTiles.CriterionUnknown
+        @test result.numeric_ppt_status === TutorialQETLABIntroTiles.CriterionUnknown &&
+            result.entanglement_input === :full_rank_depolarized_neighbor &&
+            result.depolarizing_weight == 1 // 1024 &&
+            result.neighbor_minimum_eigenvalue > 1e-5 &&
+            result.neighbor_ppt_status === TutorialQETLABIntroTiles.CriterionSatisfied
         @test result.entanglement_status === :entangled
         @test result.entanglement_certified
         @test result.entanglement_method === :realignment

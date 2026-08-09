@@ -178,8 +178,14 @@
         if (pageSource.indexOf("/actions/workflows/docs.yml") === -1) {
             failures.push("documentation page must link to the Documentation workflow");
         }
-        if (pageSource.indexOf("`documentation` artifact") === -1) {
-            failures.push("documentation page must explain the downloadable docs artifact");
+        if (
+            pageSource.indexOf(
+                "`documentation-<run-id>-<run-attempt>` artifact"
+            ) === -1
+        ) {
+            failures.push(
+                "documentation page must identify the run-specific docs artifact"
+            );
         }
         if (pageSource.indexOf("`code_generator/index.html`") === -1) {
             failures.push("documentation page must identify the artifact entry point");

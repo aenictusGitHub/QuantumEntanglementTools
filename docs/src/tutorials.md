@@ -222,11 +222,17 @@ TutorialQETLABIntroTiles.run()
 
 The floating-point checks deliberately preserve the distinction between an
 exact proof and a numerical test. `ppt_criterion` returns `CriterionUnknown`
-because the rank-four PPT state lies on the zero-eigenvalue boundary; this does
-not weaken the exact partial-transpose identity. The combined
-`is_separable(...; strategies=(:ppt, :realignment))` call records that
-inconclusive PPT attempt and then certifies entanglement through a realignment
-cross-norm violation.
+for the rank-four state because it lies on the zero-eigenvalue boundary; this
+does not weaken the exact partial-transpose identity. For an independent,
+platform-stable numerical check, the tutorial mixes in exactly `1//1024` of the
+maximally mixed state before converting to floating point. This full-rank
+neighbor remains PPT by the same exact partial-transpose identity. The combined
+`is_separable(...; strategies=(:ppt, :realignment))` call records PPT as a
+necessary but insufficient test and then certifies the neighbor's entanglement
+through a realignment cross-norm violation. Because the maximally mixed state
+is separable and separable states form a convex set, entanglement of this
+depolarized neighbor also independently implies entanglement of the original
+boundary state.
 
 This workflow was also written independently from the Tiles example on the
 [QETLAB homepage](https://qetlab.com/) and the documented contracts of
