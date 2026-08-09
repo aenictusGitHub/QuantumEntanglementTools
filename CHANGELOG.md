@@ -20,19 +20,19 @@ The inventory is pinned to QETLAB revision
 127/127 public rows are verified with the required final status, 36/36 internal
 helpers have terminal dispositions, the completion queue contains 0 public
 rows, 0 required internal helpers remain, and 0 static completion failures.
-The package has 467 public bindings (337 native/module and 130
+The package has 477 public bindings (347 native/module and 130
 `MATLABCompat`) with matching provenance entries.
 
-The 8,360-assertion full package suite passed 8,360/8,360: the core accounts
-for 8,276 assertions, and the seven executable tutorials account for 84/84
+The 9,484-assertion full package suite passed 9,484/9,484: the core accounts
+for 9,400 assertions, and the seven executable tutorials account for 84/84
 assertions (48 existing plus 36 for the two new workflows), on Julia
-1.12.6 and the installed Julia 1.10.0. The full optional JuMP suite passed
-846/846 on both Julia lines. The
-EntanglementDetection.jl extension passed 130/130 focused assertions on the
-current compatible Julia. All 114 declared quick benchmark cases completed for
-the clean `f32dd233` baseline and the candidate now committed as `a50f516`;
-targeted paired observations remain local diagnostics, not a stable performance
-baseline.
+1.12.6 and the installed Julia 1.10.11. The full optional JuMP suite passed
+847/847 on both Julia lines. The
+EntanglementDetection.jl extension passed 141/141 focused assertions on the
+current compatible Julia. All 114 declared quick benchmark cases completed
+without failure on the current uncommitted release-hardening worktree based on
+`8b2fcbaf`. This is local smoke evidence only; targeted paired observations
+remain diagnostics, not a stable comparative-performance baseline.
 
 These static and local results are not QETLAB/MATLAB parity,
 supported-platform remote CI, comparative performance, API stability, release
@@ -43,6 +43,12 @@ been made.
 
 ### Added
 
+- A project-native symmetric-state toolkit for qubits and qudits: exact
+  occupation dimensions and rank/unrank, generalized Dicke states, stable
+  symmetric product coordinates, compressed collective one-body operators,
+  sparse bipartition isometries, direct reduced states, and exact
+  coordinate/ambient maximally mixed symmetric states. All combinatorial
+  allocation paths have explicit `BigInt` resource preflights.
 - Initial Julia package shell.
 - Documentation, governance, legal, citation, and CI scaffolding.
 - Explicit experimental status and milestone ledgers.
@@ -85,10 +91,10 @@ been made.
   Their package-owned mappings use explicit structured results and documented
   numerical boundaries; function-specific MATLAB-family oracle coverage is not
   implied.
-- An 8,360-assertion full package suite passing 8,360/8,360 locally on Julia
-  1.12.6 and the installed Julia 1.10.0, comprising 8,276 core
+- A 9,484-assertion full package suite passing 9,484/9,484 locally on Julia
+  1.12.6 and the installed Julia 1.10.11, comprising 9,400 core
   assertions and 84/84 executable-tutorial assertions (48 existing plus 36 for
-  the two new workflows), plus consistency checks over 467 public bindings and
+  the two new workflows), plus consistency checks over 477 public bindings and
   all 163 source-reviewed inventory rows.
 - Seven deterministic executable tutorials for subsystem reductions, local
   channel noise, separability certificates, symmetric SAPPT states and
@@ -102,17 +108,18 @@ been made.
   representatives, published witness reconstruction, a decomposable NPT
   witness, and explicit GHZ phase handling.
 - A benchmark harness containing 114 declared quick cases, all of which
-  completed for the clean `f32dd233` baseline and performance candidate now
-  committed as `a50f516`.
+  completed for the clean `f32dd233` baseline, the historical performance
+  candidate `a50f516`, and the current dirty release-hardening tree.
   Targeted paired observations remain local diagnostics, not a stable
   comparative-performance claim or regression baseline.
-- An optional JuMP extension suite passing 846/846 locally on Julia 1.12.6 and
-  the installed Julia 1.10.0.
+- An optional JuMP extension suite passing 847/847 locally on Julia 1.12.6 and
+  the installed Julia 1.10.11.
 - An optional EntanglementDetection.jl 0.2.2 extension that runs heuristic
   searches only in an isolated child Julia process, preserves candidate results
   as uncertified evidence, and contains backend failures as `:unknown` reports.
-  Its 130 focused assertions cover load order, caller-state isolation, bounded
-  termination, malformed IPC, and post-launch output-capture failure cleanup.
+  Its 141 focused assertions cover load order, caller-state isolation, bounded
+  termination, malformed IPC, bounded live output, inherited descriptors, and
+  post-launch output-capture failure cleanup.
 - Task-first onboarding, grouped documentation navigation, progressive
   tutorials, copyable examples, and a GitHub Pages deployment for the rendered
   equations and browser-local code generator.

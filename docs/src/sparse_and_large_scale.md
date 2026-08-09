@@ -13,6 +13,19 @@ Sparse preservation is part of the API contract, not an afterthought.
   thread-safe cache is justified by measurements.
 - Mutating methods require clear aliasing rules and an actual allocation benefit.
 
+## Combinatorial constructors
+
+Symmetric and antisymmetric bases/projectors, Dicke states, compressed
+symmetric-state operations, and multiplicative or additive compound matrices
+compute `BigInt` resource plans before their combinatorial enumeration. The
+occupation-coordinate functions avoid constructing the ambient `d^N` basis
+for product coordinates, collective operators, splits, and reductions. Their
+default limits distinguish sectors, sparse nonzeros, dense entries,
+output/workspace storage, and estimated scalar work. A limit may be disabled
+with `nothing`, but that is an explicit acknowledgement of the cost—not a
+promise that the allocation will succeed. Integer and array-length
+representability checks cannot be disabled.
+
 ## Evidence required
 
 An operation advertised as sparse-aware needs tests for correctness, output

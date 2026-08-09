@@ -148,8 +148,20 @@ of emitted spectral workflows. Configuration files are additionally capped at
 16 KiB. These are safety limits of this documentation tool, not claims about
 the package's mathematical API limits.
 
-The original generator templates are part of this BSD-3-Clause repository.
-Retain the repository's license notice when redistributing substantial template
-text. For fully prewritten and continuously tested alternatives, see
+## License of generated artifacts
+
+The emitted Julia program contains substantial generator-supplied template
+text. It is covered by this repository's **BSD-3-Clause** license and carries
+`SPDX-FileCopyrightText` and `SPDX-License-Identifier` headers plus a link to
+the complete license. Retain those notices and satisfy the BSD terms when
+redistributing a generated program or substantial portions of its template.
+
+The downloaded JSON configuration is descriptive metadata containing
+normalized user selections; it does not embed the Julia or JavaScript
+template. The generator does not claim rights in parameters, comments, data,
+or other material supplied by a user. Users remain responsible for having the
+right to distribute material they add to either artifact.
+
+For fully prewritten and continuously tested alternatives, see
 [Executable tutorials](tutorials.md) and
 [Separability by example](separability_examples.md).

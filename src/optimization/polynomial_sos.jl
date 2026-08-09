@@ -1,6 +1,8 @@
-# Source-informed, independently structured implementation of the primal SDP
-# in QETLAB PolynomialSOS.m at
+# Source-informed independent Julia implementation based on the primal-SDP
+# contract of QETLAB PolynomialSOS.m at
 # d8589610f00cff106537268dee2e2a1153f3a601.
+# QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
+# Full upstream terms: licenses/QETLAB-LICENSE.txt.
 #
 # The wall-clock-derived random sampling loop is replaced by an exact caller-
 # supplied sample count and explicit RNG. Solver data uses the package-owned

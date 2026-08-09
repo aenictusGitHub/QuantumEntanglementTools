@@ -5,11 +5,29 @@ updates:
     directory: /
     schedule:
       interval: monthly
-      day: monday
       time: "04:00"
       timezone: Europe/Brussels
     open-pull-requests-limit: 3
     groups:
       github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: julia
+    directories:
+      - /
+      - /benchmark
+      - /docs
+      - /quality
+      - /test/extensions/entanglement_detection
+      - /test/extensions/jump_optimization
+      - /test/oracle
+    schedule:
+      interval: monthly
+      time: "04:30"
+      timezone: Europe/Brussels
+    open-pull-requests-limit: 3
+    groups:
+      julia-dependencies:
         patterns:
           - "*"

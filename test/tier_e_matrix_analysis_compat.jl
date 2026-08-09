@@ -98,6 +98,11 @@ end
         @test issparse(
             CompatMatrixAnalysis.CompoundMatrix(sparse(matrix), 2; sparse_output=true)
         )
+        @test CompatMatrixAnalysis.CompoundMatrix(matrix, 2; max_entries=25, max_work=88) ==
+            compound_matrix(matrix, 2)
+        @test_throws ArgumentError CompatMatrixAnalysis.CompoundMatrix(
+            matrix, 2; max_entries=24
+        )
     end
 
     @testset "AdditiveCompoundMatrix preserves pinned order-zero error" begin
@@ -116,6 +121,12 @@ end
             CompatMatrixAnalysis.AdditiveCompoundMatrix(
                 sparse(matrix), 2; sparse_output=true
             ),
+        )
+        @test CompatMatrixAnalysis.AdditiveCompoundMatrix(
+            matrix, 2; max_entries=21, max_work=87
+        ) == additive_compound_matrix(matrix, 2)
+        @test_throws ArgumentError CompatMatrixAnalysis.AdditiveCompoundMatrix(
+            matrix, 2; max_work=86
         )
         @test_throws DimensionMismatch CompatMatrixAnalysis.AdditiveCompoundMatrix(
             zeros(2, 3), 1

@@ -291,6 +291,23 @@ end
         @test Matrix(sparse_compound) == compound_matrix(matrix, 2)
         @test !issparse(compound_matrix(sparse(matrix), 2; sparse_output=false))
         @test issparse(compound_matrix(matrix, 2; sparse_output=true))
+        @test compound_matrix(matrix, 2; max_entries=25, max_work=88) ==
+            compound_matrix(matrix, 2)
+        @test compound_matrix(sparse(matrix), 2; max_entries=65, max_work=88) ==
+            compound_matrix(sparse(matrix), 2)
+        @test_throws ArgumentError compound_matrix(matrix, 2; max_entries=24)
+        @test_throws ArgumentError compound_matrix(matrix, 2; max_work=87)
+        @test_throws ArgumentError compound_matrix(sparse(matrix), 2; max_entries=64)
+        @test_throws ArgumentError compound_matrix(zeros(20, 20), 10)
+        @test_throws ArgumentError compound_matrix(matrix, 2; max_entries=true)
+        @test_throws ArgumentError compound_matrix(matrix, 2; max_work=0)
+        @test compound_matrix(matrix, 2; max_entries=nothing, max_work=nothing) ==
+            compound_matrix(matrix, 2)
+
+        guarded_rng = Xoshiro(0x434f4d504f554e44)
+        control_rng = Xoshiro(0x434f4d504f554e44)
+        @test_throws ArgumentError compound_matrix(zeros(20, 20), 10; max_entries=1)
+        @test rand(guarded_rng, UInt64) == rand(control_rng, UInt64)
         @test_throws ArgumentError compound_matrix(matrix, -1)
         @test_throws ArgumentError compound_matrix(matrix, 1.5)
         @test_throws ArgumentError compound_matrix(matrix, true)
@@ -365,6 +382,25 @@ end
         @test Matrix(sparse_additive) == expected_second
         @test !issparse(additive_compound_matrix(sparse(matrix), 2; sparse_output=false))
         @test issparse(additive_compound_matrix(matrix, 2; sparse_output=true))
+        @test additive_compound_matrix(matrix, 2; max_entries=21, max_work=87) ==
+            additive_compound_matrix(matrix, 2)
+        @test additive_compound_matrix(sparse(matrix), 2; max_entries=61, max_work=87) ==
+            additive_compound_matrix(sparse(matrix), 2)
+        @test_throws ArgumentError additive_compound_matrix(matrix, 2; max_entries=20)
+        @test_throws ArgumentError additive_compound_matrix(matrix, 2; max_work=86)
+        @test_throws ArgumentError additive_compound_matrix(
+            sparse(matrix), 2; max_entries=60
+        )
+        @test_throws ArgumentError additive_compound_matrix(zeros(20, 20), 10)
+        @test_throws ArgumentError additive_compound_matrix(matrix, 2; max_entries=1.5)
+        @test_throws ArgumentError additive_compound_matrix(matrix, 2; max_work=false)
+        @test additive_compound_matrix(matrix, 2; max_entries=nothing, max_work=nothing) ==
+            additive_compound_matrix(matrix, 2)
+
+        guarded_rng = Xoshiro(0x414444434f4d50)
+        control_rng = Xoshiro(0x414444434f4d50)
+        @test_throws ArgumentError additive_compound_matrix(zeros(20, 20), 10; max_work=1)
+        @test rand(guarded_rng, UInt64) == rand(control_rng, UInt64)
         @test_throws ArgumentError additive_compound_matrix(matrix, -1)
         @test_throws ArgumentError additive_compound_matrix(matrix, 1.5)
         @test_throws ArgumentError additive_compound_matrix(matrix, true)

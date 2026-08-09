@@ -1,4 +1,12 @@
-# QETLAB-style nonlocal-game wrappers. This file is included inside
+# Source-informed independent Julia compatibility wrappers based on the
+# executable contracts of QETLAB NPAHierarchy.m, NonlocalGameLB.m,
+# XORGameValue.m, BellInequalityMax.m, BellInequalityMaxQubits.m, BCSGameLB.m,
+# and BCSGameValue.m at d8589610f00cff106537268dee2e2a1153f3a601.
+# Upstream source authors named in those files include Nathaniel Johnston,
+# Vincent Russo, and Mateus Araújo. QETLAB: Copyright 2014 Nathaniel Johnston,
+# BSD-2-Clause. Full upstream terms: licenses/QETLAB-LICENSE.txt.
+#
+# This file is included inside
 # `MATLABCompat` after the native bindings are imported by the parent module.
 # Structured results are the default; positional scalar output is available
 # only through an explicit `structured=false` request and only when the

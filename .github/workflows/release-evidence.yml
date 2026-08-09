@@ -1,0 +1,76 @@
+name: Release tag evidence
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-evidence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-tag:
+    name: Archive smoke / Julia ${{ matrix.julia-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version:
+          - "1.10"
+          - "1"
+    steps:
+      - name: Check out the complete tagged history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Julia
+        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v3
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: Cache Julia artifacts
+        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+      - name: Validate annotated tag and isolated source archive
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: >-
+          julia --startup-file=no --project=.
+          scripts/check_release.jl --tag "$RELEASE_TAG" --archive-smoke
+
+  source-archive:
+    name: Reproducible source archive and checksum
+    needs: validate-tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the complete tagged history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Build archive and SHA-256 sidecar
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          archive="QuantumEntanglementTools-${RELEASE_TAG}.tar.gz"
+          git archive --format=tar.gz \
+            --prefix="QuantumEntanglementTools-${RELEASE_TAG}/" \
+            --output="$archive" "$RELEASE_SHA"
+          sha256sum "$archive" > "${archive}.sha256"
+          printf '%s\n' "$RELEASE_SHA" > "${archive}.commit"
+      - name: Upload inspected release material
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: source-${{ github.ref_name }}
+          path: |
+            QuantumEntanglementTools-${{ github.ref_name }}.tar.gz
+            QuantumEntanglementTools-${{ github.ref_name }}.tar.gz.sha256
+            QuantumEntanglementTools-${{ github.ref_name }}.tar.gz.commit
+          if-no-files-found: error
+          retention-days: 90

@@ -1,10 +1,13 @@
-# Independently specified solver-neutral replacement for the CVX-expression
-# branch of QETLAB kpNormDual.m at
+# Source-informed independent Julia implementation based on the CVX-expression
+# contract of QETLAB kpNormDual.m at
 # d8589610f00cff106537268dee2e2a1153f3a601.
+# QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
+# Full upstream terms: licenses/QETLAB-LICENSE.txt.
 #
-# The numeric array method remains `top_k_p_norm_dual`. This file supplies an
-# exact composable epigraph for affine vector and matrix expressions. Its
-# JuMP/MOI realization is isolated in the optional package extension.
+# This independently specified solver-neutral replacement leaves the numeric
+# array method on `top_k_p_norm_dual`. This file supplies an exact composable
+# epigraph for affine vector and matrix expressions. Its JuMP/MOI realization
+# is isolated in the optional package extension.
 
 @doc raw"""
     TopKPNormDualEpigraph

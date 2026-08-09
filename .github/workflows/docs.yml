@@ -82,6 +82,16 @@ jobs:
           test -f docs/build/assets/qet_code_generator.css
           test -f docs/build/assets/qet_code_generator_core.js
           test -f docs/build/assets/qet_code_generator_ui.js
+      - name: Record rendered-site provenance
+        env:
+          DOCS_REF: ${{ github.ref }}
+          DOCS_SHA: ${{ github.sha }}
+        run: |
+          {
+            echo "ref=$DOCS_REF"
+            echo "commit=$DOCS_SHA"
+            julia --startup-file=no -e 'println("julia=", VERSION)'
+          } > docs/build/build-info.txt
       - name: Upload GitHub Pages artifact
         if: >-
           matrix.julia-version == '1' &&
@@ -94,10 +104,10 @@ jobs:
         if: matrix.julia-version == '1'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: documentation
+          name: documentation-${{ github.run_id }}-${{ github.run_attempt }}
           path: docs/build
           if-no-files-found: error
-          retention-days: 7
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/') && 90 || 7 }}
 
   deploy:
     name: Deploy documentation to GitHub Pages

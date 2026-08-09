@@ -1,0 +1,64 @@
+name: Bug report
+description: Report a reproducible runtime, API, documentation, or performance defect.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve QuantumEntanglementTools.jl. Please remove private data and reduce the example as far as practical.
+  - type: input
+    id: version
+    attributes:
+      label: Package version or commit
+      description: For development installations, include `git rev-parse HEAD` or `Pkg.status()` output.
+      placeholder: v0.1.0 or 0123456789abcdef
+    validations:
+      required: true
+  - type: input
+    id: julia
+    attributes:
+      label: Julia and operating system
+      placeholder: Julia 1.10.5 on Ubuntu 24.04 x86_64
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include imports, data construction, dimensions, and the exact call.
+      render: julia
+    validations:
+      required: true
+  - type: textarea
+    id: numerical_context
+    attributes:
+      label: Numerical and backend context
+      description: Include element/storage type, subsystem dimensions/order, tolerances, allow_densify, RNG seed/object, optional backend and solver status.
+      placeholder: "Matrix{ComplexF64}; dims=(2,2); atol=0; rtol=...; JuMPBackend with SCS"
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: Include the full error or structured status/evidence. Do not reduce `unknown` to `false`.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Explain the expected shape, value, status, or failure contract and why.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I verified that this report contains no credentials, proprietary solver files, or private data.
+          required: true
+        - label: I checked the conventions and known limitations in the documentation.
+          required: true

@@ -20,6 +20,7 @@ Pages = [
     "random_objects.jl",
     "entangled_subspace.jl",
     "states.jl",
+    "symmetric_states.jl",
     "partial_trace.jl",
     "partial_transpose.jl",
     "permutation.jl",

@@ -19,6 +19,10 @@ export maximally_entangled,
     brauer_states,
     chessboard_state
 
+const _DICKE_DEFAULT_MAX_NONZEROS = 1_000_000
+const _DICKE_DEFAULT_MAX_DENSE_ENTRIES = 10_000_000
+const _DICKE_DEFAULT_MAX_WORK = 100_000_000
+
 function _state_coefficients(coefficients, expected::Int, default_value)
     if coefficients === nothing
         return fill(default_value, expected)
@@ -173,13 +177,45 @@ function _dicke_indices(parties::Int, excitations::Int)
     return indices
 end
 
+function _dicke_limit(value, name::AbstractString)
+    value === nothing && return nothing
+    value isa Bool &&
+        throw(ArgumentError("$name must be a positive integer or nothing, not Bool"))
+    value isa Integer || throw(ArgumentError("$name must be a positive integer or nothing"))
+    value > 0 || throw(ArgumentError("$name must be positive; got $value"))
+    return BigInt(value)
+end
+
+function _dicke_check_resource(
+    planned::BigInt, limit, name::AbstractString, resource::AbstractString
+)
+    limit === nothing && return nothing
+    planned <= limit || throw(
+        ArgumentError(
+            "dicke_state requires $planned $resource, exceeding $name=$limit; " *
+            "raise the explicit guard only after reviewing the combinatorial cost",
+        ),
+    )
+    return nothing
+end
+
 """
-    dicke_state(parties, excitations=1;
-                normalized=true, sparse_output=true, T=Float64)
+    dicke_state(
+        parties, excitations=1;
+        normalized=true, sparse_output=true, T=Float64,
+        max_nonzeros=1_000_000, max_dense_entries=10_000_000,
+        max_work=100_000_000,
+    )
 
 Return the equal superposition of all computational-basis states containing
 exactly `excitations` ones among `parties` qubits.  The vector contains
 `binomial(parties, excitations)` nonzeros.
+
+`max_nonzeros` and `max_work` reject excessive combination enumeration before
+index allocation. `max_dense_entries` bounds the ambient vector length when
+`sparse_output=false`. Set an individual guard to `nothing` only after
+reviewing the requested memory and work; the ambient dimension must always fit
+`Int`.
 """
 function dicke_state(
     parties,
@@ -187,13 +223,36 @@ function dicke_state(
     normalized::Bool=true,
     sparse_output::Bool=true,
     T::Type{<:AbstractFloat}=Float64,
+    max_nonzeros=_DICKE_DEFAULT_MAX_NONZEROS,
+    max_dense_entries=_DICKE_DEFAULT_MAX_DENSE_ENTRIES,
+    max_work=_DICKE_DEFAULT_MAX_WORK,
 )
     party_count = _positive_int(parties, "parties")
     excitation_count = _nonnegative_int(excitations, "excitations")
     excitation_count <= party_count || throw(
         ArgumentError("excitations=$excitation_count must not exceed parties=$party_count"),
     )
+    nonzero_limit = _dicke_limit(max_nonzeros, "max_nonzeros")
+    dense_limit = _dicke_limit(max_dense_entries, "max_dense_entries")
+    work_limit = _dicke_limit(max_work, "max_work")
     total = _checked_power(2, party_count, "parties")
+    nonzero_count = binomial(BigInt(party_count), excitation_count)
+    nonzero_count <= typemax(Int) || throw(
+        ArgumentError(
+            "dicke_state requires $nonzero_count nonzeros, which cannot be " *
+            "represented as an array length",
+        ),
+    )
+    _dicke_check_resource(nonzero_count, nonzero_limit, "max_nonzeros", "nonzeros")
+    if !sparse_output
+        _dicke_check_resource(
+            BigInt(total), dense_limit, "max_dense_entries", "dense output entries"
+        )
+    end
+    work =
+        BigInt(party_count) +
+        nonzero_count * (BigInt(1) + BigInt(excitation_count) * BigInt(party_count))
+    _dicke_check_resource(work, work_limit, "max_work", "estimated scalar operations")
     indices = _dicke_indices(party_count, excitation_count)
     value = normalized ? inv(sqrt(T(length(indices)))) : one(T)
     result = sparsevec(indices, fill(value, length(indices)), total)

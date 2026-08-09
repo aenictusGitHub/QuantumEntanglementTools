@@ -1,0 +1,36 @@
+name: Feature request
+description: Propose a scoped API, documentation, backend, or performance improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Describe the task that is difficult today, independently of a preferred implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed interface and semantics
+      description: Include shapes, dimensions/order, certificate meaning, unknown/failure behavior, resource limits, RNG handling, and sparse/densification expectations.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: References or compatibility target
+      description: Link specifications or papers. If inspired by QETLAB, name the function and behavior rather than pasting upstream code.
+  - type: dropdown
+    id: compatibility
+    attributes:
+      label: Compatibility impact
+      options:
+        - Additive API
+        - Behavior clarification
+        - Potential breaking change
+        - Documentation only
+    validations:
+      required: true

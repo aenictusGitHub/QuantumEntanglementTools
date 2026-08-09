@@ -20,7 +20,7 @@ jobs:
   provenance:
     name: Inventory and public API consistency
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -42,11 +42,23 @@ jobs:
       - name: Instantiate core environment
         run: julia --startup-file=no --project=. -e 'using Pkg; Pkg.instantiate()'
       - name: Check release metadata and tag consistency
-        run: julia --startup-file=no --project=. scripts/check_release.jl
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            julia --startup-file=no --project=. scripts/check_release.jl
+          elif grep -Eq '^date-released:' CITATION.cff; then
+            julia --startup-file=no --project=. scripts/check_release.jl --release-candidate
+          else
+            julia --startup-file=no --project=. scripts/check_release.jl
+          fi
+      - name: Validate Citation File Format metadata
+        uses: citation-file-format/cffconvert-github-action@4cf11baa70a673bfdf9dad0acc7ee33b3f4b6084 # 2.0.0
+        with:
+          args: "--validate"
       - name: Check generated upstream inventory
         run: julia --startup-file=no --project=. scripts/build_upstream_inventory.jl --check
-      - name: Check generated all-public-row completion plan
-        run: julia --startup-file=no --project=. scripts/check_qetlab_completion.jl --check
+      - name: Check strict terminal completion and generated artifacts
+        run: julia --startup-file=no --project=. scripts/check_qetlab_completion.jl --strict
       - name: Check exports, provenance, and reviewed mappings
         run: julia --startup-file=no --project=. scripts/check_public_api.jl
       - name: Instantiate optional extension environment for live claim counts
@@ -85,7 +97,7 @@ jobs:
   committed-oracle:
     name: Source-free QETLAB oracle fixtures
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -101,46 +113,10 @@ jobs:
         run: >-
           julia --startup-file=no --project=test/oracle -e
           'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Verify fixture digest and native/wrapper comparisons
+      - name: Verify all committed fixtures and native/wrapper comparisons
         run: >-
           julia --startup-file=no --project=test/oracle
-          test/oracle/compare_tier_a_oracle.jl
-          test/oracle/fixtures/tier_a_octave_11_3_qetlab_d858961.json
-      - name: Verify Tier B deterministic fixture
-        run: >-
-          julia --startup-file=no --project=test/oracle
-          test/oracle/compare_tier_b_oracle.jl
-          test/oracle/fixtures/tier_b_octave_11_3_qetlab_d858961.json
-      - name: Verify Tier C deterministic fixture
-        run: >-
-          julia --startup-file=no --project=test/oracle
-          test/oracle/compare_tier_c_oracle.jl
-          test/oracle/fixtures/tier_c_octave_11_3_qetlab_d858961.json
-      - name: Verify Tier D deterministic fixture
-        run: >-
-          julia --startup-file=no --project=test/oracle
-          test/oracle/compare_tier_d_oracle.jl
-          test/oracle/fixtures/tier_d_octave_11_3_qetlab_d858961.json
-      - name: Verify Tier E coherence deterministic fixture and discrepancy record
-        run: >-
-          julia --startup-file=no --project=test/oracle
-          test/oracle/compare_tier_e_coherence_oracle.jl
-          test/oracle/fixtures/tier_e_coherence_octave_11_3_qetlab_d858961.json
-      - name: Verify Tier E product-analysis fixture and discrepancy records
-        run: >-
-          julia --startup-file=no --project=test/oracle
-          test/oracle/compare_tier_e_product_oracle.jl
-          test/oracle/fixtures/tier_e_product_octave_11_3_qetlab_d858961.json
-      - name: Verify Tier E matrix-analysis fixture and discrepancy records
-        run: >-
-          julia --startup-file=no --project=test/oracle
-          test/oracle/compare_tier_e_matrix_analysis_oracle.jl
-          test/oracle/fixtures/tier_e_matrix_analysis_octave_11_3_qetlab_d858961.json
-      - name: Verify symmetric-extension and random-PPT fixture
-        run: >-
-          julia --startup-file=no --project=test/oracle
-          test/oracle/compare_symmetric_extensions_oracle.jl
-          test/oracle/fixtures/symmetric_extensions_octave_11_3_qetlab_d858961.json
+          test/oracle/runtests.jl
 
   benchmark-smoke:
     name: Quick benchmark smoke

@@ -4,11 +4,11 @@ schema_version = 1
 
 [api]
 matlab_compat_exports = 130
-native_exports = 337
-project_native_bindings = 188
-provenance_entries = 467
+native_exports = 347
+project_native_bindings = 198
+provenance_entries = 477
 qetlab_provenance_bindings = 279
-total_exports = 467
+total_exports = 477
 
     [api.gaps]
     exports_without_docs = []
@@ -46,29 +46,29 @@ strict_pass = true
 terminal_helpers = 36
 
 [dynamic_tests.entanglement_detection_extension]
-assertions = 130
+assertions = 141
 backend_version = "0.2.2"
 broken = 0
 errored = 0
 failed = 0
 measurement = "runtime Test.get_test_counts in isolated environment"
-passed = 130
+passed = 141
 
 [dynamic_tests.package]
-core_assertions = 8276
-integrated_assertions = 8360
+core_assertions = 9400
+integrated_assertions = 9484
 integrated_broken = 0
-integrated_passed = 8360
+integrated_passed = 9484
 measurement = "runtime Test.get_test_counts"
 tutorial_assertions = 84
 
     [[dynamic_tests.package.suites]]
-    assertions = 345
+    assertions = 371
     broken = 0
     errored = 0
     failed = 0
     name = "Tier A subsystem kernel"
-    passed = 345
+    passed = 371
     [[dynamic_tests.package.suites]]
     assertions = 577
     broken = 0
@@ -77,12 +77,12 @@ tutorial_assertions = 84
     name = "Tier B operators"
     passed = 577
     [[dynamic_tests.package.suites]]
-    assertions = 214
+    assertions = 226
     broken = 0
     errored = 0
     failed = 0
     name = "Tier B named states"
-    passed = 214
+    passed = 226
     [[dynamic_tests.package.suites]]
     assertions = 133
     broken = 0
@@ -91,19 +91,26 @@ tutorial_assertions = 84
     name = "Tier B explicit-RNG constructors"
     passed = 133
     [[dynamic_tests.package.suites]]
-    assertions = 30
+    assertions = 32
     broken = 0
     errored = 0
     failed = 0
     name = "Tier B MATLAB compatibility wrappers"
-    passed = 30
+    passed = 32
     [[dynamic_tests.package.suites]]
-    assertions = 185
+    assertions = 1014
+    broken = 0
+    errored = 0
+    failed = 0
+    name = "Symmetric-state occupation coordinates"
+    passed = 1014
+    [[dynamic_tests.package.suites]]
+    assertions = 200
     broken = 0
     errored = 0
     failed = 0
     name = "Tier C channel/map representations"
-    passed = 185
+    passed = 200
     [[dynamic_tests.package.suites]]
     assertions = 161
     broken = 0
@@ -462,19 +469,19 @@ tutorial_assertions = 84
     name = "WP2 FilterNormalForm bounded decomposition"
     passed = 148
     [[dynamic_tests.package.suites]]
-    assertions = 150
+    assertions = 172
     broken = 0
     errored = 0
     failed = 0
     name = "Tier E matrix analysis"
-    passed = 150
+    passed = 172
     [[dynamic_tests.package.suites]]
-    assertions = 37
+    assertions = 41
     broken = 0
     errored = 0
     failed = 0
     name = "Tier E matrix-analysis compatibility"
-    passed = 37
+    passed = 41
     [[dynamic_tests.package.suites]]
     assertions = 122
     broken = 0
@@ -693,6 +700,34 @@ tutorial_assertions = 84
     name = "QETLAB completion checker"
     passed = 37
     [[dynamic_tests.package.suites]]
+    assertions = 8
+    broken = 0
+    errored = 0
+    failed = 0
+    name = "Release-check option modes"
+    passed = 8
+    [[dynamic_tests.package.suites]]
+    assertions = 8
+    broken = 0
+    errored = 0
+    failed = 0
+    name = "Development and release-candidate metadata"
+    passed = 8
+    [[dynamic_tests.package.suites]]
+    assertions = 7
+    broken = 0
+    errored = 0
+    failed = 0
+    name = "Tagged release copy"
+    passed = 7
+    [[dynamic_tests.package.suites]]
+    assertions = 6
+    broken = 0
+    errored = 0
+    failed = 0
+    name = "Generated completion-artifact subprocess"
+    passed = 6
+    [[dynamic_tests.package.suites]]
     assertions = 84
     broken = 0
     errored = 0
@@ -702,9 +737,9 @@ tutorial_assertions = 84
 
 [generation]
 deterministic = true
-input_sha256 = "16fd69e0f01981466cf33b46d7a00c71de7b04ce1b39d37a02fff36e32929062"
+input_sha256 = "a03c5b5f77ae9962d02407727f5fe164ef1f540dcaf4a2dc9350d64585afb8ba"
 inventory_sha256 = "62d0e94cf73934f4b35af3364b81cdf7468ab1662705e8171d7e46c57ec6a3c5"
-provenance_sha256 = "303bf7adf870bb6c4061886a806fe3432fd6f7e3eee988494d979e66572ba525"
+provenance_sha256 = "8a934338d6d766a96de991c5233baa504b3c3eb49561c12f2915ea05d0344d93"
 script = "scripts/reconcile_project_claims.jl"
 status_overlay_sha256 = "40eae81340d3241aa12d844794ee67417a97b5aa84a18567c3c090b7551edd4d"
 
@@ -1099,8 +1134,8 @@ weak_dependency_count = 2
 [source_audit]
 compatibility_wrapper_bypass_candidate_count = 0
 compatibility_wrapper_bypass_candidates = []
-densification_call_count = 184
-densification_without_nearby_guard_marker_count = 162
+densification_call_count = 199
+densification_without_nearby_guard_marker_count = 172
 documented_independent_compatibility_implementation_count = 2
 duplicate_public_definition_candidate_count = 0
 duplicate_public_definition_candidates = []
@@ -1129,22 +1164,22 @@ unimplemented_markers = []
     path = "ext/entanglement_detection_worker.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1074
+    line = 1077
     nearby_guard_marker = false
     path = "src/channels/channels.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1146
+    line = 1149
     nearby_guard_marker = false
     path = "src/channels/channels.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1272
+    line = 1275
     nearby_guard_marker = false
     path = "src/channels/channels.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 1272
+    line = 1275
     nearby_guard_marker = false
     path = "src/channels/channels.jl"
     [[source_audit.densification_sites]]
@@ -1294,32 +1329,32 @@ unimplemented_markers = []
     path = "src/compat/MATLABCompat.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 3229
+    line = 3322
     nearby_guard_marker = true
     path = "src/compat/MATLABCompat.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 3241
+    line = 3334
     nearby_guard_marker = false
     path = "src/compat/MATLABCompat.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 3241
+    line = 3334
     nearby_guard_marker = false
     path = "src/compat/MATLABCompat.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 3268
+    line = 3361
     nearby_guard_marker = false
     path = "src/compat/MATLABCompat.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 3530
+    line = 3660
     nearby_guard_marker = false
     path = "src/compat/MATLABCompat.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 4033
+    line = 4163
     nearby_guard_marker = true
     path = "src/compat/MATLABCompat.jl"
     [[source_audit.densification_sites]]
@@ -1639,32 +1674,32 @@ unimplemented_markers = []
     path = "src/linear_algebra/commutant.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 47
+    line = 50
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 71
+    line = 74
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 115
+    line = 118
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 373
+    line = 524
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 638
+    line = 829
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 661
+    line = 852
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
@@ -1729,12 +1764,7 @@ unimplemented_markers = []
     path = "src/measures/scalar_measures.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 294
-    nearby_guard_marker = false
-    path = "src/nonlocal_games/game_values.jl"
-    [[source_audit.densification_sites]]
-    call = "Matrix"
-    line = 440
+    line = 301
     nearby_guard_marker = false
     path = "src/nonlocal_games/game_values.jl"
     [[source_audit.densification_sites]]
@@ -1744,7 +1774,12 @@ unimplemented_markers = []
     path = "src/nonlocal_games/game_values.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 836
+    line = 454
+    nearby_guard_marker = false
+    path = "src/nonlocal_games/game_values.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 843
     nearby_guard_marker = false
     path = "src/nonlocal_games/game_values.jl"
     [[source_audit.densification_sites]]
@@ -1879,22 +1914,22 @@ unimplemented_markers = []
     path = "src/optimization/linear_maps.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 190
+    line = 194
     nearby_guard_marker = false
     path = "src/optimization/matsumoto_fidelity_model.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 341
+    line = 345
     nearby_guard_marker = false
     path = "src/optimization/matsumoto_fidelity_model.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 349
+    line = 353
     nearby_guard_marker = false
     path = "src/optimization/matsumoto_fidelity_model.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 498
+    line = 500
     nearby_guard_marker = false
     path = "src/optimization/polynomial_sos.jl"
     [[source_audit.densification_sites]]
@@ -1954,49 +1989,124 @@ unimplemented_markers = []
     path = "src/random/random_objects.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 33
+    line = 37
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 233
+    line = 292
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 255
+    line = 314
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 297
+    line = 356
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 441
+    line = 500
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 515
+    line = 574
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 536
+    line = 595
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 639
+    line = 698
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 661
+    line = 720
     nearby_guard_marker = false
     path = "src/states/states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 1197
+    nearby_guard_marker = true
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 1233
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 1256
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 1333
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "collect"
+    line = 1354
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 1390
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 1602
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "collect"
+    line = 1627
+    nearby_guard_marker = true
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 1636
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 2008
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 2031
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 2222
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 2424
+    nearby_guard_marker = true
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 2428
+    nearby_guard_marker = false
+    path = "src/states/symmetric_states.jl"
+    [[source_audit.densification_sites]]
+    call = "Matrix"
+    line = 2453
+    nearby_guard_marker = true
+    path = "src/states/symmetric_states.jl"
     [[source_audit.densification_sites]]
     call = "collect"
     line = 37
@@ -2029,8 +2139,8 @@ unimplemented_markers = []
     path = "src/subsystem/permutation.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 84
-    nearby_guard_marker = false
+    line = 263
+    nearby_guard_marker = true
     path = "src/subsystem/projectors.jl"
 
     [[source_audit.documented_independent_compatibility_implementations]]
@@ -2046,11 +2156,11 @@ unimplemented_markers = []
 
 [static_test_macros]
 measurement = "static macro occurrences; not an assertion count"
-total = 7381
+total = 7722
 
     [static_test_macros.by_file]
     "test/extensions/entanglement_detection/load_order_probe.jl" = 0
-    "test/extensions/entanglement_detection/runtests.jl" = 105
+    "test/extensions/entanglement_detection/runtests.jl" = 116
     "test/extensions/jump_optimization/absolute_ppt.jl" = 24
     "test/extensions/jump_optimization/channel_optimization.jl" = 81
     "test/extensions/jump_optimization/coherence_optimization.jl" = 54
@@ -2093,17 +2203,20 @@ total = 7381
     "test/oracle/compare_tier_e_product_oracle.jl" = 85
     "test/oracle/compare_twirl_oracle.jl" = 4
     "test/oracle/compare_upb_catalog_oracle.jl" = 17
+    "test/oracle/runtests.jl" = 0
     "test/qetlab_completion_checker.jl" = 35
+    "test/release_gate_checks.jl" = 33
     "test/result_interface.jl" = 67
     "test/runtests.jl" = 0
-    "test/tier_a_subsystem_kernel.jl" = 229
-    "test/tier_b_states_operators_random.jl" = 233
-    "test/tier_c_channels_maps.jl" = 189
+    "test/symmetric_states.jl" = 216
+    "test/tier_a_subsystem_kernel.jl" = 255
+    "test/tier_b_states_operators_random.jl" = 247
+    "test/tier_c_channels_maps.jl" = 204
     "test/tier_d_entanglement_pipeline.jl" = 97
     "test/tier_d_measures_criteria.jl" = 261
     "test/tier_e_coherence.jl" = 59
-    "test/tier_e_matrix_analysis.jl" = 132
-    "test/tier_e_matrix_analysis_compat.jl" = 43
+    "test/tier_e_matrix_analysis.jl" = 154
+    "test/tier_e_matrix_analysis_compat.jl" = 47
     "test/tier_e_matrix_predicates.jl" = 174
     "test/tier_e_matrix_predicates_compat.jl" = 41
     "test/tier_e_product_analysis.jl" = 174

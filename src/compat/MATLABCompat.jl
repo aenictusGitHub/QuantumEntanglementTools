@@ -739,23 +739,92 @@ function _projection_mode(mode)
     return nothing
 end
 
-"""QETLAB-compatible symmetric projection or partial isometry."""
-function SymmetricProjection(dim, copies=2, partial=0, mode=-1)
+"""
+    SymmetricProjection(
+        DIM, P=2, PARTIAL=0, MODE=-1;
+        max_columns=100_000, max_nonzeros=5_000_000,
+        max_dense_entries=10_000_000, max_work=100_000_000,
+    )
+
+QETLAB-compatible symmetric projection or partial isometry. The Julia-only
+resource keywords are forwarded to the native constructor; compatibility
+output remains sparse, so `max_dense_entries` is validated but inactive.
+"""
+function SymmetricProjection(
+    dim,
+    copies=2,
+    partial=0,
+    mode=-1;
+    max_columns=100_000,
+    max_nonzeros=5_000_000,
+    max_dense_entries=10_000_000,
+    max_work=100_000_000,
+)
     _projection_mode(mode)
     return if _flag(partial, "PARTIAL")
-        symmetric_subspace_basis(dim, copies; sparse_output=true)
+        symmetric_subspace_basis(
+            dim,
+            copies;
+            sparse_output=true,
+            max_columns=max_columns,
+            max_nonzeros=max_nonzeros,
+            max_dense_entries=max_dense_entries,
+            max_work=max_work,
+        )
     else
-        symmetric_projector(dim, copies; sparse_output=true)
+        symmetric_projector(
+            dim,
+            copies;
+            sparse_output=true,
+            max_columns=max_columns,
+            max_nonzeros=max_nonzeros,
+            max_dense_entries=max_dense_entries,
+            max_work=max_work,
+        )
     end
 end
 
-"""QETLAB-compatible antisymmetric projection or partial isometry."""
-function AntisymmetricProjection(dim, copies=2, partial=0, mode=-1)
+"""
+    AntisymmetricProjection(
+        DIM, P=2, PARTIAL=0, MODE=-1;
+        max_columns=100_000, max_nonzeros=5_000_000,
+        max_dense_entries=10_000_000, max_work=100_000_000,
+    )
+
+QETLAB-compatible antisymmetric projection or partial isometry, with the same
+Julia-only resource keywords as [`SymmetricProjection`](@ref).
+"""
+function AntisymmetricProjection(
+    dim,
+    copies=2,
+    partial=0,
+    mode=-1;
+    max_columns=100_000,
+    max_nonzeros=5_000_000,
+    max_dense_entries=10_000_000,
+    max_work=100_000_000,
+)
     _projection_mode(mode)
     return if _flag(partial, "PARTIAL")
-        antisymmetric_subspace_basis(dim, copies; sparse_output=true)
+        antisymmetric_subspace_basis(
+            dim,
+            copies;
+            sparse_output=true,
+            max_columns=max_columns,
+            max_nonzeros=max_nonzeros,
+            max_dense_entries=max_dense_entries,
+            max_work=max_work,
+        )
     else
-        antisymmetric_projector(dim, copies; sparse_output=true)
+        antisymmetric_projector(
+            dim,
+            copies;
+            sparse_output=true,
+            max_columns=max_columns,
+            max_nonzeros=max_nonzeros,
+            max_dense_entries=max_dense_entries,
+            max_work=max_work,
+        )
     end
 end
 
@@ -816,10 +885,34 @@ function WState(parties, coefficients=nothing)
     return w_state(parties; coefficients=coefficients, sparse_output=true)
 end
 
-"""QETLAB-compatible Dicke-state constructor."""
-function DickeState(parties, excitations=1, normalized=1)
+"""
+    DickeState(
+        P, E=1, NRML=1;
+        max_nonzeros=1_000_000,
+        max_dense_entries=10_000_000,
+        max_work=100_000_000,
+    )
+
+QETLAB-compatible sparse Dicke-state constructor. The Julia-only resource
+keywords retain the native preflight defaults; `max_dense_entries` is
+validated but inactive for compatibility's sparse output.
+"""
+function DickeState(
+    parties,
+    excitations=1,
+    normalized=1;
+    max_nonzeros=1_000_000,
+    max_dense_entries=10_000_000,
+    max_work=100_000_000,
+)
     return dicke_state(
-        parties, excitations; normalized=_flag(normalized, "NRML"), sparse_output=true
+        parties,
+        excitations;
+        normalized=_flag(normalized, "NRML"),
+        sparse_output=true,
+        max_nonzeros=max_nonzeros,
+        max_dense_entries=max_dense_entries,
+        max_work=max_work,
     )
 end
 
@@ -3379,7 +3472,12 @@ function ElemSymPoly(values::Union{AbstractVector,AbstractMatrix}, order)
 end
 
 """
-    CompoundMatrix(A, R; sparse_output=issparse(A))
+    CompoundMatrix(
+        A, R;
+        sparse_output=issparse(A),
+        max_entries=10_000_000,
+        max_work=100_000_000,
+    )
 
 Return the `R`th multiplicative compound. Order zero is a `1×1` identity.
 When `R > min(size(A)...)`, this compatibility entry point preserves pinned
@@ -3388,25 +3486,51 @@ its widened exact minor arithmetic and checked narrowing. Sparse inputs remain
 sparse by default; `sparse_output` selects the representation explicitly. Use
 the native function to retain a mathematically informative zero-by-nonzero
 shape when the order exceeds only one dimension.
+
+The Julia-only `max_entries` and `max_work` keywords are forwarded for every
+nonempty native construction. The pinned early `0×0` compatibility branch
+allocates no combinatorial workspace.
 """
-function CompoundMatrix(matrix::AbstractMatrix, order; sparse_output::Bool=issparse(matrix))
+function CompoundMatrix(
+    matrix::AbstractMatrix,
+    order;
+    sparse_output::Bool=issparse(matrix),
+    max_entries=10_000_000,
+    max_work=100_000_000,
+)
     checked_order = _nonnegative_dimension(order, "R")
     checked_order > min(size(matrix)...) && return Matrix{Float64}(undef, 0, 0)
-    return compound_matrix(matrix, checked_order; sparse_output=sparse_output)
+    return compound_matrix(
+        matrix,
+        checked_order;
+        sparse_output=sparse_output,
+        max_entries=max_entries,
+        max_work=max_work,
+    )
 end
 
 """
-    AdditiveCompoundMatrix(A, R; sparse_output=issparse(A))
+    AdditiveCompoundMatrix(
+        A, R;
+        sparse_output=issparse(A),
+        max_entries=10_000_000,
+        max_work=100_000_000,
+    )
 
 Return the `R`th additive compound. `A` must be square. Order zero reproduces
 the reviewed pinned-QETLAB dependency-path error; use native
 `additive_compound_matrix(A, 0)` for the mathematically defined `1×1` zero.
 Positive orders delegate to the native widened exact arithmetic, and an order
 above the dimension returns `0×0`. Sparse inputs remain sparse unless
-`sparse_output` requests otherwise.
+`sparse_output` requests otherwise. The Julia-only `max_entries` and
+`max_work` keywords retain the native preflight policy.
 """
 function AdditiveCompoundMatrix(
-    matrix::AbstractMatrix, order; sparse_output::Bool=issparse(matrix)
+    matrix::AbstractMatrix,
+    order;
+    sparse_output::Bool=issparse(matrix),
+    max_entries=10_000_000,
+    max_work=100_000_000,
 )
     size(matrix, 1) == size(matrix, 2) || throw(
         DimensionMismatch(
@@ -3420,7 +3544,13 @@ function AdditiveCompoundMatrix(
             "use native additive_compound_matrix(A, 0) for the 1×1 zero",
         ),
     )
-    return additive_compound_matrix(matrix, checked_order; sparse_output=sparse_output)
+    return additive_compound_matrix(
+        matrix,
+        checked_order;
+        sparse_output=sparse_output,
+        max_entries=max_entries,
+        max_work=max_work,
+    )
 end
 
 function _compat_commutant_all_sparse(input)

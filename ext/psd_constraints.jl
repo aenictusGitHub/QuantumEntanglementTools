@@ -1,5 +1,11 @@
-# Explicit JuMP materialization for the package-owned affine replacement of
-# QETLAB IsPSD's CVX-expression branch.
+# Source-informed independent Julia materialization based on the CVX-expression
+# contract of QETLAB IsPSD.m at
+# d8589610f00cff106537268dee2e2a1153f3a601.
+# QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
+# Full upstream terms: licenses/QETLAB-LICENSE.txt.
+#
+# This is the explicit JuMP materialization for the package-owned affine
+# replacement of the pinned CVX-expression branch.
 
 function QET.positive_semidefinite_constraint(
     model::JuMP.AbstractModel,

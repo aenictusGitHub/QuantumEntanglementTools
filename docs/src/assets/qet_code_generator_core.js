@@ -1157,9 +1157,14 @@
         var family = config.family;
         lines.push("# QuantumEntanglementTools.jl generated example");
         lines.push("#");
+        lines.push("# SPDX-FileCopyrightText: 2026 John Martin");
+        lines.push("# SPDX-License-Identifier: BSD-3-Clause");
+        lines.push("# Full template terms: https://github.com/aenictusGitHub/QuantumEntanglementTools/blob/main/LICENSE");
+        lines.push("#");
         lines.push("# This deterministic template was generated in your browser.");
         lines.push("# It does not record or upload the selected parameters.");
-        lines.push("# Substantial template text is covered by the repository's BSD 3-Clause license.");
+        lines.push("# Substantial template text is covered by the license above.");
+        lines.push("# You remain responsible for rights in parameters, comments, and data you add.");
         lines.push("#");
         lines.push("# Run in an environment where QuantumEntanglementTools is available:");
         lines.push("#   julia --startup-file=no --project=. qet_" + family + "_example.jl");
@@ -1258,7 +1263,12 @@
             );
             lines.push("rho = horodecki_state(a; dims=dims)");
         } else if (family === "symmetric_sappt_ghz5") {
-            lines.push("# Phys. Rev. A 111, 042418 (2025), five-qubit GHZ representative.");
+            lines.push("# Source: J. Louvet et al., \"Nonequivalence between absolute");
+            lines.push("# separability and positive partial transposition in the symmetric");
+            lines.push("# subspace,\" Phys. Rev. A 111, 042418 (2025),");
+            lines.push("# https://doi.org/10.1103/PhysRevA.111.042418.");
+            lines.push("# The state family and rounded W5 coefficients below are cited from");
+            lines.push("# that paper; this template does not copy or rerun the source SDP.");
             lines.push("qubits = 5");
             lines.push("p = " + juliaFloat(p.symmetricP));
             lines.push("phase = " + juliaFloat(p.symmetricPhase));

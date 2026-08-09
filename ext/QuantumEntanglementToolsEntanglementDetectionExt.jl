@@ -14,6 +14,7 @@ const RESPONSE_BYTES_PER_MATRIX_ENTRY = 64
 const RESPONSE_ABSOLUTE_LIMIT = 268_435_456
 const TERMINATION_GRACE_SECONDS = 0.1
 const TERMINATION_FORCE_SECONDS = 2.0
+const OUTPUT_DRAIN_GRACE_SECONDS = 0.25
 
 backend_version() = Base.pkgversion(EntanglementDetection)
 
@@ -76,6 +77,87 @@ function _output_excerpt(path::AbstractString)
     end
     length(bytes) <= PROCESS_OUTPUT_LIMIT && return String(bytes)
     return String(bytes[1:PROCESS_OUTPUT_LIMIT]) * "\n[output truncated by adapter]"
+end
+
+function _drain_bounded_output(stream, limit::Integer=PROCESS_OUTPUT_LIMIT)
+    limit >= 0 || throw(ArgumentError("output limit must be nonnegative"))
+    kept = UInt8[]
+    sizehint!(kept, limit)
+    total_bytes = 0
+    try
+        while !eof(stream)
+            chunk = readavailable(stream)
+            if isempty(chunk)
+                yield()
+                continue
+            end
+            total_bytes += length(chunk)
+            remaining = limit - length(kept)
+            remaining > 0 && append!(kept, @view(chunk[1:min(remaining, length(chunk))]))
+        end
+        return (bytes=kept, total_bytes, truncated=total_bytes > limit, error=nothing)
+    catch error
+        return (
+            bytes=kept,
+            total_bytes,
+            truncated=total_bytes > limit,
+            error=sprint(showerror, error),
+        )
+    finally
+        try
+            close(stream)
+        catch
+        end
+    end
+end
+
+function _write_bounded_output(path::AbstractString, capture)
+    open(path, "w") do io
+        write(io, capture.bytes)
+        # One sentinel byte lets `_output_excerpt` preserve its established
+        # truncation marker without allowing the child to grow a disk file.
+        return capture.truncated && write(io, UInt8('\n'))
+    end
+    return nothing
+end
+
+function _empty_output_capture(error=nothing)
+    return (bytes=UInt8[], total_bytes=0, truncated=false, error)
+end
+
+function _finish_bounded_output(stream, task)
+    if isnothing(task)
+        if !isnothing(stream)
+            try
+                close(stream)
+            catch
+            end
+        end
+        return _empty_output_capture()
+    end
+    completed =
+        istaskdone(task) ||
+        timedwait(() -> istaskdone(task), OUTPUT_DRAIN_GRACE_SECONDS; pollint=0.005) === :ok
+    if !completed
+        # A descendant may inherit the pipe after the worker exits, or forced
+        # termination may fail to reap the worker. Closing the read side makes
+        # drain completion independent of every inherited writer.
+        try
+            close(stream.out)
+        catch
+            try
+                close(stream)
+            catch
+            end
+        end
+        completed =
+            timedwait(() -> istaskdone(task), OUTPUT_DRAIN_GRACE_SECONDS; pollint=0.005) ===
+            :ok
+    end
+    completed || return _empty_output_capture(
+        "bounded child-output drain did not finish before the adapter deadline"
+    )
+    return fetch(task)
 end
 
 function _response_size_limit(request)
@@ -247,24 +329,34 @@ function _wait_for_child(
 )
     child_stdout = nothing
     child_stderr = nothing
+    stdout_task = nothing
+    stderr_task = nothing
     process = nothing
     setup_error = nothing
     try
-        child_stdout = open(stdout_path, "w")
-        child_stderr = open(stderr_path, "w")
+        child_stdout = Pipe()
+        child_stderr = Pipe()
         process = run(
             pipeline(command; stdout=child_stdout, stderr=child_stderr); wait=false
         )
         child_state[] = :running
+        stdout_task = @async _drain_bounded_output(child_stdout)
+        stderr_task = @async _drain_bounded_output(child_stderr)
     catch error
         setup_error = error
     finally
         for stream in (child_stderr, child_stdout)
             isnothing(stream) && continue
             try
-                close_function(stream)
+                close_function(stream.in)
             catch error
                 isnothing(setup_error) && (setup_error = error)
+                # Test hooks and unusual stream failures may throw before the
+                # supplied closer actually closes the parent's writer.
+                try
+                    close(stream.in)
+                catch
+                end
             end
         end
     end
@@ -278,16 +370,35 @@ function _wait_for_child(
             child_state[] = result.reaped ? :reaped : :unreaped
             result
         end
+        stdout_capture = _finish_bounded_output(child_stdout, stdout_task)
+        stderr_capture = _finish_bounded_output(child_stderr, stderr_task)
+        _write_bounded_output(stdout_path, stdout_capture)
+        _write_bounded_output(stderr_path, stderr_capture)
         return (
             status=:launch_failed,
             process,
             termination,
             error_type=string(typeof(setup_error)),
             message=sprint(showerror, setup_error),
+            stdout_capture,
+            stderr_capture,
         )
     end
 
-    return _wait_for_process(process, timeout_seconds; child_state, wait_function)
+    stdout_capture = _empty_output_capture()
+    stderr_capture = _empty_output_capture()
+    process_result = try
+        _wait_for_process(process, timeout_seconds; child_state, wait_function)
+    finally
+        # Do not assume that reaping one process closes every inherited writer.
+        # Finishing each drain has its own deadline and closes the read side if
+        # a descendant or an unreaped worker still owns a descriptor.
+        stdout_capture = _finish_bounded_output(child_stdout, stdout_task)
+        stderr_capture = _finish_bounded_output(child_stderr, stderr_task)
+        _write_bounded_output(stdout_path, stdout_capture)
+        _write_bounded_output(stderr_path, stderr_capture)
+    end
+    return merge(process_result, (; stdout_capture, stderr_capture))
 end
 
 function _validated_request(

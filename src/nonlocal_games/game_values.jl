@@ -1,3 +1,10 @@
+# Source-informed independent Julia implementation based on the executable
+# contracts of QETLAB BellInequalityMax.m and XORGameValue.m at
+# d8589610f00cff106537268dee2e2a1153f3a601.
+# Upstream source authors named in those files include Nathaniel Johnston and
+# Mateus Araújo. QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
+# Full upstream terms: licenses/QETLAB-LICENSE.txt.
+#
 # Status-aware exact, no-signalling, XOR, and NPA Bell-value routes.
 #
 # This file composes the validated scenario layer and the solver-neutral NPA

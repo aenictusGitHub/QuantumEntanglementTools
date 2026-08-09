@@ -92,11 +92,15 @@ temporary directory is left for Julia's process-exit cleanup instead of
 starting synchronous cleanup against files that may still be open. User
 interrupts are rethrown only after this bounded cleanup attempt.
 
-Child stdout and stderr evidence is read only up to 8 KiB per stream. The files
-are not size-limited while the child writes them; the audited call fixes
-verbosity to zero, and a finite timeout bounds ordinary execution. Before
-decoding, `response.bin` is limited to
-`min(256 MiB, 1 MiB + 64 * length(rho))`. An oversized response is
+Child stdout and stderr are drained concurrently while the child runs. The
+adapter retains at most 8 KiB per stream in memory, discards later bytes, and
+writes only that bounded excerpt plus a truncation sentinel to its temporary
+files. A noisy or failing backend therefore cannot grow those files without
+limit or deadlock by filling an unread pipe. Drain finalization has a separate
+short deadline and closes the read endpoint if a descendant inherited a writer
+or forced termination could not reap the child, so captured output cannot
+extend the wall timeout indefinitely. Before decoding, `response.bin` is
+limited to `min(256 MiB, 1 MiB + 64 * length(rho))`. An oversized response is
 `:invalid_response`.
 
 The request and response use Julia's `Serialization` between the parent and a
@@ -125,16 +129,18 @@ therefore starts at Julia 1.11.
 
 ## Validation scope
 
-The dedicated suite passes 130/130 assertions locally on Julia 1.12.6. It
+The dedicated suite passes 141/141 assertions locally on Julia 1.12.6. It
 covers both load orders, repeated loading, method ambiguities, configuration
 and density validation, real-to-complex representation conversion, a live
 heuristic search, preservation of caller RNG, stdout, logger, and BLAS state,
 child RNG mutation, bounded timeout escalation, forced termination of a
 TERM-resistant process on Unix, interrupt/error cleanup, response schema and
-size checks, output truncation, and cleanup when output-stream setup fails
-after launch. The core pipeline suite separately checks dependency absence and
-the actionable error path. Independent smoke calls also covered `Float32`,
-`Float64`, `ComplexF32`, `ComplexF64`, and multipartite input.
+size checks, live bounded draining of oversized stdout and stderr, output
+truncation, inherited-writer finalization, and cleanup when output-stream setup
+fails before closing the parent's writer. The core pipeline suite separately
+checks dependency absence and the actionable error path. Independent smoke
+calls also covered `Float32`, `Float64`, `ComplexF32`, `ComplexF64`, and
+multipartite input.
 
 The six-job Julia 1.11/1.12 Linux/macOS/Windows workflow passed at predecessor
 commit `6bf8d61`; a rerun on the exact current commit remains required. That

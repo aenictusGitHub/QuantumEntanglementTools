@@ -18,7 +18,7 @@ This plan is generated from the reviewed status overlay, the generated QETLAB in
 - QETLAB revision: `d8589610f00cff106537268dee2e2a1153f3a601`
 - Inventory SHA-256: `62d0e94cf73934f4b35af3364b81cdf7468ab1662705e8171d7e46c57ec6a3c5`
 - Status-overlay SHA-256: `40eae81340d3241aa12d844794ee67417a97b5aa84a18567c3c090b7551edd4d`
-- Provenance SHA-256: `089804cba784b00946745e4dfb283f6f0772eebbde942dee4f9075561a25eab8`
+- Provenance SHA-256: `8a934338d6d766a96de991c5233baa504b3c3eb49561c12f2915ea05d0344d93`
 - Completion-policy SHA-256: `9d71c90a7001085b331383239c30d1c42689ebd56da2b9369fd312358a26b1c7`
 
 The all-public-row machine ledger is [`porting/qetlab_completion_plan.toml`](../porting/qetlab_completion_plan.toml). The executable queue is [`porting/qetlab_completion_queue.toml`](../porting/qetlab_completion_queue.toml).

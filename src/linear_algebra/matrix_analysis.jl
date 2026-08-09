@@ -7,6 +7,9 @@
 
 export majorizes, elementary_symmetric_polynomial, compound_matrix, additive_compound_matrix
 
+const _COMPOUND_DEFAULT_MAX_ENTRIES = 10_000_000
+const _COMPOUND_DEFAULT_MAX_WORK = 100_000_000
+
 function _matrix_analysis_order(value, name::AbstractString)
     value isa Bool && throw(ArgumentError("$name must be a nonnegative integer, not Bool"))
     value isa Integer ||
@@ -365,6 +368,154 @@ function _matrix_analysis_binomial(dimension::Int, order::Int)
     return Int(count)
 end
 
+function _matrix_analysis_resource_limit(value, name::AbstractString)
+    value === nothing && return nothing
+    value isa Bool &&
+        throw(ArgumentError("$name must be a positive integer or nothing, not Bool"))
+    value isa Integer || throw(ArgumentError("$name must be a positive integer or nothing"))
+    value > 0 || throw(ArgumentError("$name must be positive; got $value"))
+    return BigInt(value)
+end
+
+function _matrix_analysis_check_resource(
+    function_name::AbstractString,
+    planned::BigInt,
+    limit,
+    name::AbstractString,
+    resource::AbstractString,
+)
+    limit === nothing && return nothing
+    planned <= limit || throw(
+        ArgumentError(
+            "$function_name requires $planned $resource, exceeding $name=$limit; " *
+            "raise the explicit guard only after reviewing the resource cost",
+        ),
+    )
+    return nothing
+end
+
+function _compound_matrix_resource_plan(
+    row_count::Int,
+    column_count::Int,
+    order::Int,
+    sparse_output::Bool;
+    max_entries,
+    max_work,
+)
+    entry_limit = _matrix_analysis_resource_limit(max_entries, "max_entries")
+    work_limit = _matrix_analysis_resource_limit(max_work, "max_work")
+    rows = BigInt(row_count)
+    columns = BigInt(column_count)
+    checked_order = BigInt(order)
+    minors = rows * columns
+    minors <= typemax(Int) ||
+        throw(ArgumentError("the compound-matrix output dimensions overflow Int"))
+
+    row_workspace = row_count == 0 || column_count == 0 ? BigInt(0) : rows * checked_order
+    column_workspace =
+        row_count == 0 || column_count == 0 ? BigInt(0) : columns * checked_order
+    row_workspace <= typemax(Int) || throw(
+        ArgumentError("compound_matrix row-combination workspace exceeds typemax(Int)")
+    )
+    column_workspace <= typemax(Int) || throw(
+        ArgumentError("compound_matrix column-combination workspace exceeds typemax(Int)"),
+    )
+    combination_workspace = row_workspace + column_workspace
+    minor_workspace = minors == 0 ? BigInt(0) : checked_order^2
+    workspace = combination_workspace + minor_workspace
+    stored_entries = if sparse_output
+        # Three temporary coordinate arrays coexist with the returned CSC
+        # row/value arrays and column pointer while `sparse` is materialized.
+        5 * minors + columns + 1 + workspace
+    else
+        minors + workspace
+    end
+    stored_entries <= typemax(Int) || throw(
+        ArgumentError(
+            "compound_matrix requires $stored_entries output/workspace entries, " *
+            "which cannot be represented as an array length",
+        ),
+    )
+    _matrix_analysis_check_resource(
+        "compound_matrix",
+        stored_entries,
+        entry_limit,
+        "max_entries",
+        "output/workspace entries",
+    )
+
+    determinant_work = max(BigInt(1), checked_order^3)
+    work = workspace + minors * determinant_work
+    _matrix_analysis_check_resource(
+        "compound_matrix", work, work_limit, "max_work", "estimated scalar operations"
+    )
+    return (entries=stored_entries, work=work, minors=minors)
+end
+
+function _additive_compound_resource_plan(
+    dimension::Int, count::Int, order::Int, sparse_output::Bool; max_entries, max_work
+)
+    entry_limit = _matrix_analysis_resource_limit(max_entries, "max_entries")
+    work_limit = _matrix_analysis_resource_limit(max_work, "max_work")
+    n = BigInt(dimension)
+    columns = BigInt(count)
+    checked_order = BigInt(order)
+    replacements = max(BigInt(0), n - checked_order)
+    candidate_entries = if count == 0
+        BigInt(0)
+    else
+        columns * (1 + checked_order * replacements)
+    end
+    candidate_entries <= typemax(Int) || throw(
+        ArgumentError("additive_compound_matrix sparse-entry plan exceeds typemax(Int)")
+    )
+
+    # The combination matrix and copied dictionary keys each contain
+    # `count * order` indices.
+    workspace = 2 * columns * checked_order
+    workspace <= typemax(Int) || throw(
+        ArgumentError(
+            "additive_compound_matrix combination workspace exceeds typemax(Int)"
+        ),
+    )
+    stored_entries = if sparse_output
+        # Three temporary coordinate arrays coexist with the returned CSC
+        # row/value arrays and column pointer while `sparse` is materialized.
+        5 * candidate_entries + columns + 1 + workspace
+    else
+        columns^2 + workspace
+    end
+    stored_entries <= typemax(Int) || throw(
+        ArgumentError(
+            "additive_compound_matrix requires $stored_entries output/workspace " *
+            "entries, which cannot be represented as an array length",
+        ),
+    )
+    _matrix_analysis_check_resource(
+        "additive_compound_matrix",
+        stored_entries,
+        entry_limit,
+        "max_entries",
+        "output/workspace entries",
+    )
+
+    # Membership scans are linear in `order`; every accepted replacement also
+    # copies, sorts, and hashes an order-sized key. This intentionally
+    # overestimates the small fixed-order paths.
+    membership_work = columns * checked_order * n * max(checked_order, BigInt(1))
+    replacement_work =
+        3 * columns * checked_order * replacements * max(checked_order, BigInt(1))
+    work = columns + workspace + membership_work + replacement_work
+    _matrix_analysis_check_resource(
+        "additive_compound_matrix",
+        work,
+        work_limit,
+        "max_work",
+        "estimated scalar operations",
+    )
+    return (entries=stored_entries, work=work, candidates=candidate_entries)
+end
+
 function _matrix_analysis_combinations(dimension::Int, order::Int)
     count = _matrix_analysis_binomial(dimension, order)
     combinations = Matrix{Int}(undef, count, order)
@@ -507,7 +658,12 @@ function _matrix_analysis_minor_determinant(
 end
 
 """
-    compound_matrix(matrix, order; sparse_output=issparse(matrix))
+    compound_matrix(
+        matrix, order;
+        sparse_output=issparse(matrix),
+        max_entries=10_000_000,
+        max_work=100_000_000,
+    )
 
 Construct the `order`-th multiplicative compound matrix. Rows and columns use
 lexicographically ordered increasing subsets. For an `m × n` input, the output
@@ -527,23 +683,36 @@ input is never implicitly densified. Integer and rational minors are evaluated
 in widened exact arithmetic and narrowed only after a representability check.
 The number of determinants is
 `binomial(m, order) * binomial(n, order)`.
+
+Before combination or result allocation, `max_entries` bounds a conservative
+count of output, one selected-minor workspace, and combination-workspace
+slots. Sparse output includes three worst-case coordinate arrays together with
+the returned CSC row/value arrays and column pointer. `max_work` bounds the
+determinant count weighted by a cubic minor-order estimate. Either guard may be
+set to `nothing` only after independent review; array-length representability
+checks cannot be disabled.
 """
 function compound_matrix(
-    matrix::AbstractMatrix, order; sparse_output::Bool=SparseArrays.issparse(matrix)
+    matrix::AbstractMatrix,
+    order;
+    sparse_output::Bool=SparseArrays.issparse(matrix),
+    max_entries=_COMPOUND_DEFAULT_MAX_ENTRIES,
+    max_work=_COMPOUND_DEFAULT_MAX_WORK,
 )
     checked_order = _matrix_analysis_order(order, "order")
     row_count = _matrix_analysis_binomial(size(matrix, 1), checked_order)
     column_count = _matrix_analysis_binomial(size(matrix, 2), checked_order)
-    try
-        Base.checked_mul(row_count, column_count)
-    catch err
-        err isa OverflowError || rethrow()
-        throw(ArgumentError("the compound-matrix output dimensions overflow Int"))
-    end
-
     _matrix_analysis_require_finite(matrix, "compound_matrix")
     input_type = _matrix_analysis_numeric_type(matrix)
     result_type = _matrix_analysis_result_type(input_type)
+    _compound_matrix_resource_plan(
+        row_count,
+        column_count,
+        checked_order,
+        sparse_output;
+        max_entries=max_entries,
+        max_work=max_work,
+    )
     if row_count == 0 || column_count == 0
         return if sparse_output
             spzeros(result_type, row_count, column_count)
@@ -580,8 +749,12 @@ function compound_matrix(
 end
 
 """
-    additive_compound_matrix(matrix, order;
-                             sparse_output=issparse(matrix))
+    additive_compound_matrix(
+        matrix, order;
+        sparse_output=issparse(matrix),
+        max_entries=10_000_000,
+        max_work=100_000_000,
+    )
 
 Construct the `order`-th additive compound of a square matrix. It is the
 derivative at zero of the multiplicative compound,
@@ -603,9 +776,19 @@ produce dense outputs by default, sparse inputs remain sparse, and
 `sparse_output` can select either representation explicitly. Exact integer and
 rational arithmetic is widened internally and checked when converted to the
 result type.
+
+`max_entries` bounds conservative result, coordinate-array, combination-table,
+and lookup-key storage before allocation. `max_work` also accounts for the
+membership scans and order-sized key updates in the direct construction. Set a
+guard to `nothing` only after reviewing the cost; mandatory array-length checks
+remain active.
 """
 function additive_compound_matrix(
-    matrix::AbstractMatrix, order; sparse_output::Bool=SparseArrays.issparse(matrix)
+    matrix::AbstractMatrix,
+    order;
+    sparse_output::Bool=SparseArrays.issparse(matrix),
+    max_entries=_COMPOUND_DEFAULT_MAX_ENTRIES,
+    max_work=_COMPOUND_DEFAULT_MAX_WORK,
 )
     size(matrix, 1) == size(matrix, 2) || throw(
         DimensionMismatch(
@@ -618,6 +801,14 @@ function additive_compound_matrix(
     _matrix_analysis_require_finite(matrix, "additive_compound_matrix")
     input_type = _matrix_analysis_numeric_type(matrix)
     result_type = _matrix_analysis_result_type(input_type)
+    _additive_compound_resource_plan(
+        dimension,
+        count,
+        checked_order,
+        sparse_output;
+        max_entries=max_entries,
+        max_work=max_work,
+    )
     if count == 0
         return if sparse_output
             spzeros(result_type, count, count)

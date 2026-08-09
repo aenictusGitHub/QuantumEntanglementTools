@@ -66,6 +66,7 @@ Start from the question you want to answer:
 | Task | Recommended entry point | What to inspect |
 |---|---|---|
 | Reduce or rearrange subsystems | `partial_trace`, `partial_transpose`, `permute_subsystems` | Returned array and documented subsystem order |
+| Work with symmetric multiqubit or multiqudit states | `generalized_dicke_state`, `symmetric_product_coordinates`, `symmetric_reduced_state` | Occupation ordering, representation, and resource guards |
 | Classify a bipartite pure state | `analyze_entanglement(psi, dims)` | `EntanglementReport.status` and `certificate_kind` |
 | Apply one necessary entanglement criterion | `ppt_criterion`, `realignment_criterion`, `reduction_criterion` | `CriterionResult.status`, witness, and tolerance |
 | Run the dependency-free criterion pipeline | `analyze_entanglement(rho, dims)` | Ordered `attempts`; a pass can still lead to `:unknown` |
@@ -135,20 +136,21 @@ Schmidt-decomposition, and Tiles-UPB bound-entanglement workflows.
   are verified with the required final status, 36/36 internal helpers have
   terminal dispositions, the completion queue contains 0 public rows, 0
   required internal helpers remain, and there are 0 static completion failures.
-- The package exports 467 public bindings (337 native/module and 130
+- The package exports 477 public bindings (347 native/module and 130
   `MATLABCompat`), each with a matching provenance entry.
-- The 8,360-assertion full package suite passed 8,360/8,360: the core accounts
-  for 8,276 assertions, and the seven executable tutorials account for 84/84
+- The 9,484-assertion full package suite passed 9,484/9,484: the core accounts
+  for 9,400 assertions, and the seven executable tutorials account for 84/84
   assertions (48 existing plus 36 for the two new workflows), on Julia
-  1.12.6 and the installed Julia 1.10.0. The full optional JuMP suite passed
-  846/846 on both Julia lines.
+  1.12.6 and the installed Julia 1.10.11. The full optional JuMP suite passed
+  847/847 on both Julia lines.
 - The exact EntanglementDetection.jl 0.2.2 integration remains optional and
-  child-process isolated. The EntanglementDetection.jl extension passed 130/130
+  child-process isolated. The EntanglementDetection.jl extension passed 141/141
   focused assertions on the current compatible Julia; heuristic output remains
   uncertified candidate evidence.
-- All 114 declared quick benchmark cases completed for the clean `f32dd233`
-  baseline and the candidate now committed as `a50f516`; targeted paired
-  observations remain local diagnostics, not a stable performance baseline.
+- All 114 declared quick benchmark cases completed without failure on the
+  current uncommitted release-hardening worktree based on `8b2fcbaf`. This is
+  local smoke evidence only; targeted paired observations remain diagnostics,
+  not a stable comparative-performance baseline.
 - These are static-ledger and local-test results, not a claim of complete
   QETLAB parity or MATLAB parity, supported-platform remote CI, comparative
   performance, API stability, release approval, or non-delegable human review.
@@ -179,12 +181,15 @@ Start with:
 - [Interactive entanglement code generator](https://aenictusgithub.github.io/QuantumEntanglementTools/code_generator/)
 - [Separability by example](docs/src/separability_examples.md)
 - [Symmetric SAPPT states and witnesses](docs/src/paper_symmetric_separability.md)
+- [Symmetric multiqubit and multiqudit states](docs/src/symmetric_states.md)
 - [Mathematical conventions](docs/src/conventions.md)
 - [API reference](docs/src/api/index.md)
 - [Executable tutorials](docs/src/tutorials.md)
 - [EntanglementDetection extension](docs/src/entanglement_detection_extension.md)
 - [Migration ledger](docs/src/migration_from_qetlab.md)
 - [Contributing](CONTRIBUTING.md)
+- [Support and correctness reports](SUPPORT.md)
+- [Security policy](SECURITY.md)
 - [Release checklist](docs/RELEASE_CHECKLIST.md)
 - [Legal and provenance status](docs/LEGAL.md)
 

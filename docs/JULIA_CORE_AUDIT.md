@@ -31,14 +31,14 @@ API-stability guarantee, release approval, or the required human review.
 |---|---|---|---|
 | P0 | Architecture | Accepted design; implementation pending | General rectangular operator spaces and two-sided map sums require the representation change specified by ADR 0006. |
 | P0 | Correctness and soundness | Resolved in the current worktree | `MATLABCompat.IsPPT` previously symmetrized a slightly non-Hermitian input and could report a false `CriterionSatisfied`; it now returns `CriterionUnknown` with residual evidence. |
-| P0/P1 | Correctness policy | Open | Choi-to-Kraus conversion can project an approximately Hermitian, approximately positive Choi matrix to a different CP map without returning repair metadata. |
-| P1 | Resource safety | Open | Symmetric/antisymmetric projector construction and Dicke-state enumeration have integer-overflow checks but no practical combinatorial work/nonzero guards. |
-| P1 | Resource safety | Open | Multiplicative and additive compound matrices have no practical output/minor/work cap. |
+| P0/P1 | Correctness policy | Resolved in the current worktree | A satisfied CP predicate can still meet a wider factorization cutoff because the two checks use different scale estimates. Plain Choi-to-Kraus conversion now rejects any result that would discard a spectral mode; the typed canonical result remains available for explicit approximation. |
+| P1 | Resource safety | Resolved in the current worktree | Symmetric/antisymmetric projectors and bases now preflight exact combinatorial columns/nonzeros, dense entries, and conservative work; Dicke states preflight nonzeros, dense entries, and enumeration work. |
+| P1 | Resource safety | Resolved in the current worktree | Multiplicative and additive compounds now preflight conservative output/workspace storage and scalar work before combination-table or result allocation. |
 | P1 | Classification completeness | Partially resolved | The generic floating LDL path now scans for robustly negative diagonal witnesses and continues across exactly decoupled boundary pivots; a general pivoted method for coupled boundary pivots remains open. |
 | P1 | Performance and resource planning | Open | Tensor and channel kernels create full intermediate terms without a common output/work budget. |
 | P2 | Generic arithmetic | Resolved in the current worktree | Native and compatibility majorization now retain floating accumulator types while preserving widened exact arithmetic. |
 | P2 | Performance | Partially resolved | `coherence_rank` now uses the validated unitary-adjoint path; pure-state negativity still takes the full density-matrix route. |
-| P2 | Extension hardening | Open and documented | EntanglementDetection configuration has no seed field, child output files are not size-bounded while running, and high-level evidence fields use `Any`. |
+| P2 | Extension hardening | Partially resolved | EntanglementDetection child output is continuously drained into bounded buffers; explicit backend seeding and typed high-level evidence remain open. |
 
 ## Architecture
 
@@ -111,38 +111,32 @@ and verifies the unknown status, evidence, and input immutability at
 The complete focused Tier D file passed 174/174 assertions, including 38/38
 compatibility assertions.
 
-### Open P0/P1: Choi-to-Kraus projection policy
+### Resolved P0/P1: Choi-to-Kraus projection policy
 
-[`kraus_representation`](../src/channels/channels.jl#L478-L538) converts a Choi
-or superoperator representation by:
+The structured positive-semidefinite predicate scales its tolerance from the
+largest matrix entry, whereas the canonical spectral factorization scales from
+the largest absolute eigenvalue. Those quantities need not agree. For example,
+a dense four-dimensional Choi matrix `ones(4,4) + 3sqrt(eps())I` has a smallest
+eigenvalue above the predicate threshold, so complete positivity is satisfied,
+but its three small positive modes lie below the larger factorization cutoff.
+The previous plain conversion retained only the leading mode and returned a
+different CP map without carrying the nonzero residual.
 
-1. accepting approximate Hermiticity;
-2. diagonalizing the explicitly formed Hermitian part;
-3. allowing negative eigenvalues down to `-threshold`; and
-4. retaining only eigenvalues strictly greater than `threshold`.
+[`kraus_representation`](../src/channels/channels.jl) now requires both a
+satisfied complete-positivity diagnostic and retention of the complete
+computed spectrum. If the tolerance would discard any mode, it throws a
+`DomainError` containing the typed `CanonicalMapDecompositionResult`; it does
+not perform another eigendecomposition or silently choose a different cutoff.
+Callers making an intentional approximation inspect
+[`canonical_map_decomposition`](../src/channels/channels.jl), whose result
+records the spectrum, threshold, discarded Frobenius norm, reconstruction
+residual, and structural diagnostics.
 
-Thus small negative eigenvalues are clipped and small positive eigenvalues are
-dropped. The returned `KrausRepresentation` can encode a different map, but the
-return type contains no projection magnitude, discarded spectrum, or
-reconstruction residual. A focused diagnostic with Choi spectrum
-`[1, -1e-10, 0, 0]` and `atol=1e-8` returned a map with spectrum
-`[1, 0, 0, 0]`.
-
-The tolerance behavior is documented, so this is not a hidden implementation
-accident. It remains inconsistent with the stricter package rule that a repair
-must be explicit and report what changed. Recommended resolution:
-
-- make strict rejection the default;
-- require an explicit projection policy for bounded repair; and
-- return a typed conversion result containing the original residuals,
-  threshold, discarded eigenvalues, reconstruction error, and resulting
-  representation.
-
-Existing channel tests cover exact round trips and grossly non-CP or
-non-Hermitian inputs at
-[`test/tier_c_channels_maps.jl`](../test/tier_c_channels_maps.jl#L156-L205) and
-[`test/tier_c_channels_maps.jl`](../test/tier_c_channels_maps.jl#L245-L272).
-They do not yet lock the within-tolerance conversion boundary.
+Focused tests cover the dense scale-mismatch regression, a retained `1e-10`
+positive eigenvalue under explicit zero tolerance, strict rejection of a
+`-1e-10` boundary and an approximately Hermitian matrix, and the typed
+approximation residual at
+[`test/tier_c_channels_maps.jl`](../test/tier_c_channels_maps.jl).
 
 ### Soundness controls already working
 
@@ -199,48 +193,51 @@ also currently have no benchmark cases, as recorded in
 
 ## Resource safety
 
-### P1: projectors and Dicke states
+### Resolved P1: projectors and Dicke states
 
-The projector implementation recursively enumerates occupation sequences and
-materializes every unique orbit at
-[`src/subsystem/projectors.jl`](../src/subsystem/projectors.jl#L7-L64).
-[`_projection_arguments`](../src/subsystem/projectors.jl#L75-L80) checks only
-that `local_dimension^copies` fits `Int`. The basis constructors then collect
-all orbit entries, while the projector constructors collect every pair within
-each orbit at
-[`src/subsystem/projectors.jl`](../src/subsystem/projectors.jl#L96-L225).
+The four symmetric/antisymmetric basis and projector constructors now compute
+their occupation-column, orbit-nonzero, dense-output, and permutation-work
+plans with `BigInt` before allocating layouts, coordinate arrays, or results.
+The antisymmetric plan uses exact binomial/factorial counts; the symmetric
+projector additionally sums the exact squared orbit sizes. Default guards are
+`max_columns=100_000`, `max_nonzeros=5_000_000`,
+`max_dense_entries=10_000_000`, and `max_work=100_000_000`. Projector output
+columns are also bounded; in particular, an otherwise empty sparse projector
+still allocates a CSC column pointer. Individual guards accept `nothing` only
+as an explicit opt-out, while impossible array lengths remain rejected.
 
-Similarly, [`dicke_state`](../src/states/states.jl#L153-L200) materializes all
-`binomial(parties, excitations)` indices. The ambient power of two can fit
-`Int` even when that binomial count is far beyond available memory.
+[`dicke_state`](../src/states/states.jl) now preflights the exact
+`binomial(parties, excitations)` nonzero count, ambient dense length, and a
+conservative index-enumeration estimate. Its defaults are one million
+nonzeros, ten million dense entries, and one hundred million estimated scalar
+operations. The compatibility wrappers expose and forward the same limits.
 
-Add preflight counts using `BigInt` and practical `max_columns`,
-`max_nonzeros`, and `max_work` keywords. `nothing` may explicitly disable a
-guard after caller review. The guarded
-[`brauer_states`](../src/states/states.jl#L383-L490) API is the local model for
-this policy.
+Focused regressions exercise exact-limit acceptance, one-below-limit rejection,
+invalid guards, explicit `nothing`, dense and sparse paths, compatibility
+forwarding, an excessive but `Int`-representable request, and preservation of
+an unrelated explicit RNG stream. The projector, Tier-B state, and
+compatibility-focused files pass locally on the current Julia.
 
-Current projector tests use local dimensions and copy counts only through
-three. The quick benchmark has one symmetric `d=4`, copies-four case, already
-recording 335,840 bytes and 1,627 allocations.
+### Resolved P1: compound matrices
 
-### P1: compound matrices
+[`compound_matrix`](../src/linear_algebra/matrix_analysis.jl) now plans the
+output plus row/column combination tables before allocating them. Sparse plans
+conservatively include three coordinate arrays while they coexist with the
+returned CSC row/value arrays and column pointer; the compound plan also
+includes one selected-minor workspace.
+`max_entries=10_000_000` bounds those output/workspace slots, and
+`max_work=100_000_000` bounds every minor weighted by a cubic order estimate.
 
-[`_matrix_analysis_binomial`](../src/linear_algebra/matrix_analysis.jl#L309-L319)
-only checks whether a combination count fits `Int`.
-[`compound_matrix`](../src/linear_algebra/matrix_analysis.jl#L378-L427) checks
-the product of its output dimensions only for integer overflow, then
-materializes row and column combination tables and evaluates every minor. Its
-sparse-output mode still enumerates every minor.
+[`additive_compound_matrix`](../src/linear_algebra/matrix_analysis.jl) applies
+the same defaults to a plan containing the output or sparse coordinates, the
+combination table, copied dictionary keys, membership scans, and key
+copy/sort/hash work. Both APIs retain exact arithmetic, output shapes, and
+sparse selection, allow an explicit `nothing` opt-out, and keep mandatory
+array-length checks. Native and compatibility boundary tests include dense and
+sparse exact limits, oversized `Int`-representable counts, invalid limits, and
+no unrelated RNG consumption.
 
-[`additive_compound_matrix`](../src/linear_algebra/matrix_analysis.jl#L454-L540)
-likewise has no practical count cap. It materializes all combinations and a
-content-keyed dictionary before enumerating exterior-action updates.
-
-Add `max_entries`, `max_minors`, and/or `max_work` preflight guards computed
-with `BigInt`. Arithmetic-overflow tests are already present, but practical
-resource-limit tests are not. The quick benchmark shows why the distinction
-matters:
+The quick benchmark remains useful context for the default budgets:
 
 - dense `8×8`, order-three compound: 1,738,768 bytes and 53,367 allocations;
 - dense `16×16`, order-two additive compound: 427,872 bytes and 7,242
@@ -302,13 +299,18 @@ route. These are performance gaps, not current numerical-correctness defects.
 
 ## EntanglementDetection extension hardening
 
-The extension boundary already isolates a known stateful backend in a fresh
-child process, enforces a wall timeout, validates response schemas, caps
-serialized response size, truncates returned output excerpts, and maps every
-backend failure or candidate conclusion to uncertified package-owned evidence.
-Tests verify caller RNG, logger, stdout, and BLAS-thread preservation.
+The extension boundary isolates a known stateful backend in a fresh child
+process, enforces a wall timeout, validates response schemas, caps serialized
+response size, and maps every backend failure or candidate conclusion to
+uncertified package-owned evidence. Child stdout and stderr are continuously
+drained through pipes into bounded in-memory prefixes; only those prefixes and
+a truncation sentinel reach disk. Drain finalization has its own deadline and
+closes the read side when a descendant inherits a writer or a worker cannot be
+reaped. Tests cover output many times larger than the cap and an inherited
+descriptor without extending the wall timeout. Caller RNG, logger, stdout,
+and BLAS-thread preservation remain covered.
 
-Three limitations remain:
+Two limitations remain:
 
 1. [`EntanglementDetectionSearch`](../src/entanglement/backend_interface.jl#L40-L126)
    has no seed field, and the serialized request at
@@ -317,18 +319,15 @@ Three limitations remain:
    configuration does not encode or report an explicit random seed. If the
    audited backend exposes no public seed parameter, that limitation should be
    represented explicitly rather than bypassed through private APIs.
-2. [`_output_excerpt`](../ext/QuantumEntanglementToolsEntanglementDetectionExt.jl#L72-L79)
-   limits only how much of the completed stdout/stderr file is read. The child
-   can grow those files without bound while running. Use bounded pipes/ring
-   buffers or monitor file size and terminate the child. OS memory/CPU
-   sandboxing remains absent and is honestly reported as
-   `resource_sandboxed=false` by
-   [`backend_capabilities`](../src/entanglement/backend_interface.jl#L304-L322).
-3. [`EntanglementAttempt.raw_result`](../src/entanglement/backend_interface.jl#L167-L201)
+2. [`EntanglementAttempt.raw_result`](../src/entanglement/backend_interface.jl#L167-L201)
    and [`EntanglementReport.evidence`](../src/entanglement/backend_interface.jl#L212-L252)
    are `Any`. They are not in a numerical hot loop, but parametric evidence
    fields would preserve extensibility while improving inference and making
    package-owned result structure more explicit.
+
+OS memory/CPU sandboxing remains absent and is honestly reported as
+`resource_sandboxed=false` by
+[`backend_capabilities`](../src/entanglement/backend_interface.jl#L304-L322).
 
 These are hardening items, not evidence that the current adapter falsely
 certifies backend output.
@@ -365,16 +364,12 @@ The audit did not find the following commonly risky patterns:
 ## Recommended closure order
 
 1. Implement ADR 0006 as a coherent map-representation migration.
-2. Decide and test the strict/projecting Choi-to-Kraus conversion contract.
-3. Add practical combinatorial guards to projectors, Dicke states, and compound
-   matrices.
-4. Improve generic PSD completeness around boundary pivots.
-5. Add output/work planning and representative allocation benchmarks before
+2. Improve generic PSD completeness around coupled boundary pivots.
+3. Add output/work planning and representative allocation benchmarks before
    rewriting tensor/channel kernels.
-6. Remove unintended `BigFloat` promotion and implement the two clear
-   structure-aware fast paths.
-7. Harden optional-backend reproducibility and child output/resource handling,
-   then parameterize high-level evidence containers.
+4. Implement and benchmark the pure-state negativity fast path.
+5. Add explicit optional-backend reproducibility metadata and parameterize
+   high-level evidence containers; evaluate OS resource sandboxing separately.
 
 Release claims should be updated only after the corresponding implementation,
 tests, documentation, provenance, and benchmark evidence are recorded together.

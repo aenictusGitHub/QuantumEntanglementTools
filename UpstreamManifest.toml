@@ -1,8 +1,8 @@
 # Reproducible upstream audit pins. Development checkouts and downloads live
 # under ignored dev/ paths and are not part of the distributable package.
 schema_version = 1
-audit_date = "2026-07-29"
-audit_scope = "QETLAB current master; EntanglementDetection.jl current main/release"
+audit_date = "2026-07-31"
+audit_scope = "QETLAB current master; EntanglementDetection.jl current main/release; generator interaction-pattern reference; published SAPPT paper"
 development_checkout_policy = "ignored-dev-directories-not-vendored"
 
 [[sources]]
@@ -51,6 +51,64 @@ source_audit_findings = [
     "GenRobustnesskCoherence.m calls and declares IskCoherent.m, but that file is absent at the pinned revision.",
     "Inventory random-behavior fields propagate implicit global-RNG use through QETLAB-to-QETLAB call edges.",
 ]
+blockers = []
+
+[[sources]]
+id = "permutational_invariant_dynamics_generator_reference"
+name = "PermutationalInvariantDynamics.jl model code generator"
+source_kind = "git"
+canonical_url = "https://github.com/aenictusGitHub/PermutationalInvariantDynamics.jl"
+clone_url = "https://github.com/aenictusGitHub/PermutationalInvariantDynamics.jl.git"
+default_branch = "main"
+version_or_tag = "main inspection snapshot"
+exact_revision = "49c64b1c0fc5b301531582d470144c5b6b3d4030"
+source_tree_sha = "39407ccd1d38f1332b987b3365f5d8ef0b317600"
+retrieval_date = "2026-07-31"
+checkout_clean_at_audit = true
+license_classification = "GPL-3.0-only"
+license_file_path = "LICENSE"
+license_sha256 = "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+reuse_manifest_path = "REUSE.toml"
+reuse_manifest_sha256 = "ea4b9a6f7374c3c30a05d90393c48eea20cdd826640239f0717036ea2fc8e800"
+documentation_url = "https://aenictusgithub.github.io/PermutationalInvariantDynamics.jl/dev/model_code_generator/"
+source_code_read = true
+inspected_paths = [
+    "docs/src/model_code_generator.md",
+    "docs/src/assets/model_code_generator_core.js",
+    "docs/src/assets/model_code_generator_ui.js",
+    "docs/src/assets/model_code_generator.css",
+]
+inspected_path_sha256 = [
+    "3ca96b99f775299255fd90f8119449476a7a63ff8d47a886b84118b313053aab",
+    "a8c37650c8216ab490baf3a790ec7eacab7192b45dea1141eb6bd9efbfd0df5f",
+    "2d9d2229f652ec7d1f04a38d647fecda42573d0d1bc133a7110ebc603fd45916",
+    "7fcff9fbc9c93fbfec5f54b76ca59e98cd0b16fd3eca53176dc5a20e171fddd6",
+]
+implementation_relationship = "interaction-pattern inspiration only; no HTML, CSS, JavaScript, prose, identifier, or generated Julia template copied or adapted"
+generated_output_license_finding = "reference generator emits GPL-3.0-only template code without a generated-output exception"
+blockers = []
+
+[[sources]]
+id = "louvet_symmetric_sappt_paper"
+name = "Nonequivalence between absolute separability and positive partial transposition in the symmetric subspace"
+source_kind = "published-paper"
+canonical_url = "https://doi.org/10.1103/PhysRevA.111.042418"
+publication = "Physical Review A 111, 042418 (2025)"
+authors = [
+    "Jonathan Louvet",
+    "Eduardo Serrano-Ensástiga",
+    "Thierry Bastin",
+    "John Martin",
+]
+publication_date = "2025-04-11"
+inspection_date = "2026-07-31"
+audit_artifact = "author-supplied publisher PDF; not vendored or redistributed"
+audit_artifact_sha256 = "c9a32248a9f0f730409dc690db0dfc8ab97063bd600041cb7e567d8b0e9aaf7a"
+copyright_notice = "Copyright 2025 American Physical Society"
+license_classification = "publisher-copyrighted-paper-reference-only"
+redistribution_status = "paper text, figures, and PDF are not vendored or redistributed"
+source_code_read = false
+implementation_relationship = "independently written executable tutorial citing the analytic threshold, state family, and rounded published witness coefficients; the source SDP is not copied or rerun"
 blockers = []
 
 [[sources]]

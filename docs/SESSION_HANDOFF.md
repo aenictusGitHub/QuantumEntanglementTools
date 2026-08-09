@@ -1,6 +1,6 @@
 # Session handoff
 
-Snapshot date: 2026-07-31. This file describes the local convergence worktree,
+Snapshot date: 2026-08-09. This file describes the local convergence worktree,
 not a committed or published release.
 
 ## Repository state
@@ -9,16 +9,18 @@ not a committed or published release.
 
 - Branch: `main`.
 - `HEAD` and `origin/main`:
-  `a50f516ad7887adcc468d649ccd28307477b18e5`.
+  `8b2fcbafc646c528aade8bbf695b1112e45511a9`.
 - Remote: private `origin` at
   `https://github.com/aenictusGitHub/QuantumEntanglementTools.git`.
-- Worktree: intentionally dirty with two independently written,
-  repository-native QETLAB-introduction tutorials and an additive
-  user-experience pass. The latter includes conservative result helpers,
-  non-mutating density-matrix diagnostics, separability-strategy and backend
-  discovery, clearer optional-backend failures, task-first documentation, a
-  schema-2 browser code generator, and a GitHub Pages deployment workflow. Use
-  `git status --short` for the exact live list; do not reset or clean it.
+- Worktree: intentionally dirty with release-hardening changes layered on the
+  previously committed tutorials, user-experience work, and schema-2 browser
+  generator. The current pass adds stricter release/oracle gates, provenance
+  enforcement, bounded combinatorial resources, non-projecting Choi-to-Kraus
+  conversion, bounded optional-backend output, and GitHub maintenance/release
+  scaffolding, plus ten project-native symmetric-state APIs with exact
+  occupation indexing, multiqudit Dicke states, compressed collective
+  operators, split isometries, and direct reductions. Use `git status --short`
+  for the exact live list; do not reset or clean it.
 - No commit, push, tag, release, repository-visibility change, branch-setting
   change, history rewrite, or registry submission was made.
 - Pinned QETLAB source:
@@ -29,16 +31,16 @@ not a committed or published release.
   the completion queue contains 0 public rows, 36/36 internal helpers have
   terminal dispositions, 0 required helpers remain, and there are 0 static
   completion failures.
-- The runtime API contains 467 exports (337 native/module and 130
-  `MATLABCompat`) matched by 467 provenance records.
-- The exact current-tree package corpus passes 8,360/8,360 assertions: 8,276
+- The runtime API contains 477 exports (347 native/module and 130
+  `MATLABCompat`) matched by 477 provenance records.
+- The exact current-tree package corpus passes 9,484/9,484 assertions: 9,400
   core assertions plus 84 executable-tutorial assertions, on
-  Julia 1.12.6 and the installed Julia 1.10.0. Seven tutorial scripts are
+  Julia 1.12.6 and the installed Julia 1.10.11. Seven tutorial scripts are
   covered; 36 assertions exercise the new seeded Schmidt-decomposition and
   exact Tiles-UPB bound-entanglement workflows.
-- The complete JuMP/Hypatia/SCS extension passes 846/846 assertions on both
+- The complete JuMP/Hypatia/SCS extension passes 847/847 assertions on both
   installed Julia lines. The exact EntanglementDetection.jl 0.2.2 extension
-  passes 130/130 assertions on Julia 1.12.6; its dependency resolver floor is
+  passes 141/141 assertions on Julia 1.12.6; its dependency resolver floor is
   Julia 1.11.
 - All 27 source-free QETLAB comparator groups pass 1,347/1,347 assertions on
   both installed Julia lines, with fixture SHA-256 files verified. MATLAB was
@@ -51,12 +53,10 @@ not a committed or published release.
 - Aqua passes 11/11, the representative JET set passes 25/25, independent
   randomized matrix-predicate validation passes 130/130 on both lines, and the
   formatter gate passes.
-- All 114 declared quick benchmark cases completed for the clean
-  `f32dd233e478dd6e2642f11fab088f6c8febc420` baseline and the candidate now
-  committed as `a50f516ad7887adcc468d649ccd28307477b18e5`, with one Julia and one
-  BLAS thread. Targeted quick-run minima and allocations improved, but this
-  remains local diagnostic evidence rather than a stable comparative-performance
-  result or regression baseline.
+- All 114 declared quick benchmark cases completed without failure on the
+  current uncommitted tree with one Julia and one BLAS thread. This is local
+  smoke evidence only; targeted minima remain diagnostics rather than a stable
+  comparative-performance result or regression baseline.
 
 These are bounded local implementation and validation claims. They do not
 establish general MATLAB/QETLAB parity, supported-platform remote CI,
@@ -152,6 +152,48 @@ floating feasible points and computed-cone Farkas evidence remain structured
 inconclusive results. The Bell-qubit numerical relaxation likewise cannot
 enter a legacy certified tuple path.
 
+## Legal and provenance hardening (2026-07-31)
+
+The uncommitted release-hardening tree now gives each previously identified
+QETLAB-informed nonlocal-game and optimization source file, including the JuMP
+PSD materialization, an exact upstream-filename/revision BSD-2-Clause header.
+`PROVENANCE.toml` maps the PSD extension as an additional implementation file,
+and `scripts/check_public_api.jl` now rejects every QETLAB-attributed Julia file
+whose preamble omits QETLAB, the pinned revision, BSD-2-Clause, or the retained
+license path. The checker passes for all 477 public bindings on Julia 1.12.6 and
+1.10.11.
+
+`UpstreamManifest.toml` now pins the inspected
+PermutationalInvariantDynamics.jl generator reference at commit
+`49c64b1c0fc5b301531582d470144c5b6b3d4030`, including tree, license, REUSE,
+and four inspected-path hashes. No reference source or template was copied.
+The manifest also records the DOI, publisher-PDF hash, copyright notice, and
+reference-only relationship for the Louvet--Serrano-Ensástiga--Bastin--Martin
+SAPPT paper. The executable tutorial carries the matching citation and
+non-redistribution notice. Generated Julia examples now carry BSD-3-Clause
+SPDX headers, complete-license location, user-material warning, and the full
+paper DOI where the symmetric witness coefficients are emitted.
+
+Focused checks passed: the 178-check JavaScriptCore generator harness, its
+current-Julia generated bundle, the symmetric-SAPPT tutorial, the strict
+Documenter build, and both Julia-line public-API/provenance checks. The full
+repository formatter was then applied and its repository-wide gate passed.
+
+## Reachable-history visibility blocker (2026-07-31)
+
+The candidate tree and its source archive contain no `QUBIT4MATLAB` path or
+text reference. The name is nevertheless reachable in the existing Git
+history through commits `9b0d0d3` and `6bf8d61`, including former documentation
+and license paths. This does not contaminate the candidate archive, but it means
+that changing the current private repository to public visibility would expose
+the removed history.
+
+Do not rewrite or replace history automatically. Before public visibility, the
+maintainer must explicitly choose and record either a coordinated history
+rewrite/clean repository migration or a reviewed legal decision accepting
+tree-only removal. A private GitHub prerelease and a public repository remain
+separate decisions.
+
 ## Final local validation commands
 
 The following commands passed on the current convergence tree unless a
@@ -159,8 +201,12 @@ qualification is stated:
 
 ```sh
 julia --compiled-modules=no --startup-file=no --project=. test/runtests.jl
-/Applications/Julia-1.10.app/Contents/Resources/julia/bin/julia \
-  --compiled-modules=no --startup-file=no --project=. test/runtests.jl
+julia +1.10 --compiled-modules=no --startup-file=no --project=. test/runtests.jl
+
+julia --compiled-modules=no --startup-file=no --project=. \
+  -e 'using Test, QuantumEntanglementTools; include("test/symmetric_states.jl")'
+julia +1.10 --compiled-modules=no --startup-file=no --project=. \
+  -e 'using Test, QuantumEntanglementTools; include("test/symmetric_states.jl")'
 
 julia --compiled-modules=no --startup-file=no --project=. tutorials/runtests.jl
 /Applications/Julia-1.10.app/Contents/Resources/julia/bin/julia \
@@ -235,9 +281,9 @@ julia --compiled-modules=no --startup-file=no --project=. \
 ## Environment notes
 
 - Host: macOS on Apple arm64, Apple M4 Pro.
-- Installed Julia lines used for final local evidence: 1.12.6 and 1.10.0.
-  The installed minimum-line binary is 1.10.0, despite older documentation
-  referring to 1.10.11.
+- Installed Julia lines used for final local evidence: 1.12.6 and 1.10.11.
+  The installed minimum-line binary is 1.10.11, despite older documentation
+  referring to 1.10.0.
 - The EntanglementDetection.jl 0.2.2 isolated environment resolves only on
   Julia 1.11 or newer because of Ket 0.9; this does not raise the core package
   minimum.
@@ -248,7 +294,7 @@ julia --compiled-modules=no --startup-file=no --project=. \
   representative JET checks 25/25.
 - The first fresh-depot archive smoke was blocked only by sandbox DNS. The
   permitted reruns downloaded registry metadata into disposable depots and
-  passed on both Julia 1.12.6 and 1.10.0.
+  passed on both Julia 1.12.6 and 1.10.11.
 - The ignored docs manifest required a version-specific refresh for each Julia
   line. It currently reflects Julia 1.12.6 and is not a tracked source change.
 - The first Julia 1.10 documentation attempt found the Julia 1.12-flavored
@@ -273,6 +319,22 @@ julia --compiled-modules=no --startup-file=no --project=. \
   test bindings created by repeated `include` calls. The measured core and
   extension testsets still passed; no package runtime failure was observed.
 - MATLAB and proprietary/commercial optimization backends were not used.
+
+## Symmetric-state toolkit addition (2026-08-09)
+
+Ten project-native public functions now cover exact symmetric-subspace sizes,
+occupation enumeration and rank/unrank, multiqudit Dicke states, product-state
+coordinates, collective one-body operators, bipartition isometries, direct
+compressed reductions, and maximally mixed symmetric states. Their 1,014
+focused assertions pass on Julia 1.12.6 and 1.10.11; both complete package runs
+pass 9,484/9,484. The public-API/provenance gate, generated completion-artifact
+freshness check, strict completion checker, and strict Documenter build pass.
+
+Occupation-tuple materialization has a hard 1,000-level safety cap for Julia
+1.10 compiler stability. Large sparse wrappers may still require a temporary
+canonical sparse copy before resource rejection, and nontrivial split/reduction
+construction materializes guarded occupation workspaces. These are documented
+resource limitations, not silent densification or correctness fallbacks.
 
 ## Remaining external gates
 

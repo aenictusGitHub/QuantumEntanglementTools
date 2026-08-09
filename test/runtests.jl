@@ -3,6 +3,7 @@ using QuantumEntanglementTools
 
 include("tier_a_subsystem_kernel.jl")
 include("tier_b_states_operators_random.jl")
+include("symmetric_states.jl")
 include("tier_c_channels_maps.jl")
 include("wp1_operator_space_maps.jl")
 include("wp1_qetlab_map_rows.jl")
@@ -59,4 +60,5 @@ include("wp9_nonlocal_games_compat.jl")
 include("tier_e_matrix_predicates.jl")
 include("tier_e_matrix_predicates_compat.jl")
 include("qetlab_completion_checker.jl")
+include("release_gate_checks.jl")
 include(joinpath(@__DIR__, "..", "tutorials", "runtests.jl"))

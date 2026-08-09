@@ -194,6 +194,15 @@
         if (pageSource.indexOf("[executable tutorials](tutorials.md)") === -1) {
             failures.push("documentation page must link to executable tutorials");
         }
+        if (
+            pageSource.indexOf("## License of generated artifacts") === -1 ||
+            pageSource.indexOf("`SPDX-License-Identifier`") === -1 ||
+            pageSource.indexOf("descriptive metadata") === -1
+        ) {
+            failures.push(
+                "documentation page must explain generated-code and configuration licensing"
+            );
+        }
 
         return failures;
     }
@@ -261,7 +270,25 @@
             var before = JSON.stringify(input);
             var first = core.generate(input);
             var second = core.generate(input);
-            check(first.ok, "family " + input.family + " must generate");
+            var hasTemplateAttribution =
+                first.code.indexOf("# SPDX-FileCopyrightText: 2026 John Martin") !==
+                    -1 &&
+                first.code.indexOf("# SPDX-License-Identifier: BSD-3-Clause") !==
+                    -1 &&
+                first.code.indexOf(
+                    "QuantumEntanglementTools/blob/main/LICENSE"
+                ) !== -1;
+            var hasPaperAttribution =
+                input.family !== "symmetric_sappt_ghz5" ||
+                (first.code.indexOf("10.1103/PhysRevA.111.042418") !== -1 &&
+                    first.code.indexOf("does not copy or rerun the source SDP") !==
+                        -1);
+            check(
+                first.ok && hasTemplateAttribution && hasPaperAttribution,
+                "family " +
+                    input.family +
+                    " must generate with required template and source attribution"
+            );
             check(
                 first.code === second.code,
                 "family " + input.family + " must be deterministic"

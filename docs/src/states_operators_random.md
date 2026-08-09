@@ -52,8 +52,22 @@ dicke = dicke_state(4, 1)
 ```
 
 Supplied GHZ and W coefficients are used exactly; the package never silently
-normalizes user data. Mixed-state families validate their documented physical
-parameter ranges instead of clipping inputs:
+normalizes user data. `dicke_state` counts its combinations with `BigInt`
+before enumeration. By default it rejects more than 1,000,000 nonzeros,
+10,000,000 dense entries, or 100,000,000 estimated scalar operations; each
+guard may be set to `nothing` only after the caller reviews the requested
+cost. `MATLABCompat.DickeState` keeps sparse compatibility output and forwards
+the same limits.
+
+For multiqudits and scalable occupation-coordinate calculations, use the
+project-native [symmetric-state toolkit](symmetric_states.md). It adds exact
+occupation rank/unrank, generalized Dicke states, product coordinates,
+collective one-body operators, symmetric bipartition isometries, direct
+reduced states, and symmetric maximally mixed states. These additions do not
+create new `MATLABCompat` mappings or widen QETLAB parity claims.
+
+Mixed-state families validate their documented physical parameter ranges
+instead of clipping inputs:
 
 ```julia
 ρiso = isotropic_state(3, 1 // 4)

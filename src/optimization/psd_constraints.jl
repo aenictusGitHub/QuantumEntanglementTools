@@ -1,10 +1,13 @@
-# Independently designed solver-neutral replacement for the CVX-expression
-# branch of QETLAB IsPSD.m at
+# Source-informed independent Julia implementation based on the CVX-expression
+# contract of QETLAB IsPSD.m at
 # d8589610f00cff106537268dee2e2a1153f3a601.
+# QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
+# Full upstream terms: licenses/QETLAB-LICENSE.txt.
 #
+# The implementation is an independently designed solver-neutral replacement.
 # Numeric matrices continue to use is_positive_semidefinite. Affine model data
-# uses this explicit constraint builder so a predicate is never confused with a
-# mutation of an ambient optimization model.
+# uses this explicit constraint builder so a predicate is never confused with
+# a mutation of an ambient optimization model.
 
 """
     positive_semidefinite_constraint(matrix::HermitianAffineMatrix)

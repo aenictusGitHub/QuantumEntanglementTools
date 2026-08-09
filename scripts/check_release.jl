@@ -18,6 +18,7 @@ const REQUIRED_DISTRIBUTION_FILES = (
     "CITATION.bib",
     "CHANGELOG.md",
     "SECURITY.md",
+    "SUPPORT.md",
     "artifacts/convergence/current_snapshot.toml",
     "docs/BENCHMARK_REPORT.md",
     "docs/BUILD_ENVIRONMENT.md",
@@ -45,6 +46,8 @@ const REQUIRED_DISTRIBUTION_FILES = (
     "scripts/check_release.jl",
     "scripts/qetlab_completion_common.jl",
     "scripts/reconcile_project_claims.jl",
+    "test/oracle/runtests.jl",
+    "test/release_gate_checks.jl",
     "test/runtests.jl",
 )
 const FORBIDDEN_DISTRIBUTION_PATHS = (
@@ -69,6 +72,8 @@ Validate unreleased or tagged-release metadata and the exact Git archive.
 
 Options:
   --treeish REF      Validate REF (default: HEAD)
+  --release-candidate
+                     Require dated release metadata before creating the tag
   --tag TAG          Require an annotated v<version> tag and dated release metadata
   --archive-smoke    Extract REF and load/smoke-test it in a fresh Julia depot
   --registry         Run a partial General-registry preflight
@@ -79,10 +84,12 @@ Without `--allow-dirty`, checks read bytes from the exact committed tree and
 reject tracked changes and unexpected untracked files. Dirty mode uses an
 isolated temporary Git index and object store, includes nonignored untracked
 paths, and never changes the repository index. It is local preflight evidence,
-not release evidence. Without `--tag`, the changelog and citation metadata
-must describe an unreleased development milestone. `--registry` is only a
-partial preflight: it cannot prove the maintainer's non-delegable review,
-remote visibility, or RegistryCI acceptance.
+not release evidence. Without `--release-candidate` or `--tag`, the changelog
+and citation metadata must describe an unreleased development milestone.
+Release-candidate mode accepts the dated metadata that must be committed and
+tested before an annotated tag exists, but it is not tagged-release evidence.
+`--registry` is only a partial preflight: it cannot prove the maintainer's
+non-delegable review, remote visibility, or RegistryCI acceptance.
 """,
     )
 end
@@ -93,6 +100,7 @@ function parse_options(args)
     registry = false
     archive_smoke = false
     allow_dirty = false
+    release_candidate = false
     index = 1
     while index <= length(args)
         argument = args[index]
@@ -105,6 +113,8 @@ function parse_options(args)
             archive_smoke = true
         elseif argument == "--allow-dirty"
             allow_dirty = true
+        elseif argument == "--release-candidate"
+            release_candidate = true
         elseif startswith(argument, "--treeish=")
             treeish = split(argument, "="; limit=2)[2]
         elseif argument == "--treeish"
@@ -127,7 +137,10 @@ function parse_options(args)
         !isempty(get(ENV, "GITHUB_REF_NAME", ""))
         tag = ENV["GITHUB_REF_NAME"]
     end
-    return (; treeish, tag, registry, archive_smoke, allow_dirty)
+    release_candidate &&
+        !isnothing(tag) &&
+        error("--release-candidate and --tag are mutually exclusive")
+    return (; treeish, tag, registry, archive_smoke, allow_dirty, release_candidate)
 end
 
 function git_command(arguments...)
@@ -162,6 +175,132 @@ function is_valid_iso_date(value::AbstractString)
     catch
         return false
     end
+end
+
+function validate_release_metadata!(
+    failures::Vector{String},
+    version::VersionNumber,
+    citation::AbstractString,
+    changelog::AbstractString;
+    dated::Bool,
+)
+    check(condition, message) = condition || push!(failures, message)
+    escaped_version = replace(string(version), "." => "\\.")
+    release_match = match(
+        Regex("(?m)^## \\[$escaped_version\\] - (\\d{4}-\\d{2}-\\d{2})\\s*\$"), changelog
+    )
+    citation_date_match = match(
+        r"(?m)^date-released:\s*[\"']?(\d{4}-\d{2}-\d{2})[\"']?\s*$", citation
+    )
+
+    check(
+        occursin(r"(?m)^## \[Unreleased\]\s*$", changelog),
+        "CHANGELOG.md has no Unreleased heading",
+    )
+    check(
+        occursin(Regex("(?m)^version:\\s*[\"']?$escaped_version[\"']?\\s*\$"), citation),
+        "CITATION.cff version does not match Project.toml",
+    )
+    if dated
+        check(
+            !isnothing(release_match),
+            "CHANGELOG.md has no dated release heading for $version",
+        )
+        if !isnothing(release_match)
+            check(
+                is_valid_iso_date(release_match.captures[1]),
+                "CHANGELOG.md release date is not a valid ISO calendar date",
+            )
+        end
+        check(!isnothing(citation_date_match), "CITATION.cff has no release date")
+        if !isnothing(citation_date_match)
+            check(
+                is_valid_iso_date(citation_date_match.captures[1]),
+                "CITATION.cff release date is not a valid ISO calendar date",
+            )
+        end
+        if !isnothing(release_match) && !isnothing(citation_date_match)
+            check(
+                release_match.captures[1] == citation_date_match.captures[1],
+                "CHANGELOG.md and CITATION.cff release dates disagree",
+            )
+        end
+    else
+        check(
+            isnothing(release_match),
+            "unreleased metadata must not contain a dated $version release heading",
+        )
+        check(
+            isnothing(citation_date_match),
+            "unreleased CITATION.cff must not contain date-released",
+        )
+    end
+    check(
+        occursin(r"(?m)^repository-code:\s*[\"']?https://github\.com/", citation),
+        "CITATION.cff has no canonical repository-code URL",
+    )
+    return nothing
+end
+
+function validate_release_copy!(
+    failures::Vector{String}, version::VersionNumber, documents::AbstractDict
+)
+    check(condition, message) = condition || push!(failures, message)
+    required_paths = (
+        "AGENTS.md",
+        "CONTRIBUTING.md",
+        "README.md",
+        "SECURITY.md",
+        "CITATION.cff",
+        "CITATION.bib",
+        "docs/CONVERGENCE_AUDIT.md",
+        "docs/PORTING_STATUS.md",
+        "docs/SESSION_HANDOFF.md",
+        "docs/VALIDATION_REPORT.md",
+        "docs/src/getting_started.md",
+    )
+    for path in required_paths
+        check(haskey(documents, path), "release-copy check has no $path")
+    end
+    all(path -> haskey(documents, path), required_paths) || return nothing
+
+    stale_patterns = (
+        r"(?i)\bunreleased\b",
+        r"(?i)no version has been (?:released|published|tagged)",
+        r"(?i)no release, tag, or publication has been made",
+    )
+    for path in required_paths, pattern in stale_patterns
+        checked_content =
+            if path in (
+                "AGENTS.md",
+                "CONTRIBUTING.md",
+                "docs/CONVERGENCE_AUDIT.md",
+                "docs/PORTING_STATUS.md",
+                "docs/SESSION_HANDOFF.md",
+                "docs/VALIDATION_REPORT.md",
+            )
+                # These living maintenance documents retain historical records and
+                # instructions that may legitimately mention the Changelog's
+                # Unreleased section. Only their release-facing preamble/current
+                # status is required to be tag-safe.
+                join(Iterators.take(eachline(IOBuffer(documents[path])), 120), '\n')
+            else
+                documents[path]
+            end
+        check(
+            !occursin(pattern, checked_content),
+            "$path retains pre-release wording matching $(repr(pattern))",
+        )
+    end
+
+    expected_revision = "rev=\"v$version\""
+    for path in ("README.md", "docs/src/getting_started.md")
+        check(
+            occursin(expected_revision, documents[path]),
+            "$path must contain the stable installation revision $expected_revision",
+        )
+    end
+    return nothing
 end
 
 function split_nul_records(bytes::AbstractVector{UInt8})
@@ -241,6 +380,23 @@ function run_archive_smoke(archive_bytes::Vector{UInt8})
     end
 end
 
+function check_completion_artifacts(candidate_root::AbstractString)
+    script = joinpath(candidate_root, "scripts", "build_qetlab_completion_plan.jl")
+    isfile(script) || return (
+        success=false, output="candidate has no scripts/build_qetlab_completion_plan.jl"
+    )
+    output = IOBuffer()
+    command = `$(Base.julia_cmd()) --startup-file=no --project=$candidate_root $script --check`
+    success = try
+        run(pipeline(command; stdout=output, stderr=output))
+        true
+    catch error
+        error isa ProcessFailedException || rethrow()
+        false
+    end
+    return (; success, output=strip(String(take!(output))))
+end
+
 function check_release(options)
     failures = String[]
     check(condition, message) = condition || push!(failures, message)
@@ -296,6 +452,18 @@ function check_release(options)
                 path in archive_paths, "required file is excluded from Git archive: $path"
             )
         end
+    end
+
+    completion_artifacts = check_completion_artifacts(archive_root)
+    if !completion_artifacts.success
+        detail = if isempty(completion_artifacts.output)
+            "no diagnostic output"
+        else
+            replace(completion_artifacts.output, '\n' => " | ")
+        end
+        push!(
+            failures, "generated QETLAB completion artifacts are missing or stale: $detail"
+        )
     end
 
     for path in candidate_paths, pattern in FORBIDDEN_DISTRIBUTION_PATHS
@@ -449,60 +617,33 @@ function check_release(options)
     citation = content("CITATION.cff")
     changelog = content("CHANGELOG.md")
     if version isa VersionNumber
-        escaped_version = replace(string(version), "." => "\\.")
-        unreleased_heading = occursin(r"(?m)^## \[Unreleased\]\s*$", changelog)
-        release_match = match(
-            Regex("(?m)^## \\[$escaped_version\\] - (\\d{4}-\\d{2}-\\d{2})\\s*\$"),
-            changelog,
+        validate_release_metadata!(
+            failures,
+            version,
+            citation,
+            changelog;
+            dated=options.release_candidate || !isnothing(options.tag),
         )
-        check(unreleased_heading, "CHANGELOG.md has no Unreleased heading")
-        check(
-            occursin(
-                Regex("(?m)^version:\\s*[\"']?$escaped_version[\"']?\\s*\$"), citation
-            ),
-            "CITATION.cff version does not match Project.toml",
-        )
-        citation_date_match = match(
-            r"(?m)^date-released:\s*[\"']?(\d{4}-\d{2}-\d{2})[\"']?\s*$", citation
-        )
-        if isnothing(options.tag)
-            check(
-                isnothing(release_match),
-                "untagged metadata must not contain a dated $version release heading",
+        if options.release_candidate || !isnothing(options.tag)
+            release_copy_paths = (
+                "AGENTS.md",
+                "CONTRIBUTING.md",
+                "README.md",
+                "SECURITY.md",
+                "CITATION.cff",
+                "CITATION.bib",
+                "docs/CONVERGENCE_AUDIT.md",
+                "docs/PORTING_STATUS.md",
+                "docs/SESSION_HANDOFF.md",
+                "docs/VALIDATION_REPORT.md",
+                "docs/src/getting_started.md",
             )
-            check(
-                isnothing(citation_date_match),
-                "untagged CITATION.cff must not contain date-released",
+            validate_release_copy!(
+                failures,
+                version,
+                Dict(path => content(path) for path in release_copy_paths),
             )
-        else
-            check(
-                !isnothing(release_match),
-                "CHANGELOG.md has no dated release heading for $version",
-            )
-            if !isnothing(release_match)
-                check(
-                    is_valid_iso_date(release_match.captures[1]),
-                    "CHANGELOG.md release date is not a valid ISO calendar date",
-                )
-            end
-            check(!isnothing(citation_date_match), "CITATION.cff has no release date")
-            if !isnothing(citation_date_match)
-                check(
-                    is_valid_iso_date(citation_date_match.captures[1]),
-                    "CITATION.cff release date is not a valid ISO calendar date",
-                )
-            end
-            if !isnothing(release_match) && !isnothing(citation_date_match)
-                check(
-                    release_match.captures[1] == citation_date_match.captures[1],
-                    "CHANGELOG.md and CITATION.cff release dates disagree",
-                )
-            end
         end
-        check(
-            occursin(r"(?m)^repository-code:\s*[\"']?https://github\.com/", citation),
-            "CITATION.cff has no canonical repository-code URL",
-        )
     end
 
     if !isnothing(options.tag)
@@ -557,7 +698,11 @@ function check_release(options)
     if isempty(failures)
         if options.allow_dirty
             println(
-                "working-tree preflight passed for ",
+                if options.release_candidate
+                    "working-tree release-candidate preflight passed for "
+                else
+                    "working-tree preflight passed for "
+                end,
                 name,
                 " v",
                 version_text,
@@ -566,7 +711,11 @@ function check_release(options)
         else
             if isnothing(options.tag)
                 println(
-                    "unreleased archive check passed for ",
+                    if options.release_candidate
+                        "release-candidate archive check passed for "
+                    else
+                        "unreleased archive check passed for "
+                    end,
                     name,
                     " v",
                     version_text,
@@ -601,4 +750,6 @@ function check_release(options)
     return exit(1)
 end
 
-check_release(parse_options(ARGS))
+if abspath(PROGRAM_FILE) == abspath(@__FILE__)
+    check_release(parse_options(ARGS))
+end

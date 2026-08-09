@@ -55,13 +55,13 @@ At pinned QETLAB revision
 `d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
 checker records all 127/127 public rows with final `verified` status, all 36/36
 internal helpers with terminal dispositions, an empty completion queue, and
-467 exported bindings with matching provenance entries.
+477 exported bindings with matching provenance entries.
 
 !!! warning "Scope of the completion evidence"
-    The direct local full corpus passes 8,360/8,360 assertions: the core
-    accounts for 8,276 assertions, and the seven standalone executable
+    The direct local full corpus passes 9,484/9,484 assertions: the core
+    accounts for 9,400 assertions, and the seven standalone executable
     tutorials pass 84/84 assertions (48 existing plus 36 for the two new
-    workflows), on Julia 1.12.6 and the installed Julia 1.10.0. These static and
+    workflows), on Julia 1.12.6 and the installed Julia 1.10.11. These static and
     local results do not establish MATLAB/QETLAB parity, remote
     supported-platform CI, comparative performance, API stability, release
     approval, or the required human review.

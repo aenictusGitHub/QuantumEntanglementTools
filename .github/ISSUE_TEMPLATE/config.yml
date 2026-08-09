@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/aenictusGitHub/QuantumEntanglementTools/security/policy
+    about: Follow the repository's current confidential reporting instructions.
+  - name: Documentation
+    url: https://aenictusgithub.github.io/QuantumEntanglementTools/
+    about: Check conventions, tutorials, backends, and known limitations first.

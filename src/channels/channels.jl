@@ -880,12 +880,15 @@ mixed-precision, exact, arbitrary-precision, and sparse collections retain the
 termwise conversion path.
 
 Choi-to-Kraus conversion is defined only when complete positivity is
-established by the structured diagnostic. A numerical boundary is rejected,
-not projected onto the positive semidefinite cone. The conversion performs a
-dense Hermitian eigendecomposition, so sparse Choi data require
-`allow_densify=true`. Use [`canonical_map_decomposition`](@ref) when a stable
-paired result is required for Hermiticity-preserving, general, or
-numerically-inconclusive maps.
+established by the structured diagnostic and the canonical factorization
+retains every computed spectral mode. The predicate and factorization use
+different scale estimates, so a predicate may be satisfied while the requested
+factorization tolerance would still discard a small positive mode. The plain
+conversion rejects that case rather than silently returning a different map.
+The conversion performs a dense Hermitian eigendecomposition, so sparse Choi
+data require `allow_densify=true`. Use
+[`canonical_map_decomposition`](@ref) to inspect the typed spectrum, cutoff,
+discarded norm, and reconstruction residual at a numerical boundary.
 """
 function choi_representation(map::ChoiRepresentation)
     return ChoiRepresentation(_validated_representation_matrix(map), operator_space(map))
@@ -1300,6 +1303,14 @@ function kraus_representation(
             "canonical_map_decomposition for a paired reconstruction",
         ),
     )
+    result.retained_rank == length(result.spectral_values) || throw(
+        DomainError(
+            result,
+            "Choi-to-Kraus conversion would discard a computed spectral mode " *
+            "and return a different map; inspect canonical_map_decomposition " *
+            "or use tighter explicit tolerances after reviewing its residual",
+        ),
+    )
     factors = operator_sum_factors(result.representation)
     return KrausRepresentation(factors.left)
 end
@@ -1338,8 +1349,7 @@ end
     kraus_operators(map; atol, rtol)
 
 Return mutable copies of the map's Kraus operators. Conversion follows the
-explicit dense eigendecomposition and tolerance behavior of
-`kraus_representation`.
+strict dense eigendecomposition contract of `kraus_representation`.
 """
 function kraus_operators(map::AbstractMapRepresentation; kwargs...)
     return [copy(operator) for operator in kraus_representation(map; kwargs...).operators]

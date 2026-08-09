@@ -1,0 +1,51 @@
+name: Mathematical correctness report
+description: Report a suspected wrong value, classification, certificate, convention, or tolerance boundary.
+title: "[Correctness]: "
+labels:
+  - correctness
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Correctness reports receive priority. A passed necessary condition is not a separability certificate, and an inconclusive computation is `unknown` rather than `false`.
+  - type: input
+    id: version
+    attributes:
+      label: Exact package version or commit
+    validations:
+      required: true
+  - type: textarea
+    id: statement
+    attributes:
+      label: Suspected incorrect statement or result
+      description: Identify the function, returned status/certificate, convention, and mathematical claim.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Exact reproduction
+      render: julia
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Independent evidence
+      description: Give an analytic calculation, paper/DOI, independently generated example, or high-precision cross-check. State whether MATLAB, Octave, or QETLAB was actually run.
+    validations:
+      required: true
+  - type: textarea
+    id: parameters
+    attributes:
+      label: Dimensions, ordering, precision, and tolerances
+      description: Include subsystem order, vectorization convention, numeric type, storage type, tolerances, densification and backend/solver information.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - label: I removed credentials, private data, copyrighted source dumps, and proprietary solver output.
+          required: true

@@ -5,9 +5,9 @@ At pinned QETLAB revision
 `d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
 checker passes with 127/127 public rows verified with final status,
 36/36 internal helpers assigned terminal dispositions, no queued rows, and
-467 exported bindings with matching provenance entries. The direct local full
-corpus passes 8,360/8,360 assertions: 8,276 core plus 84
-executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
+477 exported bindings with matching provenance entries. The direct local full
+corpus passes 9,484/9,484 assertions: 9,400 core plus 84
+executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.11.
 
 This is package-local implementation and validation evidence. It does not
 establish MATLAB/QETLAB parity, remote supported-platform CI, comparative
@@ -33,8 +33,8 @@ the current package-wide aggregate.
 | `PartialTrace` | `partial_trace` | `MATLABCompat.PartialTrace` | Native `trace_out` keyword; implementation selected by dispatch rather than `MODE` | Implemented; locally tested; parity review pending |
 | `PartialTranspose` | `partial_transpose` | `MATLABCompat.PartialTranspose` | Native `systems` keyword; rectangular form uses explicit row/column layouts or a plan | Implemented; locally tested; parity review pending |
 | `Realignment` | `realign` | `MATLABCompat.Realignment` | Native generalized party selection uses `systems`; reusable plan available | Implemented; locally tested; parity review pending |
-| `SymmetricProjection` | `symmetric_projector`, `symmetric_subspace_basis` | `MATLABCompat.SymmetricProjection` | Projector and orthonormal-basis outputs are separate native functions | Implemented; locally tested; parity review pending |
-| `AntisymmetricProjection` | `antisymmetric_projector`, `antisymmetric_subspace_basis` | `MATLABCompat.AntisymmetricProjection` | Projector and orthonormal-basis outputs are separate native functions | Implemented; locally tested; parity review pending |
+| `SymmetricProjection` | `symmetric_projector`, `symmetric_subspace_basis` | `MATLABCompat.SymmetricProjection` | Projector and orthonormal-basis outputs are separate native functions; exact combinatorial column/nonzero, dense-entry, and work guards are Julia keywords | Implemented; local guard/property tests pass; parity review pending |
+| `AntisymmetricProjection` | `antisymmetric_projector`, `antisymmetric_subspace_basis` | `MATLABCompat.AntisymmetricProjection` | Projector and orthonormal-basis outputs are separate native functions; exact combinatorial column/nonzero, dense-entry, and work guards are Julia keywords | Implemented; local guard/property tests pass; parity review pending |
 
 The compatibility namespace also exposes tested `BasisToLinear`,
 `LinearToBasis`, and inverse-realignment spellings used by the Tier A wrappers.
@@ -59,7 +59,7 @@ evidence, not general MATLAB equivalence.
 | `Bell` | `bell_state` | `MATLABCompat.Bell` | Native index is restricted to `0:3`; compatibility indices retain modulo-four behavior | Implemented; local and Octave fixture tests pass |
 | `GHZState` | `ghz_state` | `MATLABCompat.GHZState` | Native coefficients and output form are keywords; supplied coefficients are not normalized | Implemented; local and Octave fixture tests pass |
 | `WState` | `w_state` | `MATLABCompat.WState` | Native coefficients and output form are keywords; supplied coefficients are not normalized | Implemented; local and Octave fixture tests pass |
-| `DickeState` | `dicke_state` | `MATLABCompat.DickeState` | Native normalization and output form are keywords | Implemented; local and Octave fixture tests pass |
+| `DickeState` | `dicke_state` | `MATLABCompat.DickeState` | Native normalization, output form, exact nonzero count, dense-entry cap, and enumeration-work cap are keywords | Implemented; local guard/property and Octave fixture tests pass |
 | `IsotropicState` | `isotropic_state` | `MATLABCompat.IsotropicState` | Native constructor enforces the physical positivity interval and supports exact rationals | Implemented; local and Octave fixture tests pass |
 | `WernerState` | `werner_state` | `MATLABCompat.WernerState` | Scalar form enforces the bipartite physical range; vector form implements the normalized lexicographic permutation sum with exact inverse-coefficient Hermiticity, PSD validation, and resource guards | Implemented; intentionally corrects the pinned multipartite loop-overwrite defect, which is retained as an Octave discrepancy fixture |
 | `HorodeckiState` | `horodecki_state` | `MATLABCompat.HorodeckiState` | Local dimensions use a `dims` keyword in the native API | Implemented; both `3×3` and `2×4` local/Octave fixtures pass |
@@ -595,8 +595,8 @@ MATLAB was not run.
 |---|---|---|---|---|
 | `Majorizes` | `majorizes` | `MATLABCompat.Majorizes` | Native uses standard strong majorization, equal totals, symmetric tolerances, padding before sorting, and singular values for every matrix shape. The compatibility entry point preserves pinned weak totals, row/column vectors, sort-before-padding, and its one-sided tolerance while exposing safe tolerance and sparse-densification keywords | Implemented; native and compatibility contracts plus all reviewed discrepancies are locally tested |
 | `ElemSymPoly` | `elementary_symmetric_polynomial` | `MATLABCompat.ElemSymPoly` | Native name is descriptive Julia `snake_case`; row/column matrices are accepted by the wrapper. The dynamic program preserves sparse vectors and checked exact arithmetic rather than enumerating combinations in floating arithmetic | Implemented; local and Octave fixture tests pass |
-| `CompoundMatrix` | `compound_matrix` | `MATLABCompat.CompoundMatrix` | Native retains `binomial(m,k) × binomial(n,k)` shapes when one dimension is zero; the wrapper preserves pinned `0×0` for `k > min(m,n)`. Exact minor arithmetic and sparse output selection are retained where values agree | Implemented; local and reviewed shape-discrepancy tests pass |
-| `AdditiveCompoundMatrix` | `additive_compound_matrix` | `MATLABCompat.AdditiveCompoundMatrix` | Native defines order zero as the `1×1` additive zero; the wrapper reproduces the reviewed pinned dependency-path error. Positive orders use checked exact arithmetic and explicit sparse output | Implemented; local and reviewed order-zero-discrepancy tests pass |
+| `CompoundMatrix` | `compound_matrix` | `MATLABCompat.CompoundMatrix` | Native retains `binomial(m,k) × binomial(n,k)` shapes when one dimension is zero; the wrapper preserves pinned `0×0` for `k > min(m,n)`. Exact minor arithmetic, sparse output selection, and pre-allocation output/workspace and work guards are retained where values agree | Implemented; local guard and reviewed shape-discrepancy tests pass |
+| `AdditiveCompoundMatrix` | `additive_compound_matrix` | `MATLABCompat.AdditiveCompoundMatrix` | Native defines order zero as the `1×1` additive zero; the wrapper reproduces the reviewed pinned dependency-path error. Positive orders use checked exact arithmetic, explicit sparse output, and pre-allocation output/workspace and work guards | Implemented; local guard and reviewed order-zero-discrepancy tests pass |
 | `Commutant` | `commutant` | `MATLABCompat.Commutant` | A matrix or nonempty Julia tuple/vector replaces a MATLAB matrix or cell. The native result is a dense Hilbert--Schmidt-orthonormal basis with explicit rank tolerances, densification permission, and allocation/work budgets. The wrapper preserves sparse output storage when all inputs were sparse | Implemented for finite numeric matrices supported by the standard-library dense SVD; subspace, residual, type, sparse-policy, and guard tests pass; MATLAB not run |
 
 The five discrepancy fixtures are evidence, not native expected values: weak

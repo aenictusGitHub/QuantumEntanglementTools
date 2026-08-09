@@ -1,10 +1,14 @@
-# Independently specified solver-neutral replacement for the CVX-expression
-# branch of QETLAB MatsumotoFidelity.m at
+# Source-informed independent Julia implementation based on the executable
+# contract of QETLAB MatsumotoFidelity.m at
 # d8589610f00cff106537268dee2e2a1153f3a601.
+# QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
+# Full upstream terms: licenses/QETLAB-LICENSE.txt.
 #
-# The numeric branch remains in measures/scalar_measures.jl. This file exposes
-# the exact semidefinite hypograph lift instead of mutating an ambient CVX
-# model or returning a backend-owned expression.
+# This independently specified solver-neutral replacement covers the pinned
+# CVX-expression branch. The numeric branch remains in
+# measures/scalar_measures.jl. This file exposes the exact semidefinite
+# hypograph lift instead of mutating an ambient CVX model or returning a
+# backend-owned expression.
 
 """
     MatsumotoFidelityModel

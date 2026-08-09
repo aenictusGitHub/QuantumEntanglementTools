@@ -184,8 +184,65 @@ end
         full_rank_choi = QET.ChoiRepresentation(
             Matrix(Diagonal([4.0, 3.0, 2.0, 1.0])), 2, 2
         )
+        full_rank_decomposition = QET.canonical_map_decomposition(full_rank_choi)
+        @test full_rank_decomposition.complete_positivity.status ===
+            MatrixPredicateSatisfied
+        @test all(
+            >(full_rank_decomposition.threshold), full_rank_decomposition.spectral_values
+        )
         @test QET.choi_matrix(QET.kraus_representation(full_rank_choi)) ≈
             QET.choi_matrix(full_rank_choi)
+
+        tiny_positive_choi = QET.ChoiRepresentation(
+            Matrix(Diagonal([1.0, 1.0, 1.0, 1.0e-10])), 2, 2
+        )
+        tiny_positive_decomposition = QET.canonical_map_decomposition(
+            tiny_positive_choi; atol=0, rtol=0
+        )
+        @test tiny_positive_decomposition.complete_positivity.status ===
+            MatrixPredicateSatisfied
+        @test all(
+            >(tiny_positive_decomposition.threshold),
+            tiny_positive_decomposition.spectral_values,
+        )
+        tiny_positive_kraus = QET.kraus_representation(tiny_positive_choi; atol=0, rtol=0)
+        @test QET.choi_matrix(tiny_positive_kraus) ≈ QET.choi_matrix(tiny_positive_choi) atol =
+            1.0e-14 rtol = 1.0e-14
+
+        # The PSD diagnostic scales from the largest matrix entry, while the
+        # factorization cutoff scales from the largest eigenvalue. This map is
+        # robustly CP for the former but would lose three positive modes under
+        # the latter. The plain conversion must not silently change the map.
+        roundoff = sqrt(eps(Float64))
+        scale_mismatch_choi = QET.ChoiRepresentation(
+            ones(4, 4) + 3 * roundoff * Matrix{Float64}(I, 4, 4), 2, 2
+        )
+        scale_mismatch = QET.canonical_map_decomposition(scale_mismatch_choi)
+        @test scale_mismatch.complete_positivity.status === MatrixPredicateSatisfied
+        @test scale_mismatch.retained_rank < length(scale_mismatch.spectral_values)
+        @test scale_mismatch.discarded_frobenius_norm > 0
+        @test scale_mismatch.reconstruction_frobenius_norm > 0
+        @test_throws DomainError QET.kraus_representation(scale_mismatch_choi)
+
+        tiny_negative_choi = QET.ChoiRepresentation(
+            Matrix(Diagonal([1.0, 1.0, 1.0, -1.0e-10])), 2, 2
+        )
+        approximate = QET.canonical_map_decomposition(
+            tiny_negative_choi; atol=1.0e-8, rtol=0
+        )
+        @test approximate isa QET.CanonicalMapDecompositionResult
+        @test approximate.discarded_frobenius_norm == 1.0e-10
+        @test approximate.reconstruction_frobenius_norm ≈ 1.0e-10
+        @test_throws DomainError QET.kraus_representation(
+            tiny_negative_choi; atol=1.0e-8, rtol=0
+        )
+
+        nearly_hermitian_data = Matrix{Float64}(I, 4, 4)
+        nearly_hermitian_data[1, 2] = 1.0e-10
+        nearly_hermitian_choi = QET.ChoiRepresentation(nearly_hermitian_data, 2, 2)
+        @test_throws DomainError QET.kraus_representation(
+            nearly_hermitian_choi; atol=1.0e-8, rtol=0
+        )
 
         input = ComplexF64[0.6 0.2im; -0.2im 0.4]
         expected = sum(operator * input * operator' for operator in operators)

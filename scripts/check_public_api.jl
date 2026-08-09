@@ -37,6 +37,8 @@ const REQUIRED_PROVENANCE_FIELDS = Set([
 const QETLAB_PROVENANCE_FIELDS = Set([
     "upstream_function", "source_path", "source_revision", "source_sha256"
 ])
+const QETLAB_ATTRIBUTION_TOKENS = ("QETLAB", "BSD-2-Clause", "licenses/QETLAB-LICENSE.txt")
+const QETLAB_ATTRIBUTION_PREAMBLE_LINES = 160
 
 const ALLOWED_PUBLIC_KINDS = Set([
     "module", "type", "function", "constant", "alias", "compatibility_wrapper"
@@ -179,6 +181,8 @@ function main(args)
 
     provenance_by_key = Dict{Tuple{String,String},Any}()
     qetlab_provenance_by_function = Dict{String,Vector{Any}}()
+    qetlab_attribution_files = Dict{String,Set{String}}()
+    qetlab_additional_file_sources = Dict{String,Set{String}}()
     for (entry_number, entry) in pairs(provenance_entries)
         entry isa AbstractDict || error("provenance entry $entry_number is not a table")
         missing = setdiff(REQUIRED_PROVENANCE_FIELDS, Set(keys(entry)))
@@ -266,6 +270,41 @@ function main(args)
                 "QETLAB provenance for $(module_name).$(name) is missing: " *
                 join(sort!(collect(missing_qetlab)), ", "),
             )
+
+            additional_files = get(entry, "additional_julia_files", String[])
+            if !(
+                additional_files isa AbstractVector &&
+                all(path -> path isa AbstractString && !isempty(path), additional_files)
+            )
+                fail(
+                    "additional_julia_files must be an array of non-empty strings for " *
+                    "$(module_name).$(name)",
+                )
+                additional_files = String[]
+            end
+            primary_file = get(entry, "julia_file", "")
+            revision = get(entry, "source_revision", "")
+            for source_file in Iterators.flatten(([primary_file], additional_files))
+                source_file isa AbstractString && !isempty(source_file) || continue
+                isfile(joinpath(REPOSITORY_ROOT, source_file)) || fail(
+                    "QETLAB-attributed Julia file is not a local regular file for " *
+                    "$(module_name).$(name): $source_file",
+                )
+                revision isa AbstractString &&
+                    !isempty(revision) &&
+                    push!(
+                        get!(qetlab_attribution_files, source_file, Set{String}()), revision
+                    )
+            end
+            source_path = get(entry, "source_path", "")
+            if source_path isa AbstractString && !isempty(source_path)
+                for source_file in additional_files
+                    push!(
+                        get!(qetlab_additional_file_sources, source_file, Set{String}()),
+                        basename(source_path),
+                    )
+                end
+            end
             haskey(entry, "upstream_function") || continue
             upstream_function = entry["upstream_function"]
             source_path = get(entry, "source_path", "")
@@ -296,6 +335,35 @@ function main(args)
             )
         else
             fail("unsupported source_project '$source_project' for $(module_name).$(name)")
+        end
+    end
+
+    for source_file in sort!(collect(keys(qetlab_attribution_files)))
+        full_path = joinpath(REPOSITORY_ROOT, source_file)
+        isfile(full_path) || continue
+        source_lines = split(read(full_path, String), '\n')
+        preamble = join(
+            source_lines[1:min(length(source_lines), QETLAB_ATTRIBUTION_PREAMBLE_LINES)],
+            '\n',
+        )
+        for token in QETLAB_ATTRIBUTION_TOKENS
+            occursin(token, preamble) || fail(
+                "QETLAB-attributed file $source_file must name '$token' in its first " *
+                "$(QETLAB_ATTRIBUTION_PREAMBLE_LINES) lines",
+            )
+        end
+        for revision in qetlab_attribution_files[source_file]
+            occursin(revision, preamble) || fail(
+                "QETLAB-attributed file $source_file must name pinned revision $revision " *
+                "in its first $(QETLAB_ATTRIBUTION_PREAMBLE_LINES) lines",
+            )
+        end
+        for upstream_file in get(qetlab_additional_file_sources, source_file, Set{String}())
+            occursin(upstream_file, preamble) || fail(
+                "additional QETLAB-attributed file $source_file must name its mapped " *
+                "upstream source $upstream_file in its first " *
+                "$(QETLAB_ATTRIBUTION_PREAMBLE_LINES) lines",
+            )
         end
     end
 

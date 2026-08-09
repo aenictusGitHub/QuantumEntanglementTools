@@ -1,6 +1,12 @@
 using Documenter
 using QuantumEntanglementTools
 
+edit_ref = if get(ENV, "GITHUB_REF_TYPE", "") == "tag"
+    get(ENV, "GITHUB_REF_NAME", "main")
+else
+    "main"
+end
+
 include(joinpath(@__DIR__, "..", "scripts", "check_docs_math_compat.jl"))
 DocsMathCompatibility.check_docs_math_compat() ||
     error("documentation math compatibility checks failed")
@@ -26,7 +32,7 @@ makedocs(;
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
         collapselevel=1,
-        edit_link="main",
+        edit_link=edit_ref,
         assets=[
             Documenter.asset("assets/qet_code_generator.css"; class=:css, islocal=true),
             Documenter.asset(
@@ -66,6 +72,7 @@ makedocs(;
         ],
         "States, channels, and maps" => [
             "States, operators, and random objects" => "states_operators_random.md",
+            "Symmetric multiqubit and multiqudit states" => "symmetric_states.md",
             "General and rectangular maps" => "general_maps.md",
             "Bounded random completely positive maps" => "random_superoperators.md",
             "Guarded group twirls" => "twirls.md",

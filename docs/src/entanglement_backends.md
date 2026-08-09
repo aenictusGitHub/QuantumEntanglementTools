@@ -8,10 +8,10 @@ package-certified conclusions.
 At pinned QETLAB revision
 `d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
 checker records 127/127 public rows with final `verified` status, 36/36 internal
-helpers with terminal dispositions, no queued rows, and 467 exported bindings
+helpers with terminal dispositions, no queued rows, and 477 exported bindings
 with matching provenance entries. The direct local full corpus passes
-8,360/8,360 assertions: 8,276 core plus 84 executable-tutorial
-assertions, on Julia 1.12.6 and the installed Julia 1.10.0. This evidence does not establish
+9,484/9,484 assertions: 9,400 core plus 84 executable-tutorial
+assertions, on Julia 1.12.6 and the installed Julia 1.10.11. This evidence does not establish
 MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,
 API stability, release approval, or human review.
 

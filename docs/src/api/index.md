@@ -10,6 +10,7 @@ than scanning the full export list.
 |---|---|---|
 | Tensor, trace, transpose, swap, or permute subsystems | `tensor_product`, `partial_trace`, `partial_transpose`, `swap_subsystems`, `permute_subsystems` | [Conventions](../conventions.md) |
 | Construct a named or random state | `bell_state`, `ghz_state`, `random_state_vector`, `random_density_matrix` | [States and random objects](../states_operators_random.md) |
+| Work with symmetric multiqubit or multiqudit states | `generalized_dicke_state`, `symmetric_product_coordinates`, `symmetric_reduced_state` | [Symmetric states](../symmetric_states.md) |
 | Classify a bipartite pure state | `analyze_entanglement(psi, dims)` | `EntanglementReport` |
 | Run one entanglement criterion | `ppt_criterion`, `realignment_criterion`, `reduction_criterion` | `CriterionResult` |
 | Seek a composite separability or entanglement certificate | `is_separable(rho, dims; strategies=...)` | [Separability and local discrimination](../separability_optimization.md) |
@@ -119,6 +120,11 @@ documented in
 The checked, type-preserving full-probability tensor construction for
 parallel nonlocal-game repetition is documented in
 [Nonlocal games](../nonlocal_games.md).
+Exact occupation indexing, generalized Dicke states, compressed product
+coordinates, collective observables, symmetric split isometries, direct
+reductions, and explicit coordinate-versus-ambient maximally mixed states are
+documented in
+[Symmetric multiqubit and multiqudit states](../symmetric_states.md).
 Exact classical enumeration, NPA and no-signalling relaxations, and
 explicit-RNG attained candidates are documented in
 [Bell inequalities and nonlocal games](../nonlocal_optimization.md).
@@ -150,10 +156,10 @@ below Documenter's strict HTML-size limit:
 At pinned QETLAB revision
 `d8589610f00cff106537268dee2e2a1153f3a601`, the strict static completion
 checker passes with 127/127 public rows carrying final `verified` status, 36/36
-internal helpers assigned terminal dispositions, no queued rows, and 467
+internal helpers assigned terminal dispositions, no queued rows, and 477
 exported bindings with matching provenance entries. The direct local full
-corpus passes 8,360/8,360 assertions: 8,276 core plus 84
-executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.0.
+corpus passes 9,484/9,484 assertions: 9,400 core plus 84
+executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.11.
 
 These results establish local implementation and validation evidence, not
 MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,

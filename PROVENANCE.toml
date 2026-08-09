@@ -1,7 +1,7 @@
 # Public-API provenance ledger. Keep this synchronized with exports and the
 # reviewed upstream inventory via `julia --project=. scripts/check_public_api.jl`.
 schema_version = 1
-audit_date = "2026-07-30"
+audit_date = "2026-08-09"
 qetlab_revision = "d8589610f00cff106537268dee2e2a1153f3a601"
 verification_scope = "The strict local completion ledger records terminal coverage for all 127 pinned public QETLAB rows and terminal dispositions for all 36 internal helpers. Every exported binding names local tests and documentation; 27 source-free Octave/QETLAB comparator groups provide function-specific supplemental evidence, while MATLAB was not run. The core and complete open-source JuMP/Hypatia/SCS extension suites pass on Julia 1.12.6 and the installed Julia 1.10.0. Executable tutorials run in the core corpus. The isolated EntanglementDetection.jl 0.2.2 adapter passes its dedicated child-process, load-order, lifecycle, and caller-state suite on Julia 1.12.6, with an effective Julia 1.11 resolver floor. These records do not establish general MATLAB parity, supported-platform CI, universal optimizer-certificate validity, performance superiority, API stability, or human release approval."
 
@@ -4561,6 +4561,146 @@ tests = ["test/wp2_polynomial_foundations.jl"]
 docs = ["docs/src/api/matlab_compat.md", "docs/src/polynomial_foundations.md", "docs/src/migration_from_qetlab.md"]
 
 [[functions]]
+julia_name = "symmetric_subspace_dimension"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native exact stars-and-bars dimension for permutation-symmetric occupation coordinates."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-exact-bigint-combinatorial-dimension"
+status = "implemented"
+verification_status = "local-focused-dimension-boundary-invalid-and-roundtrip-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "symmetric_occupations"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native bounded enumeration of multiqudit occupation sectors in the package's existing symmetric-basis order."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-bounded-occupation-enumeration"
+status = "implemented"
+verification_status = "local-focused-ordering-dimension-vacuum-resource-invalid-and-basis-column-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "symmetric_basis_index"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native exact one-based rank of a multiqudit occupation tuple."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-bigint-combinatorial-ranking-without-enumeration"
+status = "implemented"
+verification_status = "local-focused-exhaustive-small-rank-unrank_ordering-trailing-zero-and-invalid-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "symmetric_basis_occupation"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native exact inverse of symmetric occupation ranking."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-bigint-block-unranking-without-enumeration"
+status = "implemented"
+verification_status = "local-focused-exhaustive-small-rank-unrank_boundary-and-invalid-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "generalized_dicke_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native multiqudit occupation-state constructor generalizing the package's qubit Dicke API."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-sparse-multiset-word-enumeration-with-bigint-resource-preflight"
+status = "implemented"
+verification_status = "local-focused-normalization-support-permutation_qubit-equivalence_basis-column_sparse-dense-generic-resource-invalid-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "symmetric_product_coordinates"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native direct occupation coordinates for repeated identical local pure-state factors."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-multinomial-product-coordinates-with-widened-intermediates-and-bounded-enumeration"
+status = "implemented"
+verification_status = "local-focused-ambient-projection_norm_complex_sparse_float32-bigfloat-vacuum-overflow-resource-invalid-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "symmetric_collective_operator"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native bosonic occupation-coordinate representation of a collective one-body operator."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-sparse-second-quantized-one-body-action-with-bigint-resource-preflight"
+status = "implemented"
+verification_status = "local-focused-ambient-tensor-sum_hermitian-spin-commutator_sparse-dense-generic-vacuum-resource-invalid-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "symmetric_split_isometry"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native Clebsch-style isometry splitting a symmetric occupation basis across a particle bipartition."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-sparse-exact-combinatorial-split-map-with-widened-ratio-evaluation"
+status = "implemented"
+verification_status = "local-focused-multiqubit-multiqudit-all-splits_isometry_sparse-dense-float32-vacuum-resource-invalid-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "symmetric_reduced_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native partial trace acting directly on symmetric occupation coordinates."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-direct-compressed-pure-and-operator-reduction-with-sparse-preservation-and-resource-preflight"
+status = "implemented"
+verification_status = "local-focused-ambient-partial-trace_agreement_pure-mixed_all-splits_hypergeometric_trace-hermiticity_sparse-dense-resource-invalid-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
+julia_name = "symmetric_maximally_mixed_state"
+public_module = "QuantumEntanglementTools"
+public_kind = "function"
+julia_file = "src/states/symmetric_states.jl"
+source_project = "QuantumEntanglementTools"
+project_origin = "Project-native maximally mixed state on the symmetric subspace with explicit compressed or ambient representation."
+specification = "docs/src/symmetric_states.md"
+implementation_kind = "independent-project-native-exact-coordinate-identity-or-guarded-symmetric-projector-normalization"
+status = "implemented"
+verification_status = "local-focused-exact-trace_coordinate-ambient-agreement_sparse-dense-generic-vacuum-resource-invalid-tests-pass_current-julia_julia-1.10-pending"
+tests = ["test/symmetric_states.jl"]
+docs = ["docs/src/symmetric_states.md", "docs/src/api/index.md", "docs/src/api/native.md"]
+
+[[functions]]
 julia_name = "DensityMatrixValidationReport"
 public_module = "QuantumEntanglementTools"
 public_kind = "type"
@@ -6183,6 +6323,7 @@ julia_name = "positive_semidefinite_constraint"
 public_module = "QuantumEntanglementTools"
 public_kind = "function"
 julia_file = "src/optimization/psd_constraints.jl"
+additional_julia_files = ["ext/psd_constraints.jl"]
 source_project = "QETLAB"
 upstream_function = "IsPSD"
 source_path = "IsPSD.m"

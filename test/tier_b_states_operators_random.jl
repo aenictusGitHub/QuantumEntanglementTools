@@ -157,6 +157,27 @@ end
         @test dicke_state(4, 0) == sparsevec([1], [1.0], 16)
         @test dicke_state(4, 4) == sparsevec([16], [1.0], 16)
         @test all(==(1), nonzeros(dicke_state(5, 2; normalized=false)))
+        @test dicke_state(6, 3; max_nonzeros=20, max_work=386) == dicke_state(6, 3)
+        @test dicke_state(
+            6, 3; sparse_output=false, max_nonzeros=20, max_dense_entries=64, max_work=386
+        ) == Vector(dicke_state(6, 3))
+        @test_throws ArgumentError dicke_state(6, 3; max_nonzeros=19)
+        @test_throws ArgumentError dicke_state(6, 3; max_work=385)
+        @test_throws ArgumentError dicke_state(
+            6, 3; sparse_output=false, max_dense_entries=63
+        )
+        @test_throws ArgumentError dicke_state(30, 15)
+        @test_throws ArgumentError dicke_state(4, 2; max_nonzeros=true)
+        @test_throws ArgumentError dicke_state(4, 2; max_dense_entries=0)
+        @test_throws ArgumentError dicke_state(4, 2; max_work=1.5)
+        @test dicke_state(
+            5, 2; max_nonzeros=nothing, max_dense_entries=nothing, max_work=nothing
+        ) == dicke_state(5, 2)
+
+        guarded_rng = Xoshiro(0x4449434b45)
+        control_rng = Xoshiro(0x4449434b45)
+        @test_throws ArgumentError dicke_state(30, 15; max_nonzeros=1)
+        @test rand(guarded_rng, UInt64) == rand(control_rng, UInt64)
 
         @test_throws ArgumentError maximally_entangled(0)
         @test_throws ArgumentError bell_state(4)
@@ -394,6 +415,8 @@ end
     @test CompatB.GHZState(2, 3) == ghz_state(2, 3)
     @test CompatB.WState(4) == w_state(4)
     @test CompatB.DickeState(5, 2, 0) == dicke_state(5, 2; normalized=false)
+    @test CompatB.DickeState(6, 3, 1; max_nonzeros=20, max_work=386) == dicke_state(6, 3)
+    @test_throws ArgumentError CompatB.DickeState(6, 3; max_nonzeros=19)
     @test CompatB.IsotropicState(3, 0.2) == isotropic_state(3, 0.2)
     @test CompatB.WernerState(3, 0.2) == werner_state(3, 0.2)
     @test CompatB.HorodeckiState(0.2, [2, 4]) == horodecki_state(0.2; dims=(2, 4))

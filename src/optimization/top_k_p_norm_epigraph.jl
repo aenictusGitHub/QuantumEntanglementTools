@@ -1,10 +1,12 @@
-# Independently specified solver-neutral replacement for the CVX-expression
-# branch of QETLAB kpNorm.m at
+# Source-informed independent Julia implementation based on the CVX-expression
+# contract of QETLAB kpNorm.m at
 # d8589610f00cff106537268dee2e2a1153f3a601.
+# QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
+# Full upstream terms: licenses/QETLAB-LICENSE.txt.
 #
-# Numeric vectors and matrices continue to use top_k_p_norm. This file defines
-# a composable affine epigraph atom; its JuMP/MOI materialization lives in the
-# optional extension.
+# This independently specified solver-neutral replacement leaves numeric
+# vectors and matrices on top_k_p_norm. This file defines a composable affine
+# epigraph atom; its JuMP/MOI materialization lives in the optional extension.
 
 """
     ComplexAffineTerm(variable, coefficient)

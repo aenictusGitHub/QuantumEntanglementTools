@@ -588,6 +588,60 @@ end
         @test_throws ArgumentError symmetric_projector(0)
         @test_throws ArgumentError antisymmetric_projector(2, 0)
         @test_throws ArgumentError symmetric_projector(true)
+        @test_throws ArgumentError symmetric_subspace_basis(1, 100_000_000)
+        @test symmetric_subspace_basis(1, 100_000_000; max_work=nothing) ==
+            sparse([1], [1], [1.0], 1, 1)
+        @test symmetric_projector(1, 100_000_000; max_work=nothing) ==
+            sparse([1], [1], [1.0], 1, 1)
+
+        bounded_symmetric_basis = symmetric_subspace_basis(
+            3, 2; max_columns=6, max_nonzeros=9, max_work=50
+        )
+        @test bounded_symmetric_basis == symmetric_subspace_basis(3, 2)
+        @test symmetric_subspace_basis(
+            3,
+            2;
+            sparse_output=false,
+            max_columns=6,
+            max_nonzeros=9,
+            max_dense_entries=54,
+            max_work=50,
+        ) == Matrix(bounded_symmetric_basis)
+        @test_throws ArgumentError symmetric_subspace_basis(3, 2; max_columns=5)
+        @test_throws ArgumentError symmetric_subspace_basis(3, 2; max_nonzeros=8)
+        @test_throws ArgumentError symmetric_subspace_basis(3, 2; max_work=49)
+        @test_throws ArgumentError symmetric_subspace_basis(
+            3, 2; sparse_output=false, max_dense_entries=53
+        )
+
+        @test symmetric_projector(3, 2; max_columns=9, max_nonzeros=15, max_work=65) ==
+            symmetric_projector(3, 2)
+        @test antisymmetric_subspace_basis(
+            3, 2; max_columns=3, max_nonzeros=6, max_work=56
+        ) == antisymmetric_subspace_basis(3, 2)
+        @test antisymmetric_projector(3, 2; max_columns=9, max_nonzeros=12, max_work=68) ==
+            antisymmetric_projector(3, 2)
+        @test_throws ArgumentError symmetric_projector(3, 2; max_columns=8)
+        @test_throws ArgumentError symmetric_projector(3, 2; max_nonzeros=14)
+        @test_throws ArgumentError symmetric_projector(3, 2; max_work=64)
+        @test_throws ArgumentError antisymmetric_subspace_basis(3, 2; max_columns=2)
+        @test_throws ArgumentError antisymmetric_projector(3, 2; max_nonzeros=11)
+        @test_throws ArgumentError symmetric_projector(2, 2; max_columns=true)
+        @test_throws ArgumentError symmetric_projector(2, 2; max_nonzeros=0)
+        @test_throws ArgumentError symmetric_projector(2, 2; max_work=1.5)
+        @test symmetric_projector(
+            2,
+            2;
+            max_columns=nothing,
+            max_nonzeros=nothing,
+            max_dense_entries=nothing,
+            max_work=nothing,
+        ) == symmetric_projector(2, 2)
+
+        guarded_rng = Xoshiro(0x50524f4a)
+        control_rng = Xoshiro(0x50524f4a)
+        @test_throws ArgumentError symmetric_projector(4, 4; max_columns=1)
+        @test rand(guarded_rng, UInt64) == rand(control_rng, UInt64)
     end
 
     @testset "MATLAB compatibility wrappers" begin
@@ -663,6 +717,15 @@ end
         symmetric_basis = MATLABCompat.SymmetricProjection(2, 2, 1)
         @test symmetric_basis * adjoint(symmetric_basis) ≈ symmetric_projector(2, 2)
         @test MATLABCompat.AntisymmetricProjection(2, 2, 0) == antisymmetric_projector(2, 2)
+        @test MATLABCompat.SymmetricProjection(
+            3, 2, 0; max_columns=9, max_nonzeros=15, max_work=65
+        ) == symmetric_projector(3, 2)
+        @test MATLABCompat.AntisymmetricProjection(
+            3, 2, 1; max_columns=3, max_nonzeros=6, max_work=56
+        ) == antisymmetric_subspace_basis(3, 2)
+        @test_throws ArgumentError MATLABCompat.SymmetricProjection(
+            3, 2, 0; max_nonzeros=14
+        )
         @test MATLABCompat.BasisToLinear((2, 1), (2, 3)) == 4
         @test MATLABCompat.LinearToBasis(4, (2, 3)) == (2, 1)
 

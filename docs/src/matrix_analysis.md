@@ -111,6 +111,14 @@ with `sparse_output` overriding either choice. Exact minors use widened integer
 or rational arithmetic with checked narrowing rather than the floating
 projection path used for ordinary numeric QETLAB inputs.
 
+Combination growth is checked before combination tables or results are
+allocated. `max_entries=10_000_000` bounds conservative output and workspace
+storage, including one selected-minor workspace and the temporary coordinate
+arrays coexisting with returned CSC row/value arrays and column pointers for a
+sparse result. `max_work=100_000_000` bounds the number of minors weighted by a
+cubic minor-order estimate. Set a guard to `nothing` only after reviewing the
+requested cost; array-length representability checks remain mandatory.
+
 ## Additive compounds
 
 `additive_compound_matrix(A, k)` requires a square matrix and represents the
@@ -132,6 +140,11 @@ julia> additive_compound_matrix([1 2; 3 4], 2)
 The pinned `AdditiveCompoundMatrix.m` dependency path errors at order zero;
 `MATLABCompat.AdditiveCompoundMatrix` reproduces that reviewed error. Use the
 native function for the mathematically defined `1×1` result.
+
+The additive implementation uses the same `max_entries` and `max_work`
+defaults. Its plan also includes the combination table, content-keyed lookup,
+membership scans, and key copy/sort/hash work. The compatibility wrapper
+forwards both Julia-only guards for positive orders.
 
 ## Matrix commutants
 

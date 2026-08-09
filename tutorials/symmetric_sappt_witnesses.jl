@@ -1,3 +1,17 @@
+# SPDX-FileCopyrightText: 2026 John Martin
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Independently written executable tutorial citing selected analytic results
+# and rounded witness coefficients from J. Louvet, E. Serrano-Ensástiga,
+# T. Bastin, and J. Martin, "Nonequivalence between absolute separability and
+# positive partial transposition in the symmetric subspace," Phys. Rev. A 111,
+# 042418 (2025), https://doi.org/10.1103/PhysRevA.111.042418.
+# Inspected author-supplied publisher PDF SHA-256:
+# c9a32248a9f0f730409dc690db0dfc8ab97063bd600041cb7e567d8b0e9aaf7a.
+# The paper PDF, prose, figures, and source SDP are not copied or redistributed;
+# this tutorial's original Julia implementation is covered by the repository's
+# BSD 3-Clause License.
+
 module TutorialSymmetricSAPPTWitnesses
 
 using LinearAlgebra

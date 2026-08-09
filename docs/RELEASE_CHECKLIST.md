@@ -55,7 +55,13 @@ not suitable for registration.
 - [ ] Immediately before the approved tag, confirm that the dated changelog
       heading and `CITATION.cff` `date-released` equal the actual publication
       date. Update both on a new candidate commit and rerun every gate; the
-      preparation date is not a release date.
+      preparation date is not a release date. Validate that exact, untagged
+      commit in the explicit release-candidate mode:
+
+  ```sh
+  julia --startup-file=no --project=. \
+    scripts/check_release.jl --release-candidate
+  ```
 - [ ] While iterating, run the explicitly non-evidentiary worktree preflight
       after all intended release files are present. Dirty mode uses an isolated
       temporary Git index/object store and does not alter the repository index:
@@ -72,6 +78,10 @@ not suitable for registration.
   cffconvert --version
   cffconvert --validate --infile CITATION.cff
   ```
+
+  The Quality workflow repeats schema validation through the pinned official
+  `cffconvert` action. A remote pass supplements rather than replaces recording
+  the validator version used for the candidate.
 
 - [ ] Confirm that all canonical repository and documentation links match the
       chosen release target.
@@ -135,7 +145,13 @@ Run each command from the repository root on the exact candidate commit:
 - [ ] Every committed source-free oracle comparator, with its fixture path
       supplied explicitly and fixture SHA-256 verified. Record MATLAB versus
       Octave provenance per fixture; passing Octave comparisons do not establish
-      MATLAB parity.
+      MATLAB parity. The checked-in driver has an explicit one-to-one manifest,
+      rejects unmapped comparator/fixture/sidecar files, verifies every digest
+      before and after execution, and always passes the committed fixture path:
+
+  ```sh
+  julia --startup-file=no --project=test/oracle test/oracle/runtests.jl
+  ```
 
 - [ ] Claim reconciliation must run without `--skip-tests` after all source,
       test, ledger, and current-claim prose changes:
@@ -166,29 +182,14 @@ Run each command from the repository root on the exact candidate commit:
     benchmark/benchmarks.jl --quick --no-save
   ```
 
-- [ ] Run every committed source-free oracle comparator. Each comparator
-      verifies its fixture's committed `.sha256` sidecar before comparing
-      native and compatibility results:
-
-  ```sh
-  julia --startup-file=no --project=test/oracle test/oracle/compare_tier_a_oracle.jl test/oracle/fixtures/tier_a_octave_11_3_qetlab_d858961.json
-  julia --startup-file=no --project=test/oracle test/oracle/compare_tier_b_oracle.jl test/oracle/fixtures/tier_b_octave_11_3_qetlab_d858961.json
-  julia --startup-file=no --project=test/oracle test/oracle/compare_tier_c_oracle.jl test/oracle/fixtures/tier_c_octave_11_3_qetlab_d858961.json
-  julia --startup-file=no --project=test/oracle test/oracle/compare_tier_d_oracle.jl test/oracle/fixtures/tier_d_octave_11_3_qetlab_d858961.json
-  julia --startup-file=no --project=test/oracle test/oracle/compare_tier_e_coherence_oracle.jl test/oracle/fixtures/tier_e_coherence_octave_11_3_qetlab_d858961.json
-  julia --startup-file=no --project=test/oracle test/oracle/compare_tier_e_product_oracle.jl test/oracle/fixtures/tier_e_product_octave_11_3_qetlab_d858961.json
-  julia --startup-file=no --project=test/oracle test/oracle/compare_tier_e_matrix_analysis_oracle.jl test/oracle/fixtures/tier_e_matrix_analysis_octave_11_3_qetlab_d858961.json
-  ```
-
-  Record that Octave evidence is function-specific and does not establish
-  general MATLAB equivalence.
-
 - [ ] On a clean exact candidate commit, run the release archive checks on both
       the current Julia and the minimum supported Julia:
 
   ```sh
-  julia --startup-file=no --project=. scripts/check_release.jl --archive-smoke
-  julia +1.10 --startup-file=no --project=. scripts/check_release.jl --archive-smoke
+  julia --startup-file=no --project=. \
+    scripts/check_release.jl --release-candidate --archive-smoke
+  julia +1.10 --startup-file=no --project=. \
+    scripts/check_release.jl --release-candidate --archive-smoke
   ```
 
 ## Remote evidence
@@ -199,14 +200,29 @@ Run each command from the repository root on the exact candidate commit:
 - [ ] Quality, formatting, inventory, and API/provenance workflows pass.
 - [ ] Coverage tests pass and Codecov confirms successful ingestion of the
       report; a green job that skipped or failed upload is not sufficient.
+      Keep the initial project and patch statuses informational until a private
+      repository baseline has uploaded successfully; tighten them only from
+      recorded evidence.
 - [ ] The EntanglementDetection Julia 1.11/1.12 Linux, macOS, and Windows
       matrix passes.
 - [ ] Nightly failures are either fixed or recorded as upstream/nightly-only;
       they are not silently ignored.
-- [ ] Required status checks and branch protection refer to the current workflow
-      job names.
+- [ ] Required status checks and branch protection refer to current,
+      always-running Core, Coverage, and Quality job contexts. Do not directly
+      require Documentation or Optional-backend contexts while those workflows
+      use path filters: a skipped required workflow can remain Pending and
+      block merging. If either becomes required, first add an always-running
+      aggregate status job or remove the workflow-level path filter.
 - [ ] A GitHub ruleset protects release tags matching `v*` from update or
       deletion after publication.
+- [ ] The tag-only **Release tag evidence** workflow passes its Julia 1.10 and
+      stable archive-smoke matrix. Download and verify its source tarball,
+      SHA-256 sidecar, and exact-commit sidecar before the 90-day Actions
+      retention window expires.
+- [ ] Download and inspect the tag-specific rendered-documentation artifact
+      before its 90-day Actions retention window expires. The Pages deployment
+      is a moving `main` snapshot until immutable public version hosting is
+      deliberately enabled.
 
 ## Legal and archive inspection
 
@@ -234,7 +250,7 @@ Run each command from the repository root on the exact candidate commit:
   ```sh
   candidate_commit="$(git rev-parse HEAD)"
   julia --startup-file=no --project=. scripts/check_release.jl \
-    --treeish "$candidate_commit" --archive-smoke
+    --treeish "$candidate_commit" --release-candidate --archive-smoke
   git archive --format=tar "$candidate_commit" | tar -tf -
   ```
 
@@ -256,10 +272,19 @@ Run each command from the repository root on the exact candidate commit:
 Use this section only if the repository is to remain private.
 
 - [ ] Obtain explicit approval to publish a private GitHub release.
-- [ ] Confirm that collaborators understand the release and its documentation
-      are not publicly accessible.
+- [ ] Confirm the intended visibility separately for source, release assets, and
+      GitHub Pages. A Pages site built from a private repository may still be
+      public depending on the account plan and repository settings.
 - [ ] Confirm the release commit is pushed, branch protection is active, and all
       required checks pass on that exact commit.
+- [ ] Keep the default Actions token read-only, disallow Actions from creating
+      or approving pull requests, and restrict the `github-pages` deployment
+      environment to `main`.
+- [ ] Enable the dependency graph, Dependabot alerts, and private vulnerability
+      reporting. Update `SECURITY.md` and the issue-form contact link together,
+      then verify the confidential route before advertising it.
+- [ ] Grant the Codecov GitHub App access to this private repository and verify
+      an accepted OIDC upload before making coverage status required.
 - [ ] Decide whether GitHub should mark `v0.1.0` as a pre-release; do not call
       the experimental API stable.
 - [ ] Create an annotated `v0.1.0` tag on the exact tested commit.
@@ -267,10 +292,14 @@ Use this section only if the repository is to remain private.
       tag-triggered Core, Documentation, Coverage, Quality, and Optional
       integration workflow to pass on the tag's exact commit before publishing
       the GitHub release.
+- [ ] Confirm the `v*` tag ruleset prevents update/deletion and enable immutable
+      releases if it is available for this repository.
 - [ ] Create release notes from the `0.1.0` changelog section, including the
       no-parity statement, Julia requirements, optional-backend floor, and known
       limitations.
-- [ ] Attach only inspected artifacts and checksums.
+- [ ] Attach the inspected workflow tarball, `.sha256`, `.commit`, and rendered
+      documentation bundle to the approved GitHub release before their Actions
+      artifacts expire. Attach no uninspected build output.
 - [ ] In a fresh depot with authenticated private-repository access, install the
       exact tag and run a package-load plus small certificate smoke test.
 - [ ] Verify that the tag, GitHub release, changelog, citation metadata, and
@@ -302,7 +331,7 @@ Complete this section in addition to every applicable section above.
 
   ```sh
   QET_HUMAN_REVIEW_CONFIRMED=true julia --startup-file=no --project=. \
-    scripts/check_release.jl --registry
+    scripts/check_release.jl --release-candidate --registry
   ```
 
 - [ ] Confirm the package name and non-affiliation wording with the maintainer;

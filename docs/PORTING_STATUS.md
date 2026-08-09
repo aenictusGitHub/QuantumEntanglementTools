@@ -1,6 +1,6 @@
 # Porting status
 
-Last updated: 2026-07-31.
+Last updated: 2026-08-09.
 
 This is the human-readable status summary. The generated upstream inventory is
 the authoritative function ledger once reviewed. A function is not complete
@@ -12,18 +12,18 @@ merely because a similarly named Julia method exists.
 
 | Area | Evidence-based status |
 |---|---|
-| Repository state | Uncommitted tutorial, user-experience, and schema-2 generator integration work on `main` at base `a50f516ad7887adcc468d649ccd28307477b18e5`; no commit, push, tag, release, visibility, or settings change in this pass |
+| Repository state | Uncommitted release-hardening work on `main` at base `8b2fcbafc646c528aade8bbf695b1112e45511a9`; `origin/main` is the same base, and no commit, push, tag, release, visibility, or settings change was made in this pass |
 | QETLAB source | Pinned and clean at `d8589610f00cff106537268dee2e2a1153f3a601`; 163 MATLAB files, 127 public functions, 36 private helpers, 503 dependency edges, and no detected cycle |
 | Strict completion ledger | 127/127 public rows are verified with final status; completion queue contains 0 public rows; 36/36 internal helpers have terminal dispositions; 0 required helpers remain; 0 static completion failures |
-| Public API/provenance | 467 runtime exports (337 native/module and 130 `MATLABCompat`) match 467 provenance records |
-| Full package corpus | 8,360/8,360 assertions—8,276 core plus 84 executable-tutorial assertions—pass on Julia 1.12.6 and the installed Julia 1.10.0 |
-| Optional optimization | The complete JuMP/Hypatia/SCS environment passes 846/846 assertions on both installed Julia lines; solver output remains status-rich and is not automatically a certificate |
-| EntanglementDetection.jl | Exact 0.2.2 adapter passes 130/130 assertions on Julia 1.12.6; its effective resolver floor remains Julia 1.11 because of Ket 0.9 |
-| User-facing diagnostics | Additive result interpretation, density validation, strategy/backend discovery, task-first documentation, and rendered Pages deployment preserve existing function names and certificate boundaries |
+| Public API/provenance | 477 runtime exports (347 native/module and 130 `MATLABCompat`) match 477 provenance records |
+| Full package corpus | 9,484/9,484 assertions—9,400 core plus 84 executable-tutorial assertions—pass on Julia 1.12.6 and the installed Julia 1.10.11 |
+| Optional optimization | The complete JuMP/Hypatia/SCS environment passes 847/847 assertions on both installed Julia lines; solver output remains status-rich and is not automatically a certificate |
+| EntanglementDetection.jl | Exact 0.2.2 adapter passes 141/141 assertions on Julia 1.12.6; its effective resolver floor remains Julia 1.11 because of Ket 0.9 |
+| User-facing diagnostics | Additive result interpretation, density validation, strategy/backend discovery, symmetric multiqubit/multiqudit coordinates, task-first documentation, and rendered Pages deployment preserve existing function names and certificate boundaries |
 | Interactive generator | Schema 2 provides 11 bounded families, nine curated presets, five additional analysis routes, four fixed core separability profiles, resource planning, and strict versioned JSON portability; 178 JavaScriptCore checks pass, and the 13-module generated Julia bundle completes on Julia 1.12.6 and 1.10.0 |
 | Independent predicates | Randomized spectrum/minor validation passes 130/130 assertions on both installed Julia lines |
 | Executable tutorials | Seven standalone scripts pass 84/84 assertions on both installed Julia lines; 36 assertions cover the new seeded Schmidt and exact Tiles-UPB workflows |
-| Quick benchmarks | All 114 declared quick benchmark cases completed for the clean `f32dd233` baseline and the candidate now committed as `a50f516`; targeted paired minima and allocations are recorded as local diagnostics, not a stable comparative-performance or regression-baseline claim |
+| Quick benchmarks | All 114 declared quick benchmark cases completed without failure on the current uncommitted worktree; this is local smoke evidence only, and targeted paired minima remain diagnostics rather than a stable comparative baseline |
 | Remote/release evidence | Dirty-worktree preflight and isolated archive smoke pass on both installed Julia lines; exact-commit supported-platform CI, Codecov ingestion, maintainer review, and publication decisions remain open |
 
 The strict result is a bounded local repository-evidence claim. It does not
@@ -85,6 +85,17 @@ previously recorded HTML/search-index size warnings remain.
 
 The strict checker is deliberately static. Passing it does not prove semantic
 correctness, MATLAB parity, or solver-certificate validity.
+
+## Symmetric multiqubit and multiqudit tools (2026-08-09)
+
+The project-native API now includes ten occupation-coordinate operations for
+symmetric states. Exact dimension/rank arithmetic, multiqudit Dicke
+construction, compressed product coordinates, collective operators, split
+isometries, reductions, and coordinate/ambient maximally mixed states are
+integrated with provenance, conceptual/API documentation, and resource guards.
+The focused suite passes 1,014/1,014 on Julia 1.12.6 and 1.10.11. This addition
+does not change the pinned QETLAB inventory or claim a QETLAB compatibility
+mapping for these project-native functions.
 
 ## Remaining gates
 

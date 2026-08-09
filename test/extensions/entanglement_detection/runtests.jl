@@ -217,6 +217,65 @@ end
     @testset "bounded process lifecycle" begin
         extension = extension_module()
 
+        unused_stream = IOBuffer()
+        empty_capture = extension._finish_bounded_output(unused_stream, nothing)
+        @test !isopen(unused_stream) && isempty(empty_capture.bytes)
+
+        mktempdir() do directory
+            stdout_path = joinpath(directory, "stdout.log")
+            stderr_path = joinpath(directory, "stderr.log")
+            payload_size = 8 * extension.PROCESS_OUTPUT_LIMIT
+            script =
+                "write(stdout, repeat(\"o\", $payload_size)); " *
+                "write(stderr, repeat(\"e\", $payload_size))"
+            result = extension._wait_for_child(
+                `$(Base.julia_cmd()) --startup-file=no --history-file=no -e $script`,
+                stdout_path,
+                stderr_path,
+                30.0,
+            )
+            @test result.status === :ok
+            @test filesize(stdout_path) <= extension.PROCESS_OUTPUT_LIMIT + 1
+            @test filesize(stderr_path) <= extension.PROCESS_OUTPUT_LIMIT + 1
+            @test occursin(
+                "[output truncated by adapter]", extension._output_excerpt(stdout_path)
+            )
+            @test occursin(
+                "[output truncated by adapter]", extension._output_excerpt(stderr_path)
+            )
+        end
+
+        if Sys.isunix()
+            mktempdir() do directory
+                stdout_path = joinpath(directory, "inherited-stdout.log")
+                stderr_path = joinpath(directory, "inherited-stderr.log")
+                pid_path = joinpath(directory, "descendant.pid")
+                script =
+                    "sleep 30 & " *
+                    "printf '%s' \"\$!\" > \"\$QET_DESCENDANT_PID\"; " *
+                    "printf inherited-parent-output"
+                command = setenv(
+                    Cmd(["/bin/sh", "-c", script]), "QET_DESCENDANT_PID" => pid_path
+                )
+                started = time()
+                result = try
+                    extension._wait_for_child(command, stdout_path, stderr_path, 10.0)
+                finally
+                    if isfile(pid_path)
+                        descendant_pid = strip(read(pid_path, String))
+                        isempty(descendant_pid) ||
+                            run(Cmd(["/bin/kill", "-KILL", descendant_pid]); wait=false)
+                    end
+                end
+                elapsed = time() - started
+                @test result.status === :ok
+                @test elapsed < 3.0
+                @test extension._output_excerpt(stdout_path) == "inherited-parent-output"
+                @test isnothing(result.stdout_capture.error)
+                @test isnothing(result.stderr_capture.error)
+            end
+        end
+
         for injected_error in (InterruptException(), ErrorException("injected wait error"))
             process = run(
                 `$(Base.julia_cmd()) --startup-file=no --history-file=no -e $("sleep(30)")`;
@@ -235,10 +294,10 @@ end
             child_state = Ref(:not_started)
             close_count = Ref(0)
             close_after_throwing = function (stream)
-                close(stream)
                 close_count[] += 1
                 close_count[] == 1 &&
                     throw(ErrorException("injected post-launch stream-close failure"))
+                close(stream)
                 return nothing
             end
             result = extension._wait_for_child(

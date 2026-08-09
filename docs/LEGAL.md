@@ -1,6 +1,6 @@
 # Legal and provenance status
 
-Last evidence update: 2026-07-29.
+Last evidence update: 2026-07-31.
 
 This file documents an engineering compliance review, not legal advice. A source
 being publicly accessible does not by itself authorize copying, adaptation, or
@@ -26,16 +26,31 @@ does not replace.
 The interaction pattern of the documentation's browser code generator was
 inspired by the public
 [PermutationalInvariantDynamics.jl model code generator](https://aenictusgithub.github.io/PermutationalInvariantDynamics.jl/dev/model_code_generator/),
-inspected on 2026-07-29. That reference project and its generated templates are
-GPL-3.0-only, with no output exception identified during inspection.
+inspected in a clean disposable checkout on 2026-07-31 at commit
+[`49c64b1c0fc5b301531582d470144c5b6b3d4030`](https://github.com/aenictusGitHub/PermutationalInvariantDynamics.jl/tree/49c64b1c0fc5b301531582d470144c5b6b3d4030)
+(tree `39407ccd1d38f1332b987b3365f5d8ef0b317600`). The inspected paths were
+`docs/src/model_code_generator.md` and its three
+`docs/src/assets/model_code_generator_{core.js,ui.js,css}` assets. Exact path
+hashes are recorded in `UpstreamManifest.toml`.
+
+The reference repository's `REUSE.toml` applies GPL-3.0-only to the complete
+tree. Its root `LICENSE` and `LICENSES/GPL-3.0-only.txt` both have SHA-256
+`8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903`.
+The reference generator documentation and emitted headers explicitly classify
+its generated Julia templates as GPL-3.0-only without a generated-output
+exception.
 
 No reference HTML, CSS, JavaScript, prose, identifiers, or Julia templates were
 copied or adapted. The QuantumEntanglementTools generator is an independently
 written implementation based only on this package's public API contracts and
 the general idea of a deterministic browser form with copy/download controls.
 Its original source assets and generated template text are covered by this
-repository's BSD 3-Clause License. Redistribution of substantial generated
-template text must retain the applicable BSD notice and conditions.
+repository's BSD 3-Clause License. Emitted Julia files carry SPDX copyright and
+license identifiers plus a link to the complete project license. Redistribution
+of substantial generated template text must retain that notice and the
+applicable BSD conditions. Configuration JSON contains normalized user choices,
+not the Julia template; users remain responsible for rights in data or other
+material they supply.
 
 ## QETLAB
 
@@ -114,6 +129,25 @@ Ket 0.9 releases have that compatibility floor. Runtime compatibility checks
 enforce version 0.2.2 but do not authenticate a source tree; controlled
 validation and release environments must use the registered release or the
 recorded pinned checkout.
+
+## Published SAPPT example
+
+The executable tutorial `tutorials/symmetric_sappt_witnesses.jl` cites and
+reproduces selected calculations from:
+
+- J. Louvet, E. Serrano-Ensástiga, T. Bastin, and J. Martin,
+  “Nonequivalence between absolute separability and positive partial
+  transposition in the symmetric subspace,” *Physical Review A* **111**,
+  042418 (2025), <https://doi.org/10.1103/PhysRevA.111.042418>.
+
+The inspected author-supplied publisher PDF has SHA-256
+`c9a32248a9f0f730409dc690db0dfc8ab97063bd600041cb7e567d8b0e9aaf7a`
+and states `Copyright 2025 American Physical Society`. The PDF, paper prose,
+and figures are not vendored or redistributed. The tutorial is independently
+written Julia code under this repository's BSD 3-Clause License. It cites the
+analytic SAPPT threshold and reconstructs rounded witness coefficients printed
+in the paper; it does not copy or rerun the authors' source SDP. The full source
+relationship and artifact evidence are recorded in `UpstreamManifest.toml`.
 
 ## Distribution checklist
 
