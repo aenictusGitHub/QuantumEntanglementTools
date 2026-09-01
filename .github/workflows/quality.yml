@@ -38,7 +38,7 @@ jobs:
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@a7bed9df697e5d7309d68afe7542a87621a8b6c8 # v3.3.0
       - name: Instantiate core environment
         run: julia --startup-file=no --project=. -e 'using Pkg; Pkg.instantiate()'
       - name: Check release metadata and tag consistency
@@ -84,7 +84,7 @@ jobs:
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@a7bed9df697e5d7309d68afe7542a87621a8b6c8 # v3.3.0
       - name: Instantiate quality environment with local package
         run: >-
           julia --startup-file=no --project=quality -e
@@ -108,7 +108,7 @@ jobs:
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@a7bed9df697e5d7309d68afe7542a87621a8b6c8 # v3.3.0
       - name: Instantiate oracle environment with local package
         run: >-
           julia --startup-file=no --project=test/oracle -e
@@ -134,7 +134,7 @@ jobs:
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@a7bed9df697e5d7309d68afe7542a87621a8b6c8 # v3.3.0
       - name: Instantiate benchmark environment
         run: julia --startup-file=no --project=benchmark -e 'using Pkg; Pkg.instantiate()'
       - name: Run non-recording smoke suite
