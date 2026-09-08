@@ -57,7 +57,7 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@a7bed9df697e5d7309d68afe7542a87621a8b6c8 # v3.3.0
       - name: Instantiate docs environment with local package
         run: >-
           julia --startup-file=no --project=docs -e
@@ -99,7 +99,7 @@ jobs:
           matrix.julia-version == '1' &&
           github.ref == 'refs/heads/main' &&
           github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: docs/build
       - name: Upload rendered site
@@ -127,7 +127,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - name: Deploy rendered documentation
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
