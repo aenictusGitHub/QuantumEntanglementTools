@@ -25,8 +25,8 @@ total_exports = 477
     provenance_without_export_count = 0
 
 [benchmarks]
-cases = ["channels/apply_dephasing_d16", "channels/canonical_general_4x3_to_5x6_terms4", "channels/cb_norm_reset_d2_analytic", "channels/complement_operator_sum_6x5_to_8x8_terms4", "channels/diamond_norm_identity_d2_analytic", "channels/diamond_norm_transpose_d2_model", "channels/distinguishability_identical_d2_analytic", "channels/induced_schatten_3to2_dephasing_d16", "channels/is_cp_depolarizing_d8", "channels/kraus_to_choi_dephasing_d16", "channels/kraus_to_superoperator_dephasing_d16", "channels/maximum_output_fidelity_d2_analytic", "channels/operator_sum_direct_16x12_to_20x10_terms4", "channels/operator_sum_dual_16x12_to_20x10_terms4", "channels/operator_sum_to_choi_16x12_to_20x10_terms4", "channels/partial_operator_sum_2x16_by_3x12_terms4", "channels/random_superoperator_bistochastic_d3_rank3", "channels/random_superoperator_proportional_2to3_rank2", "channels/random_superoperator_tp_4to4_rank16", "channels/twirl_pauli_d4_sparse", "channels/twirl_werner_p3_d2_dense", "coherence/generalized_robustness_pure_d64_k8", "coherence/is_absolutely_k_incoherent_mixed_d16_k1", "coherence/is_k_incoherent_diagonal_d16_k1", "coherence/l1_pure_d4096", "coherence/pure_k_robustness_d4096_k64", "coherence/rank_basis_transform_d64", "coherence/relative_entropy_pure_d4096", "coherence/robustness_pure_d64", "coherence/trace_distance_pure_d64", "criteria/ppt_8x8", "criteria/realignment_8x8", "criteria/reduction_8x8", "entanglement/abs_ppt_constraints_p3", "entanglement/block_positive_identity_d2", "entanglement/block_positive_violation_d2", "entanglement/is_abs_ppt_p2_exhaustive", "entanglement/is_entangling_gate_cnot", "entanglement/is_upb_tiles_exact", "entanglement/logarithmic_negativity_8x8", "entanglement/minimum_upb_size_twelve_qubits", "entanglement/negativity_8x8", "entanglement/schmidt_decomposition_32x32", "entanglement/schmidt_rank_32x32", "entanglement/separability_diagonal_d2", "entanglement/symmetric_extension_problem_bosonic_ppt_k2", "entanglement/symmetric_extension_two_qubit_analytic", "entanglement/upb_alon_lovasz_3x4", "entanglement/upb_chen_johnston_6x6", "entanglement/upb_generalized_tiles_1_d8", "entanglement/upb_johnston_twelve_qubits", "entanglement/upb_separable_discrimination_tiles", "entanglement/upb_tiles", "matrix_analysis/additive_compound_dense_16_order2", "matrix_analysis/commutant_dense_two_generators_d8", "matrix_analysis/compound_dense_8_order3", "matrix_analysis/majorizes_singular_values_32x32", "measures/concurrence_mixed_two_qubit", "measures/entropy_density_d64", "measures/fidelity_density_d32", "measures/induced_matrix_norm_3to2_64x48", "measures/ky_fan_k16_64x48", "measures/matsumoto_fidelity_density_d32", "measures/purity_density_d64", "measures/schatten_p3_64x48", "measures/trace_distance_density_d64", "measures/trace_norm_64x48", "nonlocal/bcs_classical_value", "nonlocal/bcs_lower_bound_no_backend", "nonlocal/bell_classical_chsh", "nonlocal/bell_qubit_rectangular_problem", "nonlocal/game_lower_bound_no_backend", "nonlocal/npa_problem_level1", "nonlocal/parallel_repetition_2x2x3x2_copies2", "nonlocal/xor_classical_chsh", "operators/fourier_d32", "optimization/local_discrimination_problem_d2_order2", "optimization/matsumoto_fidelity_problem_d2", "optimization/psd_constraint_affine_d4", "optimization/sk_norm_bounds_d2_k1", "optimization/sk_norm_exact_d2_k2", "optimization/state_discrimination_helstrom_qubit", "optimization/top_k_p_dual_epigraph_3x2_k2_p3", "optimization/top_k_p_epigraph_3x2_k2_p3", "partial_trace/dense_matrix_plan_reuse", "partial_trace/dense_pure_plan_reuse", "partial_trace/plan_construction", "partial_trace/sparse_matrix_plan_reuse", "partial_transpose/dense_plan_reuse", "partial_transpose/sparse_plan_reuse", "permutation/dense_matrix_plan_reuse", "polynomials/bounds_n2_degree2_level1", "polynomials/clique_cycle5_certified_bounds", "polynomials/copositive_quartic_d8", "polynomials/copositivity_exact_psd_d2", "polynomials/sos_problem_n2_degree2_level0", "polynomials/symmetric_matrix_n2_degree4_level2", "product/filter_normal_form_4x8", "product/formation_mixed_two_qubit", "product/formation_rank_one_2x3", "product/operator_analysis_4x8x2", "product/operator_schmidt_decomposition_8x8", "product/operator_schmidt_hermitian_factors_4x8", "product/operator_sinkhorn_4x8", "projector/symmetric_d4_p4_sparse", "random/density_d32_rank16", "random/povm_d8_outcomes4", "random/ppt_state_2x3_full", "random/unitary_d32", "realignment/dense_plan_reuse", "states/entangled_subspace_8x8_r2_dim36", "states/werner_d8_sparse", "states/werner_three_party_d3_sparse", "tensor_product/dense_two_factor"]
-count = 114
+cases = ["channels/apply_dephasing_d16", "channels/canonical_general_4x3_to_5x6_terms4", "channels/cb_norm_reset_d2_analytic", "channels/complement_operator_sum_6x5_to_8x8_terms4", "channels/diamond_norm_identity_d2_analytic", "channels/diamond_norm_transpose_d2_model", "channels/distinguishability_identical_d2_analytic", "channels/induced_schatten_3to2_dephasing_d16", "channels/is_cp_depolarizing_d8", "channels/kraus_to_choi_dephasing_d16", "channels/kraus_to_superoperator_dephasing_d16", "channels/maximum_output_fidelity_d2_analytic", "channels/operator_sum_direct_16x12_to_20x10_terms4", "channels/operator_sum_dual_16x12_to_20x10_terms4", "channels/operator_sum_to_choi_16x12_to_20x10_terms4", "channels/partial_operator_sum_2x16_by_3x12_terms4", "channels/random_superoperator_bistochastic_d3_rank3", "channels/random_superoperator_proportional_2to3_rank2", "channels/random_superoperator_tp_4to4_rank16", "channels/twirl_pauli_d4_sparse", "channels/twirl_werner_p3_d2_dense", "coherence/generalized_robustness_pure_d64_k8", "coherence/is_absolutely_k_incoherent_mixed_d16_k1", "coherence/is_k_incoherent_diagonal_d16_k1", "coherence/l1_diagonal_d512", "coherence/l1_pure_d4096", "coherence/pure_k_robustness_d4096_k64", "coherence/rank_basis_transform_d64", "coherence/relative_entropy_diagonal_d512", "coherence/relative_entropy_pure_d4096", "coherence/robustness_pure_d64", "coherence/trace_distance_pure_d64", "criteria/ppt_8x8", "criteria/realignment_8x8", "criteria/reduction_8x8", "entanglement/abs_ppt_constraints_p3", "entanglement/block_positive_identity_d2", "entanglement/block_positive_violation_d2", "entanglement/is_abs_ppt_p2_exhaustive", "entanglement/is_entangling_gate_cnot", "entanglement/is_upb_tiles_exact", "entanglement/logarithmic_negativity_8x8", "entanglement/minimum_upb_size_twelve_qubits", "entanglement/negativity_8x8", "entanglement/schmidt_coefficients_32x32", "entanglement/schmidt_decomposition_32x32", "entanglement/schmidt_rank_32x32", "entanglement/separability_diagonal_d2", "entanglement/symmetric_extension_problem_bosonic_ppt_k2", "entanglement/symmetric_extension_two_qubit_analytic", "entanglement/upb_alon_lovasz_3x4", "entanglement/upb_chen_johnston_6x6", "entanglement/upb_generalized_tiles_1_d8", "entanglement/upb_johnston_twelve_qubits", "entanglement/upb_separable_discrimination_tiles", "entanglement/upb_tiles", "matrix_analysis/additive_compound_dense_16_order2", "matrix_analysis/commutant_dense_two_generators_d8", "matrix_analysis/compound_dense_8_order3", "matrix_analysis/majorizes_singular_values_32x32", "measures/concurrence_mixed_two_qubit", "measures/entropy_density_d64", "measures/fidelity_density_d32", "measures/fidelity_diagonal_d512", "measures/induced_matrix_norm_3to2_64x48", "measures/ky_fan_k16_64x48", "measures/matsumoto_fidelity_density_d32", "measures/purity_density_d64", "measures/purity_diagonal_d512", "measures/schatten_p3_64x48", "measures/trace_distance_density_d64", "measures/trace_distance_diagonal_d512", "measures/trace_norm_64x48", "nonlocal/bcs_classical_value", "nonlocal/bcs_lower_bound_no_backend", "nonlocal/bell_classical_chsh", "nonlocal/bell_qubit_rectangular_problem", "nonlocal/game_lower_bound_no_backend", "nonlocal/npa_problem_level1", "nonlocal/parallel_repetition_2x2x3x2_copies2", "nonlocal/xor_classical_chsh", "operators/fourier_d32", "optimization/local_discrimination_problem_d2_order2", "optimization/matsumoto_fidelity_problem_d2", "optimization/psd_constraint_affine_d4", "optimization/sk_norm_bounds_d2_k1", "optimization/sk_norm_exact_d2_k2", "optimization/state_discrimination_helstrom_qubit", "optimization/top_k_p_dual_epigraph_3x2_k2_p3", "optimization/top_k_p_epigraph_3x2_k2_p3", "partial_trace/dense_matrix_plan_reuse", "partial_trace/dense_pure_plan_reuse", "partial_trace/plan_construction", "partial_trace/sparse_matrix_plan_reuse", "partial_transpose/dense_plan_reuse", "partial_transpose/sparse_plan_reuse", "permutation/dense_matrix_plan_reuse", "polynomials/bounds_n2_degree2_level1", "polynomials/clique_cycle5_certified_bounds", "polynomials/copositive_quartic_d8", "polynomials/copositivity_exact_psd_d2", "polynomials/sos_problem_n2_degree2_level0", "polynomials/symmetric_matrix_n2_degree4_level2", "product/filter_normal_form_4x8", "product/formation_mixed_two_qubit", "product/formation_rank_one_2x3", "product/operator_analysis_4x8x2", "product/operator_schmidt_decomposition_8x8", "product/operator_schmidt_hermitian_factors_4x8", "product/operator_sinkhorn_4x8", "projector/symmetric_d4_p4_sparse", "random/density_d32_rank16", "random/povm_d8_outcomes4", "random/ppt_state_2x3_full", "random/unitary_d32", "realignment/dense_plan_reuse", "states/entangled_subspace_8x8_r2_dim36", "states/werner_d8_sparse", "states/werner_three_party_d3_sparse", "tensor_product/dense_two_factor"]
+count = 120
 measurement = "static BenchmarkGroup assignment count; execution is a separate gate"
 
 [completion]
@@ -55,20 +55,20 @@ measurement = "runtime Test.get_test_counts in isolated environment"
 passed = 141
 
 [dynamic_tests.package]
-core_assertions = 9400
-integrated_assertions = 9484
+core_assertions = 9675
+integrated_assertions = 9759
 integrated_broken = 0
-integrated_passed = 9484
+integrated_passed = 9759
 measurement = "runtime Test.get_test_counts"
 tutorial_assertions = 84
 
     [[dynamic_tests.package.suites]]
-    assertions = 371
+    assertions = 505
     broken = 0
     errored = 0
     failed = 0
     name = "Tier A subsystem kernel"
-    passed = 371
+    passed = 505
     [[dynamic_tests.package.suites]]
     assertions = 577
     broken = 0
@@ -77,12 +77,12 @@ tutorial_assertions = 84
     name = "Tier B operators"
     passed = 577
     [[dynamic_tests.package.suites]]
-    assertions = 226
+    assertions = 233
     broken = 0
     errored = 0
     failed = 0
     name = "Tier B named states"
-    passed = 226
+    passed = 233
     [[dynamic_tests.package.suites]]
     assertions = 133
     broken = 0
@@ -147,12 +147,12 @@ tutorial_assertions = 84
     name = "Tier D matrix norms"
     passed = 25
     [[dynamic_tests.package.suites]]
-    assertions = 30
+    assertions = 40
     broken = 0
     errored = 0
     failed = 0
     name = "Tier D density-matrix scalar measures"
-    passed = 30
+    passed = 40
     [[dynamic_tests.package.suites]]
     assertions = 78
     broken = 0
@@ -168,12 +168,12 @@ tutorial_assertions = 84
     name = "Tier D negativity and logarithmic negativity"
     passed = 11
     [[dynamic_tests.package.suites]]
-    assertions = 15
+    assertions = 28
     broken = 0
     errored = 0
     failed = 0
     name = "Tier D Schmidt analysis"
-    passed = 15
+    passed = 28
     [[dynamic_tests.package.suites]]
     assertions = 11
     broken = 0
@@ -371,12 +371,12 @@ tutorial_assertions = 84
     name = "Common human-facing result interface"
     passed = 62
     [[dynamic_tests.package.suites]]
-    assertions = 54
+    assertions = 60
     broken = 0
     errored = 0
     failed = 0
     name = "Tier E coherence measures"
-    passed = 54
+    passed = 60
     [[dynamic_tests.package.suites]]
     assertions = 82
     broken = 0
@@ -469,12 +469,12 @@ tutorial_assertions = 84
     name = "WP2 FilterNormalForm bounded decomposition"
     passed = 148
     [[dynamic_tests.package.suites]]
-    assertions = 172
+    assertions = 268
     broken = 0
     errored = 0
     failed = 0
     name = "Tier E matrix analysis"
-    passed = 172
+    passed = 268
     [[dynamic_tests.package.suites]]
     assertions = 41
     broken = 0
@@ -490,12 +490,12 @@ tutorial_assertions = 84
     name = "WP2 solver-free commutant"
     passed = 122
     [[dynamic_tests.package.suites]]
-    assertions = 292
+    assertions = 301
     broken = 0
     errored = 0
     failed = 0
     name = "WP2 parallel repetition"
-    passed = 292
+    passed = 301
     [[dynamic_tests.package.suites]]
     assertions = 181
     broken = 0
@@ -737,9 +737,9 @@ tutorial_assertions = 84
 
 [generation]
 deterministic = true
-input_sha256 = "a8b41fec2f587d5a7c76365ee99d6ef484c2591f53777ecb20806e6d107ddb30"
+input_sha256 = "106bd0fdab29ae18a18f79bebff843b76b14129b871fd13694174f7e6a0ba1f4"
 inventory_sha256 = "62d0e94cf73934f4b35af3364b81cdf7468ab1662705e8171d7e46c57ec6a3c5"
-provenance_sha256 = "8a934338d6d766a96de991c5233baa504b3c3eb49561c12f2915ea05d0344d93"
+provenance_sha256 = "5b9194294716baeaa0a0e42e702957569433809e1b703debbafaab2f064993e6"
 script = "scripts/reconcile_project_claims.jl"
 status_overlay_sha256 = "40eae81340d3241aa12d844794ee67417a97b5aa84a18567c3c090b7551edd4d"
 
@@ -1134,8 +1134,8 @@ weak_dependency_count = 2
 [source_audit]
 compatibility_wrapper_bypass_candidate_count = 0
 compatibility_wrapper_bypass_candidates = []
-densification_call_count = 199
-densification_without_nearby_guard_marker_count = 172
+densification_call_count = 202
+densification_without_nearby_guard_marker_count = 175
 documented_independent_compatibility_implementation_count = 2
 duplicate_public_definition_candidate_count = 0
 duplicate_public_definition_candidates = []
@@ -1214,7 +1214,7 @@ unimplemented_markers = []
     path = "src/channels/twirls.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 195
+    line = 220
     nearby_guard_marker = false
     path = "src/coherence/coherence.jl"
     [[source_audit.densification_sites]]
@@ -1694,12 +1694,12 @@ unimplemented_markers = []
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 829
+    line = 891
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 852
+    line = 914
     nearby_guard_marker = false
     path = "src/linear_algebra/matrix_analysis.jl"
     [[source_audit.densification_sites]]
@@ -1994,42 +1994,42 @@ unimplemented_markers = []
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 292
+    line = 320
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 314
+    line = 342
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 356
+    line = 384
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 500
+    line = 528
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 574
+    line = 602
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 595
+    line = 623
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 698
+    line = 726
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 720
+    line = 748
     nearby_guard_marker = false
     path = "src/states/states.jl"
     [[source_audit.densification_sites]]
@@ -2109,6 +2109,21 @@ unimplemented_markers = []
     path = "src/states/symmetric_states.jl"
     [[source_audit.densification_sites]]
     call = "collect"
+    line = 163
+    nearby_guard_marker = false
+    path = "src/subsystem/partial_trace.jl"
+    [[source_audit.densification_sites]]
+    call = "collect"
+    line = 175
+    nearby_guard_marker = false
+    path = "src/subsystem/partial_trace.jl"
+    [[source_audit.densification_sites]]
+    call = "collect"
+    line = 279
+    nearby_guard_marker = false
+    path = "src/subsystem/partial_trace.jl"
+    [[source_audit.densification_sites]]
+    call = "collect"
     line = 37
     nearby_guard_marker = false
     path = "src/subsystem/permutation.jl"
@@ -2119,22 +2134,22 @@ unimplemented_markers = []
     path = "src/subsystem/permutation.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 217
+    line = 226
     nearby_guard_marker = false
     path = "src/subsystem/permutation.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 238
+    line = 247
     nearby_guard_marker = false
     path = "src/subsystem/permutation.jl"
     [[source_audit.densification_sites]]
     call = "Matrix"
-    line = 241
+    line = 250
     nearby_guard_marker = false
     path = "src/subsystem/permutation.jl"
     [[source_audit.densification_sites]]
     call = "collect"
-    line = 269
+    line = 278
     nearby_guard_marker = false
     path = "src/subsystem/permutation.jl"
     [[source_audit.densification_sites]]
@@ -2156,7 +2171,7 @@ unimplemented_markers = []
 
 [static_test_macros]
 measurement = "static macro occurrences; not an assertion count"
-total = 7722
+total = 7842
 
     [static_test_macros.by_file]
     "test/extensions/entanglement_detection/load_order_probe.jl" = 0
@@ -2209,13 +2224,13 @@ total = 7722
     "test/result_interface.jl" = 67
     "test/runtests.jl" = 0
     "test/symmetric_states.jl" = 216
-    "test/tier_a_subsystem_kernel.jl" = 255
-    "test/tier_b_states_operators_random.jl" = 247
+    "test/tier_a_subsystem_kernel.jl" = 332
+    "test/tier_b_states_operators_random.jl" = 254
     "test/tier_c_channels_maps.jl" = 204
     "test/tier_d_entanglement_pipeline.jl" = 97
-    "test/tier_d_measures_criteria.jl" = 261
-    "test/tier_e_coherence.jl" = 59
-    "test/tier_e_matrix_analysis.jl" = 154
+    "test/tier_d_measures_criteria.jl" = 273
+    "test/tier_e_coherence.jl" = 65
+    "test/tier_e_matrix_analysis.jl" = 162
     "test/tier_e_matrix_analysis_compat.jl" = 47
     "test/tier_e_matrix_predicates.jl" = 174
     "test/tier_e_matrix_predicates_compat.jl" = 41
@@ -2237,7 +2252,7 @@ total = 7722
     "test/wp2_multipartite_werner.jl" = 41
     "test/wp2_operator_schmidt_completion.jl" = 100
     "test/wp2_operator_sinkhorn.jl" = 128
-    "test/wp2_parallel_repetition.jl" = 42
+    "test/wp2_parallel_repetition.jl" = 52
     "test/wp2_polynomial_foundations.jl" = 139
     "test/wp2_random_superoperator.jl" = 139
     "test/wp2_robk_coherence.jl" = 74

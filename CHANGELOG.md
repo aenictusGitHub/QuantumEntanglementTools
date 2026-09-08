@@ -23,15 +23,15 @@ rows, 0 required internal helpers remain, and 0 static completion failures.
 The package has 477 public bindings (347 native/module and 130
 `MATLABCompat`) with matching provenance entries.
 
-The 9,484-assertion full package suite passed 9,484/9,484: the core accounts
-for 9,400 assertions, and the seven executable tutorials account for 84/84
+The 9,759-assertion full package suite passed 9,759/9,759: the core accounts
+for 9,675 assertions, and the seven executable tutorials account for 84/84
 assertions (48 existing plus 36 for the two new workflows), on Julia
 1.12.6 and the installed Julia 1.10.11. The full optional JuMP suite passed
 847/847 on both Julia lines. The
 EntanglementDetection.jl extension passed 141/141 focused assertions on the
-current compatible Julia. All 114 declared quick benchmark cases completed
-without failure on the current uncommitted release-hardening worktree based on
-`8b2fcbaf`. This is local smoke evidence only; targeted paired observations
+current compatible Julia. All 120 declared quick benchmark cases completed
+without failure on the current uncommitted performance-and-stability worktree
+based on `1d611e4`. This is local smoke evidence only; targeted paired observations
 remain diagnostics, not a stable comparative-performance baseline.
 
 These static and local results are not QETLAB/MATLAB parity,
@@ -91,8 +91,8 @@ been made.
   Their package-owned mappings use explicit structured results and documented
   numerical boundaries; function-specific MATLAB-family oracle coverage is not
   implied.
-- A 9,484-assertion full package suite passing 9,484/9,484 locally on Julia
-  1.12.6 and the installed Julia 1.10.11, comprising 9,400 core
+- A 9,759-assertion full package suite passing 9,759/9,759 locally on Julia
+  1.12.6 and the installed Julia 1.10.11, comprising 9,675 core
   assertions and 84/84 executable-tutorial assertions (48 existing plus 36 for
   the two new workflows), plus consistency checks over 477 public bindings and
   all 163 source-reviewed inventory rows.
@@ -107,9 +107,10 @@ been made.
   five-qubit SAPPT threshold, same-spectrum separable/entangled
   representatives, published witness reconstruction, a decomposable NPT
   witness, and explicit GHZ phase handling.
-- A benchmark harness containing 114 declared quick cases, all of which
-  completed for the clean `f32dd233` baseline, the historical performance
-  candidate `a50f516`, and the current dirty release-hardening tree.
+- A benchmark harness containing 120 declared quick cases. Its 114-case
+  predecessor completed for the clean `f32dd233` baseline and historical
+  performance candidate `a50f516`; the expanded suite completes on the current
+  dirty performance-and-stability tree based on `1d611e4`.
   Targeted paired observations remain local diagnostics, not a stable
   comparative-performance claim or regression baseline.
 - An optional JuMP extension suite passing 847/847 locally on Julia 1.12.6 and
@@ -142,6 +143,15 @@ been made.
 
 ### Changed
 
+- Diagonal density matrices now use direct linear-time paths for purity,
+  fidelity, trace distance, and coherence measures instead of dense spectral
+  decompositions; generic floating types and validation boundaries are
+  preserved.
+- Schmidt coefficients, rank, and nontrivial Schmidt `k`-norms now compute
+  singular values without allocating singular vectors. Full Schmidt
+  decompositions retain their existing vector-producing path.
+- Dense second additive compounds now use direct lexicographic pair indexing,
+  while sparse output and all other orders retain the general construction.
 - Dense homogeneous BLAS-float Kraus and operator-sum Choi construction now
   uses compact factor-column products, while mixed, exact,
   arbitrary-precision, and sparse inputs retain the prior path.
@@ -154,6 +164,23 @@ been made.
   stream.
 - Documentation equations use GitHub-compatible roman-text notation instead of
   the unsupported operator-name macro.
+
+### Fixed
+
+- Logical sparse wrappers such as adjoints, transposes, and sparse views now
+  remain sparse through subsystem permutation, partial trace, partial
+  transpose, realignment, and inverse realignment.
+- Normalized sparse state constructors no longer turn large valid Float16
+  equal-superposition amplitudes into zero when the dimension itself exceeds
+  the finite Float16 range.
+- Boolean partial traces now use Julia's additive `Int` codomain consistently
+  for dense and sparse inputs. Fixed-width integer tensor products, partial
+  traces, and parallel repetitions now throw `OverflowError` instead of
+  silently wrapping an unrepresentable result; partial traces accumulate
+  exactly before final type narrowing.
+- Nightly CI failures are no longer advisory, provenance reconciliation avoids
+  duplicating the full dynamic suites, and benchmark smoke fixes both Julia
+  and OpenBLAS thread counts.
 
 ### Security
 

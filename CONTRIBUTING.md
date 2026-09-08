@@ -29,14 +29,14 @@ rows, 0 required internal helpers remain, and 0 static completion failures.
 The public API has 477 public bindings (347 native/module and 130
 `MATLABCompat`) with matching provenance entries.
 
-The 9,484-assertion full package suite passed 9,484/9,484: 9,400 core
+The 9,759-assertion full package suite passed 9,759/9,759: 9,675 core
 assertions plus 84 executable-tutorial assertions, including 36 for the
 two QETLAB-introduction workflows. It passes on Julia 1.12.6 and the installed
 Julia 1.10.11. The full optional JuMP suite passed 847/847 on both Julia lines. The
 EntanglementDetection.jl extension passed 141/141 focused assertions on the
-current compatible Julia. All 114 declared quick benchmark cases completed
-without failure on the current uncommitted release-hardening worktree based on
-`8b2fcbaf`. This is local smoke evidence only; targeted paired observations
+current compatible Julia. All 120 declared quick benchmark cases completed
+without failure on the current uncommitted performance-and-stability worktree
+based on `1d611e4`. This is local smoke evidence only; targeted paired observations
 remain diagnostics, not a stable comparative-performance baseline.
 
 These runs and static checks are development evidence, not QETLAB/MATLAB
@@ -55,11 +55,15 @@ julia --startup-file=no --project=. tutorials/runtests.jl
 Build the documentation with:
 
 ```sh
-julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-julia --project=docs docs/make.jl
+julia --startup-file=no scripts/build_docs.jl
 ```
 
-The benchmark source declares 114 quick cases. Run its non-recording smoke
+The helper copies `docs/Project.toml` into a temporary environment before
+resolving dependencies, so switching Julia versions cannot reuse an
+incompatible ignored manifest. The rendered site remains in `docs/build`; a
+resolution or strict-build failure makes the command exit unsuccessfully.
+
+The benchmark source declares 120 quick cases. Run its non-recording smoke
 command with:
 
 ```sh

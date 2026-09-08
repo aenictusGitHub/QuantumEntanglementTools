@@ -1,4 +1,5 @@
 using LinearAlgebra
+using Random
 using SparseArrays
 
 const QETD = QuantumEntanglementTools
@@ -114,6 +115,23 @@ end
     sparse_state = sparse(maximally_mixed)
     @test_throws ArgumentError QETD.purity(sparse_state)
     @test QETD.purity(sparse_state; allow_densify=true) == 0.25
+
+    diagonal32 = Diagonal(Float32[0.5, 0.25, 0.25])
+    @test QETD.purity(diagonal32) === Float32(0.375)
+    diagonal_big = Diagonal(BigFloat[0.5, 0.25, 0.25])
+    reversed_big = Diagonal(BigFloat[0.25, 0.25, 0.5])
+    big_purity = QETD.purity(diagonal_big)
+    @test big_purity isa BigFloat
+    @test big_purity == BigFloat(0.375)
+    big_fidelity = QETD.fidelity(diagonal_big, reversed_big)
+    @test big_fidelity isa BigFloat
+    @test big_fidelity ≈ 0.25 + sqrt(BigFloat(0.125)) * 2
+    @test QETD.fidelity(diagonal_big, reversed_big; squared=true) == big_fidelity^2
+    big_distance = QETD.trace_distance(diagonal_big, reversed_big)
+    @test big_distance isa BigFloat
+    @test big_distance == BigFloat(0.25)
+    @test QETD.purity(diagonal_big; allow_densify=false) == big_purity
+    @test_throws DimensionMismatch QETD.fidelity(diagonal_big, Diagonal(BigFloat[0.5, 0.5]))
 
     # A tiny negative eigenvalue is not silently clipped even when it lies
     # within a deliberately coarse state-validation tolerance.
@@ -288,6 +306,8 @@ end
 
     rectangular = Float64[1, 2, 3, 4, 5, 6]
     rectangular_decomposition = QETD.schmidt_decomposition(rectangular, (2, 3))
+    @test QETD.schmidt_coefficients(rectangular, (2, 3)) ≈
+        rectangular_decomposition.coefficients
     rectangular_reconstruction = sum(
         rectangular_decomposition.coefficients[index] * kron(
             rectangular_decomposition.left_vectors[:, index],
@@ -308,6 +328,15 @@ end
     @test_throws ArgumentError QETD.schmidt_coefficients(bell, (4,))
     @test_throws ArgumentError QETD.schmidt_coefficients(ComplexF64[1, NaN, 0, 0], (2, 2))
     @test_throws ArgumentError QETD.schmidt_coefficients(BigFloat[1, 0, 0, 1], (2, 2))
+
+    schmidt_rng = MersenneTwister(0x5343484d494454)
+    for T in (Float32, Float64, ComplexF32, ComplexF64), dims in ((2, 3), (4, 7), (8, 5))
+        random_state = randn(schmidt_rng, T, prod(dims))
+        values_only = QETD.schmidt_coefficients(random_state, dims)
+        vector_values = QETD.schmidt_decomposition(random_state, dims).coefficients
+        tolerance = T <: Union{Float32,ComplexF32} ? 2e-5 : 2e-12
+        @test values_only ≈ vector_values rtol = tolerance atol = tolerance
+    end
 end
 
 @testset "Tier D two-qubit concurrence" begin

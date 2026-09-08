@@ -61,12 +61,10 @@ jobs:
         run: julia --startup-file=no --project=. scripts/check_qetlab_completion.jl --strict
       - name: Check exports, provenance, and reviewed mappings
         run: julia --startup-file=no --project=. scripts/check_public_api.jl
-      - name: Instantiate optional extension environment for live claim counts
+      - name: Reconcile generated claims without rerunning dedicated test jobs
         run: >-
-          julia --startup-file=no --project=test/extensions/entanglement_detection
-          -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Reconcile generated claims against live test suites
-        run: julia --startup-file=no --project=. scripts/reconcile_project_claims.jl --check
+          julia --startup-file=no --project=.
+          scripts/reconcile_project_claims.jl --check --skip-tests
       - name: Cross-check matrix predicates independently
         run: julia --startup-file=no --project=. scripts/validate_matrix_predicates.jl
 
@@ -124,6 +122,7 @@ jobs:
     timeout-minutes: 20
     env:
       JULIA_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

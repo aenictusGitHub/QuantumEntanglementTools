@@ -16,7 +16,7 @@ The later strict static repository audit at pinned QETLAB revision
 verified with final status and all 36/36 private helpers with terminal
 dispositions, with zero queued tasks and zero static-evidence failures. The
 strict completion checker passes locally on Julia 1.12.6 and the installed
-Julia 1.10.0.
+Julia 1.10.11.
 
 This supersedes only the historical completion and implementation-priority
 conclusions below; the dated audit findings remain as the evidence actually

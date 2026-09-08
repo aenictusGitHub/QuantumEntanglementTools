@@ -192,7 +192,7 @@
         }
         if (
             pageSource.indexOf(
-                "julia --startup-file=no --project=docs docs/make.jl"
+                "julia --startup-file=no scripts/build_docs.jl"
             ) === -1
         ) {
             failures.push("documentation page must provide the local docs build command");

@@ -127,6 +127,11 @@ end
         @test maximally_entangled(3; normalized=false, sparse_output=true) ==
             sparsevec([1, 5, 9], ones(3), 9)
         @test eltype(maximally_entangled(2; T=BigFloat)) == BigFloat
+        large_float16_phi = maximally_entangled(70_000; sparse_output=true, T=Float16)
+        @test length(large_float16_phi) == 4_900_000_000
+        @test nnz(large_float16_phi) == 70_000
+        @test nonzeros(large_float16_phi)[1] != 0
+        @test norm(Float64.(nonzeros(large_float16_phi))) ≈ 1 rtol = 5e-4
 
         expected_bells = (
             [1, 0, 0, 1] / sqrt(2),
@@ -146,6 +151,10 @@ end
         @test ghz_state(3, 2; coefficients=[1, 2im, -3], sparse_output=false) ==
             [1, 0, 0, 0, 2im, 0, 0, 0, -3]
         @test norm(ghz_state(5, 4)) ≈ 1
+        large_float16_ghz = ghz_state(70_000, 1; T=Float16)
+        @test nnz(large_float16_ghz) == 70_000
+        @test nonzeros(large_float16_ghz)[1] != 0
+        @test norm(Float64.(nonzeros(large_float16_ghz))) ≈ 1 rtol = 5e-4
 
         w = w_state(4)
         @test w == sparsevec([9, 5, 3, 2], fill(0.5, 4), 16)

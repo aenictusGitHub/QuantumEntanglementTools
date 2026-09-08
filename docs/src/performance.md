@@ -19,6 +19,24 @@ Any statement that Julia is faster must be limited to the measured operation,
 sizes, environment, and revision. Correctness tolerances may not be weakened to
 improve a benchmark.
 
+## Structure-aware paths
+
+The library recognizes structure only when it can preserve the documented
+mathematics and failure behavior. In particular:
+
+- `Diagonal` density matrices use direct entrywise implementations for purity,
+  fidelity, trace distance, and coherence measures;
+- Schmidt coefficients and rank use a singular-values-only factorization,
+  while `schmidt_decomposition` still computes the requested vectors;
+- dense order-two additive compounds use direct pair indexing; and
+- sparse adjoints, transposes, and views are canonicalized to sparse storage
+  before subsystem transformations rather than falling through to dense
+  kernels.
+
+These routes retain validation, numeric types, sparse-output contracts, and
+resource guards. The paired local observations in
+`docs/BENCHMARK_REPORT.md` are diagnostic evidence, not performance promises.
+
 ## Optimization priorities
 
 Measure before selecting reshape/permutation, contraction, sparse accumulation,

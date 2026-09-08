@@ -69,6 +69,33 @@ end
         @test eltype(scalar_repeated) == Complex{BigFloat}
     end
 
+    @testset "checked fixed-width integer coefficients" begin
+        safe_game = fill(Int8(3), 1, 1, 1, 1)
+        safe_repeated = parallel_repetition(safe_game, 3; max_entries=1, max_work=3)
+        @test only(safe_repeated) === Int8(27)
+        @test eltype(safe_repeated) === Int8
+
+        large_integer = typemax(Int)
+        overflowing_game = fill(large_integer, 1, 1, 1, 1)
+        overflowing_snapshot = copy(overflowing_game)
+        @test only(parallel_repetition(overflowing_game, 1)) == large_integer
+        @test_throws OverflowError parallel_repetition(
+            overflowing_game, 2; max_entries=1, max_work=2
+        )
+        @test_throws OverflowError parallel_repetition(
+            @view(overflowing_game[:, :, :, :]), 2; max_entries=1, max_work=2
+        )
+        @test_throws OverflowError QuantumEntanglementTools.MATLABCompat.ParallelRepetition(
+            overflowing_game, 2; max_entries=1, max_work=2
+        )
+        @test overflowing_game == overflowing_snapshot
+
+        exact_game = fill(big(large_integer), 1, 1, 1, 1)
+        exact_repeated = parallel_repetition(exact_game, 2; max_entries=1, max_work=2)
+        @test only(exact_repeated) == big(large_integer)^2
+        @test eltype(exact_repeated) === BigInt
+    end
+
     @testset "limits and validation" begin
         game = ones(Float32, 2, 2, 2, 2)
         @test_throws ArgumentError parallel_repetition(game, 0)

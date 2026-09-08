@@ -106,12 +106,11 @@ Run each command from the repository root on the exact candidate commit:
 - [ ] Strict documentation and browser-generator checks:
 
   ```sh
-  julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-  julia --startup-file=no --project=docs docs/make.jl
+  julia --startup-file=no scripts/build_docs.jl
   generator_smoke="$(mktemp -d)"
   node docs/test/code_generator_node.js "$generator_smoke"
-  julia --startup-file=no --project=docs "$generator_smoke/generated_smoke.jl"
-  julia +1.10 --startup-file=no --project=docs "$generator_smoke/generated_smoke.jl"
+  julia --startup-file=no --project=. "$generator_smoke/generated_smoke.jl"
+  julia +1.10 --startup-file=no --project=. "$generator_smoke/generated_smoke.jl"
   ```
 
   If Node is unavailable, replace its command with the exact macOS

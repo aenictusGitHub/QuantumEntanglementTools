@@ -58,8 +58,8 @@ internal helpers with terminal dispositions, an empty completion queue, and
 477 exported bindings with matching provenance entries.
 
 !!! warning "Scope of the completion evidence"
-    The direct local full corpus passes 9,484/9,484 assertions: the core
-    accounts for 9,400 assertions, and the seven standalone executable
+    The direct local full corpus passes 9,759/9,759 assertions: the core
+    accounts for 9,675 assertions, and the seven standalone executable
     tutorials pass 84/84 assertions (48 existing plus 36 for the two new
     workflows), on Julia 1.12.6 and the installed Julia 1.10.11. These static and
     local results do not establish MATLAB/QETLAB parity, remote

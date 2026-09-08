@@ -47,7 +47,9 @@ For a pure vector the equivalent allocation-free identity
 `sum(abs, state)^2 - 1` is used, including for sparse vectors. Matrix inputs
 are validated as finite, normalized, Hermitian, and positive semidefinite;
 sparse matrices require explicit `allow_densify=true` because validation uses
-a full eigendecomposition. Inputs are never normalized, clipped, or mutated.
+a full eigendecomposition. A `Diagonal` density matrix is validated directly
+in `O(n)` time and workspace and returns zero without densification. Inputs are
+never normalized, clipped, or mutated.
 """
 function l1_coherence(
     state::AbstractVector{<:Number}; atol=nothing, rtol=nothing, allow_densify::Bool=false
@@ -70,6 +72,16 @@ function l1_coherence(
     )
     matrix = analysis.matrix
     return sum(abs, matrix) - sum(abs, diag(matrix))
+end
+
+function l1_coherence(
+    state::Diagonal{<:Number}; atol=nothing, rtol=nothing, allow_densify::Bool=false
+)
+    _ = allow_densify
+    eigenvalues = _tierd_diagonal_density_eigenvalues(
+        state; atol=atol, rtol=rtol, operation="l1_coherence", boundary_policy=:record
+    )
+    return zero(eltype(eigenvalues))
 end
 
 function _coherence_entropy(probabilities, base)
@@ -100,7 +112,9 @@ the von Neumann entropy in the explicitly supplied logarithm `base`.
 For a normalized pure vector this reduces to the Shannon entropy of
 `abs2.(state)`. Density matrices receive the same strict validation and sparse
 densification gate as [`von_neumann_entropy`](@ref). No probability,
-eigenvalue, or final result is clipped.
+eigenvalue, or final result is clipped. A `Diagonal` density matrix is
+validated directly and returns zero in `O(n)` time and workspace without
+densification, including for generic floating types such as `BigFloat`.
 """
 function relative_entropy_coherence(
     state::AbstractVector{<:Number};
@@ -134,6 +148,17 @@ function relative_entropy_coherence(
     diagonal_entropy = _coherence_entropy(diagonal_probabilities, base)
     state_entropy = _coherence_entropy(analysis.eigenvalues, base)
     return diagonal_entropy - state_entropy
+end
+
+function relative_entropy_coherence(
+    state::Diagonal{<:Number}; base, atol=nothing, rtol=nothing, allow_densify::Bool=false
+)
+    _ = allow_densify
+    eigenvalues = _tierd_diagonal_density_eigenvalues(
+        state; atol=atol, rtol=rtol, operation="relative_entropy_coherence"
+    )
+    logarithm_base = _tierd_validate_log_base(base)
+    return zero(eltype(eigenvalues)) / log(logarithm_base)
 end
 
 """

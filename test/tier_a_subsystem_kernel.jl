@@ -139,6 +139,34 @@ end
         @test Matrix(tensor_product(sparse_a, sparse_b)) ==
             kron(Matrix(sparse_a), Matrix(sparse_b))
 
+        safe_integer_product = tensor_product(Int8[2, 3], Int8[4])
+        @test safe_integer_product == Int8[8, 12]
+        @test eltype(safe_integer_product) === Int8
+        @test tensor_power(Int8[3], 3) == Int8[27]
+        @test tensor_product(Int8[-1], UInt16[0]) == UInt16[0]
+        @test tensor_product(UInt16[0], Int8[-1]) == UInt16[0]
+        large_integer = typemax(Int)
+        large_factor = [large_integer]
+        large_factor_snapshot = copy(large_factor)
+        @test_throws OverflowError tensor_product(large_factor, large_factor)
+        @test_throws OverflowError tensor_power(large_factor, 2)
+        @test large_factor == large_factor_snapshot
+
+        sparse_large_factor = sparse(reshape([large_integer], 1, 1))
+        sparse_large_snapshot = copy(sparse_large_factor)
+        for wrapped in (
+            sparse_large_factor,
+            adjoint(sparse_large_factor),
+            transpose(sparse_large_factor),
+            @view(sparse_large_factor[:, :]),
+        )
+            @test_throws OverflowError tensor_product(wrapped, sparse_large_factor)
+        end
+        @test sparse_large_factor == sparse_large_snapshot
+        exact_large_product = tensor_product(BigInt[large_integer], BigInt[large_integer])
+        @test only(exact_large_product) == big(large_integer)^2
+        @test eltype(exact_large_product) === BigInt
+
         columns = Matrix{Int}(I, 2, 2)
         @test tensor_sum(columns, columns) == [1, 0, 0, 1]
         @test tensor_sum(columns, columns; weights=[2, -1]) == [2, 0, 0, -1]
@@ -339,6 +367,148 @@ end
         @test issparse(sparse_all)
         @test size(sparse_all) == (1, 1)
 
+        bool_identity = Matrix{Bool}(I, 4, 4)
+        bool_identity_snapshot = copy(bool_identity)
+        expected_bool_reduction = 2 .* Matrix{Int}(I, 2, 2)
+        dense_bool_reduction = partial_trace(bool_identity, (2, 2); trace_out=(2,))
+        @test eltype(dense_bool_reduction) === Int
+        @test dense_bool_reduction == expected_bool_reduction
+        @test bool_identity == bool_identity_snapshot
+
+        sparse_bool_identity = sparse(bool_identity)
+        sparse_bool_snapshot = copy(sparse_bool_identity)
+        bool_sparse_wrappers = (
+            sparse_bool_identity,
+            adjoint(sparse_bool_identity),
+            transpose(sparse_bool_identity),
+            @view(sparse_bool_identity[:, :]),
+        )
+        for wrapped in bool_sparse_wrappers
+            bool_reduction = partial_trace(wrapped, (2, 2); trace_out=(2,))
+            @test issparse(bool_reduction)
+            @test eltype(bool_reduction) === Int
+            @test Matrix(bool_reduction) == expected_bool_reduction
+        end
+        @test sparse_bool_identity == sparse_bool_snapshot
+
+        for element_type in (Int8, Float32, ComplexF32, Rational{Int})
+            typed_identity = Matrix{element_type}(I, 4, 4)
+            typed_reduction = partial_trace(typed_identity, (2, 2); trace_out=(2,))
+            sparse_typed_reduction = partial_trace(
+                sparse(typed_identity), (2, 2); trace_out=(2,)
+            )
+            @test eltype(typed_reduction) === element_type
+            @test eltype(sparse_typed_reduction) === element_type
+            @test typed_reduction == Matrix(sparse_typed_reduction)
+        end
+
+        safe_integer_vector = Int8[3, 0, 0, 4]
+        safe_integer_reduction = partial_trace(safe_integer_vector, (2, 2); trace_out=(2,))
+        @test safe_integer_reduction == Int8[9 0; 0 16]
+        @test eltype(safe_integer_reduction) === Int8
+        sparse_safe_integer_reduction = partial_trace(
+            sparse(safe_integer_vector), (2, 2); trace_out=(2,)
+        )
+        @test issparse(sparse_safe_integer_reduction)
+        @test eltype(sparse_safe_integer_reduction) === Int8
+        @test Matrix(sparse_safe_integer_reduction) == safe_integer_reduction
+
+        overflowing_product_vector = [typemax(Int), 0]
+        overflowing_product_snapshot = copy(overflowing_product_vector)
+        @test_throws OverflowError partial_trace(
+            overflowing_product_vector, (2,); trace_out=(1,)
+        )
+        sparse_overflowing_product = sparse(overflowing_product_vector)
+        @test_throws OverflowError partial_trace(
+            sparse_overflowing_product, (2,); trace_out=(1,)
+        )
+        @test_throws OverflowError partial_trace(
+            @view(sparse_overflowing_product[:]), (2,); trace_out=(1,)
+        )
+        @test overflowing_product_vector == overflowing_product_snapshot
+
+        overflowing_sum_vector = Int8[8, 8, 0, 0]
+        @test_throws OverflowError partial_trace(
+            overflowing_sum_vector, (2, 2); trace_out=(2,)
+        )
+        sparse_overflowing_sum = sparse(overflowing_sum_vector)
+        @test_throws OverflowError partial_trace(
+            sparse_overflowing_sum, (2, 2); trace_out=(2,)
+        )
+        @test_throws OverflowError partial_trace(
+            @view(sparse_overflowing_sum[:]), (2, 2); trace_out=(2,)
+        )
+
+        exact_large_vector = BigInt[typemax(Int), 0]
+        exact_large_reduction = partial_trace(exact_large_vector, (2,); trace_out=(1,))
+        @test only(exact_large_reduction) == big(typemax(Int))^2
+        @test eltype(exact_large_reduction) === BigInt
+
+        safe_integer_operator = Diagonal(Int8[3, 4, 5, 6]) |> Matrix
+        safe_integer_operator_reduction = partial_trace(
+            safe_integer_operator, (2, 2); trace_out=(2,)
+        )
+        @test safe_integer_operator_reduction == Diagonal(Int8[7, 11])
+        @test eltype(safe_integer_operator_reduction) === Int8
+        sparse_safe_operator_reduction = partial_trace(
+            sparse(safe_integer_operator), (2, 2); trace_out=(2,)
+        )
+        @test issparse(sparse_safe_operator_reduction)
+        @test eltype(sparse_safe_operator_reduction) === Int8
+        @test Matrix(sparse_safe_operator_reduction) == safe_integer_operator_reduction
+
+        overflowing_operator = Diagonal(Int8[100, 100, 0, 0]) |> Matrix
+        overflowing_operator_snapshot = copy(overflowing_operator)
+        @test_throws OverflowError partial_trace(
+            overflowing_operator, (2, 2); trace_out=(2,)
+        )
+        sparse_overflowing_operator = sparse(overflowing_operator)
+        sparse_overflowing_operator_snapshot = copy(sparse_overflowing_operator)
+        for wrapped in (
+            sparse_overflowing_operator,
+            adjoint(sparse_overflowing_operator),
+            transpose(sparse_overflowing_operator),
+            @view(sparse_overflowing_operator[:, :]),
+        )
+            @test_throws OverflowError partial_trace(wrapped, (2, 2); trace_out=(2,))
+        end
+        @test overflowing_operator == overflowing_operator_snapshot
+        @test sparse_overflowing_operator == sparse_overflowing_operator_snapshot
+
+        cancelling_operator = Diagonal(Int8[100, 100, -100]) |> Matrix
+        for wrapped in (
+            cancelling_operator,
+            sparse(cancelling_operator),
+            adjoint(sparse(cancelling_operator)),
+            transpose(sparse(cancelling_operator)),
+            @view(sparse(cancelling_operator)[:, :]),
+        )
+            cancelling_reduction = partial_trace(wrapped, (3,); trace_out=(1,))
+            @test eltype(cancelling_reduction) === Int8
+            @test only(cancelling_reduction) === Int8(100)
+        end
+
+        exact_large_operator = Diagonal(BigInt[typemax(Int), 1]) |> Matrix
+        exact_large_operator_reduction = partial_trace(
+            exact_large_operator, (2,); trace_out=(1,)
+        )
+        @test only(exact_large_operator_reduction) == big(typemax(Int)) + 1
+        @test eltype(exact_large_operator_reduction) === BigInt
+
+        union_vector = Union{Int8,Int16}[Int8(1), Int16(2)]
+        expected_union_vector = Matrix{Union{Int8,Int16}}(undef, 1, 1)
+        expected_union_vector[1, 1] = Int16(5)
+        @test partial_trace(union_vector, (2,); trace_out=(1,)) == expected_union_vector
+
+        union_matrix = Matrix{Union{Int8,Int16}}(undef, 2, 2)
+        union_matrix[1, 1] = Int8(1)
+        union_matrix[1, 2] = Int8(0)
+        union_matrix[2, 1] = Int8(0)
+        union_matrix[2, 2] = Int16(2)
+        expected_union_matrix = Matrix{Union{Int8,Int16}}(undef, 1, 1)
+        expected_union_matrix[1, 1] = Int16(3)
+        @test partial_trace(union_matrix, (2,); trace_out=(1,)) == expected_union_matrix
+
         @test_throws DimensionMismatch partial_trace(ones(5), (2, 3); trace_out=1)
         @test_throws DimensionMismatch partial_trace(ones(5, 5), (2, 3); trace_out=1)
         @test_throws ArgumentError PartialTracePlan(dims, (1, 1))
@@ -516,6 +686,80 @@ end
         @test_throws ArgumentError RealignmentPlan((2, 3); systems=(1, 2))
         @test_throws ArgumentError RealignmentPlan((2, 3); systems=(1, 1))
         @test_throws DimensionMismatch inverse_realign(ones(3, 3), RealignmentPlan((2, 2)))
+    end
+
+    @testset "logical sparse wrappers preserve sparsity" begin
+        dims = (2, 2)
+        permutation_plan = SubsystemPermutationPlan(dims, (2, 1))
+        trace_plan = PartialTracePlan(dims, (2,))
+        transpose_plan = PartialTransposePlan(dims, (2,))
+        realignment_plan = RealignmentPlan(dims; systems=(1,))
+
+        sparse_vector = sparsevec([1, 3, 4], ComplexF64[1 + 2im, -3im, 4 - im], prod(dims))
+        vector_snapshot = copy(sparse_vector)
+        vector_view = @view sparse_vector[:]
+        @test issparse(vector_view)
+
+        traced_vector = partial_trace(vector_view, trace_plan)
+        @test issparse(traced_vector)
+        @test Matrix(traced_vector) == partial_trace(Vector(vector_view), trace_plan)
+
+        permuted_vector = permute_subsystems(vector_view, permutation_plan)
+        @test issparse(permuted_vector)
+        @test Vector(permuted_vector) ==
+            permute_subsystems(Vector(vector_view), permutation_plan)
+        @test sparse_vector == vector_snapshot
+
+        sparse_matrix = sparse(
+            [1, 2, 3, 4],
+            [4, 2, 1, 3],
+            ComplexF64[1 + 2im, -3 + im, 4im, 5 - 2im],
+            prod(dims),
+            prod(dims),
+        )
+        matrix_snapshot = copy(sparse_matrix)
+        matrix_wrappers = (
+            adjoint(sparse_matrix), transpose(sparse_matrix), @view(sparse_matrix[:, :])
+        )
+
+        for wrapped in matrix_wrappers
+            @test issparse(wrapped)
+
+            traced = partial_trace(wrapped, trace_plan)
+            @test issparse(traced)
+            @test Matrix(traced) == partial_trace(Matrix(wrapped), trace_plan)
+
+            partially_transposed = partial_transpose(wrapped, transpose_plan)
+            @test issparse(partially_transposed)
+            @test Matrix(partially_transposed) ==
+                partial_transpose(Matrix(wrapped), transpose_plan)
+
+            permuted = permute_subsystems(wrapped, permutation_plan)
+            @test issparse(permuted)
+            @test Matrix(permuted) == permute_subsystems(Matrix(wrapped), permutation_plan)
+
+            rows_permuted = permute_subsystems(wrapped, permutation_plan; rows_only=true)
+            @test issparse(rows_permuted)
+            @test Matrix(rows_permuted) ==
+                permute_subsystems(Matrix(wrapped), permutation_plan; rows_only=true)
+
+            aligned = realign(wrapped, realignment_plan)
+            @test issparse(aligned)
+            @test Matrix(aligned) == realign(Matrix(wrapped), realignment_plan)
+
+            inverse_aligned = inverse_realign(wrapped, realignment_plan)
+            @test issparse(inverse_aligned)
+            @test Matrix(inverse_aligned) ==
+                inverse_realign(Matrix(wrapped), realignment_plan)
+        end
+        @test sparse_matrix == matrix_snapshot
+
+        wrong_shape = @view sparse(ones(3, 3))[:, :]
+        @test_throws DimensionMismatch partial_trace(wrong_shape, trace_plan)
+        @test_throws DimensionMismatch partial_transpose(wrong_shape, transpose_plan)
+        @test_throws DimensionMismatch permute_subsystems(wrong_shape, permutation_plan)
+        @test_throws DimensionMismatch realign(wrong_shape, realignment_plan)
+        @test_throws DimensionMismatch inverse_realign(wrong_shape, realignment_plan)
     end
 
     @testset "plan invariants and array axes" begin

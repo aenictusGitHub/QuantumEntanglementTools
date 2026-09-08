@@ -1650,7 +1650,9 @@ be finite, square, normalized, approximately Hermitian, and positive
 semidefinite.  It is never normalized, clipped, or mutated.  After the
 Hermiticity residual passes the requested tolerance, the explicitly formed
 Hermitian part is used as the numerical work matrix.  The dense Hermitian
-eigendecomposition costs `O(n^3)` time and `O(n^2)` workspace.
+eigendecomposition costs `O(n^3)` time and `O(n^2)` workspace. A `Diagonal`
+state is validated and evaluated directly in `O(n)` time and workspace without
+densification, including for generic floating types such as `BigFloat`.
 """
 function purity(
     rho::AbstractMatrix{<:Number}; atol=nothing, rtol=nothing, allow_densify::Bool=false
@@ -1672,10 +1674,20 @@ function _tierd_validate_entropy_order(alpha)
 end
 
 function _tierd_diagonal_density_eigenvalues(
-    rho::Diagonal{<:Number}; atol, rtol, operation::AbstractString
+    rho::Diagonal{<:Number};
+    atol,
+    rtol,
+    operation::AbstractString,
+    boundary_policy::Symbol=:reject,
 )
     !isempty(rho) || throw(ArgumentError("rho must have positive dimension"))
-    _tierd_require_finite(rho, "rho")
+    boundary_policy in (:reject, :record) || throw(
+        ArgumentError(
+            "internal boundary policy must be :reject or :record; got $boundary_policy"
+        ),
+    )
+    diagonal_values = parent(rho)
+    _tierd_require_finite(diagonal_values, "rho")
     real_type = typeof(real(zero(eltype(rho))))
     real_type <: AbstractFloat || throw(
         ArgumentError(
@@ -1685,7 +1697,6 @@ function _tierd_diagonal_density_eigenvalues(
         ),
     )
     absolute, relative = _tierd_tolerances(real_type, atol, rtol)
-    diagonal_values = diag(rho)
     scale = max(one(real_type), maximum(abs, diagonal_values; init=zero(real_type)))
     validation_tolerance = _tierd_threshold(scale, absolute, relative)
 
@@ -1715,7 +1726,7 @@ function _tierd_diagonal_density_eigenvalues(
         ),
     )
 
-    eigenvalues = real.(diagonal_values)
+    eigenvalues = eltype(diagonal_values) <: Real ? diagonal_values : real.(diagonal_values)
     spectral_scale = max(scale, maximum(abs, eigenvalues; init=zero(real_type)))
     spectral_tolerance = _tierd_threshold(spectral_scale, absolute, relative)
     minimum_eigenvalue = minimum(eigenvalues)
@@ -1726,14 +1737,37 @@ function _tierd_diagonal_density_eigenvalues(
             "rtol=$relative",
         ),
     )
-    minimum_eigenvalue < zero(minimum_eigenvalue) && throw(
-        DomainError(
-            minimum_eigenvalue,
-            "rho has a small negative eigenvalue inside the validation " *
-            "tolerance. Refusing to clip it to zero.",
-        ),
-    )
+    minimum_eigenvalue < zero(minimum_eigenvalue) &&
+        boundary_policy === :reject &&
+        throw(
+            DomainError(
+                minimum_eigenvalue,
+                "rho has a small negative eigenvalue inside the validation " *
+                "tolerance. Refusing to clip it to zero.",
+            ),
+        )
     return eigenvalues
+end
+
+function purity(
+    rho::Diagonal{<:Number}; atol=nothing, rtol=nothing, allow_densify::Bool=false
+)
+    _ = allow_densify
+    eigenvalues = _tierd_diagonal_density_eigenvalues(
+        rho; atol=atol, rtol=rtol, operation="purity"
+    )
+    return sum(abs2, eigenvalues)
+end
+
+function _tierd_diagonal_root_fidelity(rho_values, sigma_values)
+    working_type = promote_type(eltype(rho_values), eltype(sigma_values))
+    result = zero(working_type)
+    for (rho_value, sigma_value) in zip(rho_values, sigma_values)
+        result +=
+            sqrt(convert(working_type, rho_value)) *
+            sqrt(convert(working_type, sigma_value))
+    end
+    return result
 end
 
 function _tierd_entropy_eigenvalues(
@@ -1911,6 +1945,9 @@ validated density matrices and are never normalized, clipped, or mutated.
 The result is not forcibly clipped to `[0, 1]`.  Inputs that pass approximate
 Hermiticity validation use their explicitly formed Hermitian work matrices.
 The eigendecompositions and SVD cost `O(n^3)` time and `O(n^2)` workspace.
+Two `Diagonal` inputs use the commuting formula
+`sum(sqrt.(diag(rho)) .* sqrt.(diag(sigma)))` directly in `O(n)` time and
+workspace, without densification and with generic floating types preserved.
 """
 function fidelity(
     rho::AbstractMatrix{<:Number},
@@ -1933,6 +1970,30 @@ function fidelity(
     )
     root_product = _tierd_psd_sqrt(rho_analysis) * _tierd_psd_sqrt(sigma_analysis)
     root_fidelity = sum(svdvals(root_product))
+    return squared ? root_fidelity^2 : root_fidelity
+end
+
+function fidelity(
+    rho::Diagonal{<:Number},
+    sigma::Diagonal{<:Number};
+    squared::Bool=false,
+    atol=nothing,
+    rtol=nothing,
+    allow_densify::Bool=false,
+)
+    size(rho) == size(sigma) || throw(
+        DimensionMismatch(
+            "rho and sigma must have the same size; got $(size(rho)) and $(size(sigma))"
+        ),
+    )
+    _ = allow_densify
+    rho_values = _tierd_diagonal_density_eigenvalues(
+        rho; atol=atol, rtol=rtol, operation="fidelity"
+    )
+    sigma_values = _tierd_diagonal_density_eigenvalues(
+        sigma; atol=atol, rtol=rtol, operation="fidelity"
+    )
+    root_fidelity = _tierd_diagonal_root_fidelity(rho_values, sigma_values)
     return squared ? root_fidelity^2 : root_fidelity
 end
 
@@ -2275,14 +2336,7 @@ function matsumoto_fidelity(
     sigma_values = _tierd_diagonal_density_eigenvalues(
         sigma; atol=atol, rtol=rtol, operation="matsumoto_fidelity"
     )
-    working_type = promote_type(eltype(rho_values), eltype(sigma_values))
-    result = zero(working_type)
-    for (rho_value, sigma_value) in zip(rho_values, sigma_values)
-        result +=
-            sqrt(convert(working_type, rho_value)) *
-            sqrt(convert(working_type, sigma_value))
-    end
-    return result
+    return _tierd_diagonal_root_fidelity(rho_values, sigma_values)
 end
 
 """
@@ -2292,7 +2346,9 @@ end
 Return `trace_norm(rho - sigma) / 2` for two validated density matrices.
 No normalization or range clipping is performed.  The validation
 eigendecompositions and trace-norm SVD cost `O(n^3)` time and `O(n^2)`
-workspace.
+workspace. Two `Diagonal` inputs are validated and compared entrywise in
+`O(n)` time and workspace without densification, preserving generic floating
+types.
 """
 function trace_distance(
     rho::AbstractMatrix{<:Number},
@@ -2313,6 +2369,35 @@ function trace_distance(
         sigma; atol=atol, rtol=rtol, allow_densify=allow_densify, operation="trace_distance"
     )
     return sum(svdvals(rho_analysis.matrix - sigma_analysis.matrix)) / 2
+end
+
+function trace_distance(
+    rho::Diagonal{<:Number},
+    sigma::Diagonal{<:Number};
+    atol=nothing,
+    rtol=nothing,
+    allow_densify::Bool=false,
+)
+    size(rho) == size(sigma) || throw(
+        DimensionMismatch(
+            "rho and sigma must have the same size; got $(size(rho)) and $(size(sigma))"
+        ),
+    )
+    _ = allow_densify
+    rho_values = _tierd_diagonal_density_eigenvalues(
+        rho; atol=atol, rtol=rtol, operation="trace_distance"
+    )
+    sigma_values = _tierd_diagonal_density_eigenvalues(
+        sigma; atol=atol, rtol=rtol, operation="trace_distance"
+    )
+    working_type = promote_type(eltype(rho_values), eltype(sigma_values))
+    distance = zero(working_type)
+    for (rho_value, sigma_value) in zip(rho_values, sigma_values)
+        distance += abs(
+            convert(working_type, rho_value) - convert(working_type, sigma_value)
+        )
+    end
+    return distance / 2
 end
 
 function _tierd_density_from_state(
@@ -2450,15 +2535,28 @@ function schmidt_decomposition(
     )
 end
 
+function _tierd_schmidt_values(
+    psi::AbstractVector{<:Number}, dims; allow_densify::Bool=false
+)
+    layout = _tierd_bipartite_layout(dims, length(psi))
+    dense = _tierd_dense_vector(
+        psi; allow_densify=allow_densify, operation="schmidt_decomposition"
+    )
+    coefficient_matrix = reshape(dense, layout.dims[2], layout.dims[1])
+    return svdvals(coefficient_matrix)
+end
+
 """
     schmidt_coefficients(psi, dims; allow_densify=false)
 
 Return all Schmidt coefficients, including zeros, in descending order.
+Only singular values are computed; singular vectors are not allocated. Input
+validation and sparse-input handling are identical to [`schmidt_decomposition`](@ref).
 """
 function schmidt_coefficients(
     psi::AbstractVector{<:Number}, dims; allow_densify::Bool=false
 )
-    return schmidt_decomposition(psi, dims; allow_densify=allow_densify).coefficients
+    return _tierd_schmidt_values(psi, dims; allow_densify=allow_densify)
 end
 
 """
@@ -2472,9 +2570,9 @@ behavior of QETLAB `SkVectorNorm`. The vector need not be normalized.
 
 When `k >= min(dims...)`, the result is `norm(psi)` and sparse or generic
 floating-point vectors, including `BigFloat`, are handled without
-densification. A smaller `k` requires a full SVD and therefore requires
-`allow_densify=true` for sparse input and a BLAS floating element type in the
-dependency-free core. The SVD path costs
+densification. A smaller `k` requires singular-value computation and therefore
+requires `allow_densify=true` for sparse input and a BLAS floating element type
+in the dependency-free core. The singular-value path costs
 `O(dA*dB*min(dA,dB))` time and `O(dA*dB)` workspace.
 
 # Examples

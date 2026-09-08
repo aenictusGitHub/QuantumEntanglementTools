@@ -1,6 +1,6 @@
 # Session handoff
 
-Snapshot date: 2026-08-09. This file describes the local convergence worktree,
+Snapshot date: 2026-09-08. This file describes the local convergence worktree,
 not a committed or published release.
 
 ## Repository state
@@ -9,19 +9,16 @@ not a committed or published release.
 
 - Branch: `main`.
 - `HEAD` and `origin/main`:
-  `c69185f46c7027906e07d4965ed58dbfeab6457f`.
+  `1d611e4f61f2d740602018dce05afd47f2ecf620`.
 - Remote: private `origin` at
   `https://github.com/aenictusGitHub/QuantumEntanglementTools.git`.
-- Worktree: intentionally dirty with a bounded GitHub Pages repair in five
-  implementation/evidence files: `tutorials/qetlab_intro_tiles.jl`,
-  `tutorials/runtests.jl`, `docs/src/tutorials.md`,
-  `docs/src/code_generator.md`, and `docs/test/code_generator_cases.js`, plus
-  this handoff, `docs/PORTING_STATUS.md`, and the reconciled generated
-  `artifacts/convergence/current_snapshot.toml`. Use `git status --short` for
-  the exact live list; do not reset or clean it.
+- Worktree: intentionally dirty with a bounded performance, numerical-
+  stability, regression-test, CI, documentation, and evidence update. Use
+  `git status --short` for the exact live list; do not reset or clean it.
 - No commit, push, tag, release, repository-visibility change, branch-setting
-  change, history rewrite, or registry submission was made by the coding
-  agent. The repository owner enabled **GitHub Actions** as the Pages source.
+  change, history rewrite, or registry submission was made in this pass. The
+  preceding Pages repair is committed at `1d611e4f61f2d740602018dce05afd47f2ecf620`
+  and was successfully deployed.
 - Pinned QETLAB source:
   `d8589610f00cff106537268dee2e2a1153f3a601`, with 163 MATLAB files,
   127 public functions, 36 internal helpers, 503 dependency edges, and no
@@ -32,7 +29,7 @@ not a committed or published release.
   completion failures.
 - The runtime API contains 477 exports (347 native/module and 130
   `MATLABCompat`) matched by 477 provenance records.
-- The exact current-tree package corpus passes 9,484/9,484 assertions: 9,400
+- The exact current-tree package corpus passes 9,759/9,759 assertions: 9,675
   core assertions plus 84 executable-tutorial assertions, on
   Julia 1.12.6 and the installed Julia 1.10.11. Seven tutorial scripts are
   covered; 36 assertions exercise the new seeded Schmidt-decomposition and
@@ -52,7 +49,7 @@ not a committed or published release.
 - Aqua passes 11/11, the representative JET set passes 25/25, independent
   randomized matrix-predicate validation passes 130/130 on both lines, and the
   formatter gate passes.
-- All 114 declared quick benchmark cases completed without failure on the
+- All 120 declared quick benchmark cases completed without failure on the
   current uncommitted tree with one Julia and one BLAS thread. This is local
   smoke evidence only; targeted minima remain diagnostics rather than a stable
   comparative-performance result or regression baseline.
@@ -87,15 +84,18 @@ status-rich numerical outcomes. Necessary criteria, relaxations, heuristics,
 and numerical feasibility evidence are not promoted to unchecked Boolean
 certificates.
 
-The performance pass preserves every public name and signature. Homogeneous
-dense BLAS-float Kraus and paired operator-sum factors now form Choi matrices
-from compact factor-column products; mixed, exact, arbitrary-precision, and
-sparse inputs retain the previous termwise path. Compound matrices use
-allocation-light, partially pivoted kernels for standard floating-point
-two-by-two and three-by-three minors, exact formulas for widened exact types,
-and the standard-library determinant for other numeric types and larger
-minors. See `docs/BENCHMARK_REPORT.md` for the bounded measurements and
-numerical cross-checks.
+The current performance and stability pass preserves every public name and
+signature. Diagonal density measures and coherence now avoid dense spectral
+factorizations; coefficient-only Schmidt operations use `svdvals`; and dense
+order-two additive compounds use direct lexicographic pair indexing. Logical
+sparse wrappers remain sparse through subsystem transformations. Fixed-width
+integer tensor products, partial traces, and parallel repetitions now reject
+overflow instead of wrapping; Boolean partial traces consistently return the
+additive `Int` codomain; and large `Float16` equal-superposition constructors
+can no longer silently normalize every amplitude to zero. Generic, sparse,
+higher-order, exact, and full-vector-producing paths retain their documented
+roles. See `docs/BENCHMARK_REPORT.md` for bounded smoke results and explicitly
+non-baseline local timing observations.
 
 The tutorial pass adds two independently written, core-only workflows inspired
 by QETLAB's introductory examples. The seeded Schmidt workflow reconstructs a
@@ -123,10 +123,10 @@ and checks that every copyable `JuMPBackend` example imports JuMP explicitly.
 The `main` documentation workflow packages and deploys the rendered
 Documenter site, including equations and the browser-local code generator.
 The repository owner selected **GitHub Actions** as the Pages source on
-2026-08-09. The site still needs an authorized push of the local repair and a
-successful post-push Documentation workflow before its root and code-generator
-routes can be verified. On a private repository, Pages availability and site
-visibility depend on the GitHub plan and repository settings.
+2026-08-09. The Pages repair was committed, its Documentation deployment
+succeeded, and the root and `/code_generator/` routes returned HTTP 200 in the
+preceding session. On a private repository, Pages availability and site
+visibility continue to depend on the GitHub plan and repository settings.
 
 The generator now has 11 bounded state families and nine curated workflows.
 The new families are an exact-arithmetic Tiles-UPB complement and seeded
@@ -201,11 +201,13 @@ qualification is stated:
 
 ```sh
 julia --compiled-modules=no --startup-file=no --project=. test/runtests.jl
-julia +1.10 --compiled-modules=no --startup-file=no --project=. test/runtests.jl
+/Applications/Julia-1.10.app/Contents/Resources/julia/bin/julia \
+  --compiled-modules=no --startup-file=no --project=. test/runtests.jl
 
 julia --compiled-modules=no --startup-file=no --project=. \
   -e 'using Test, QuantumEntanglementTools; include("test/symmetric_states.jl")'
-julia +1.10 --compiled-modules=no --startup-file=no --project=. \
+/Applications/Julia-1.10.app/Contents/Resources/julia/bin/julia \
+  --compiled-modules=no --startup-file=no --project=. \
   -e 'using Test, QuantumEntanglementTools; include("test/symmetric_states.jl")'
 
 julia --compiled-modules=no --startup-file=no --project=. tutorials/runtests.jl
@@ -224,18 +226,18 @@ julia --compiled-modules=no --startup-file=no \
   --project=test/extensions/entanglement_detection \
   test/extensions/entanglement_detection/runtests.jl
 
-julia --compiled-modules=no --startup-file=no --project=docs docs/make.jl
+julia --compiled-modules=no --startup-file=no scripts/build_docs.jl
 /Applications/Julia-1.10.app/Contents/Resources/julia/bin/julia \
-  --compiled-modules=no --startup-file=no --project=docs docs/make.jl
+  --compiled-modules=no --startup-file=no scripts/build_docs.jl
 
 julia --compiled-modules=no --startup-file=no --project=. \
   scripts/check_optional_backend_docs.jl
 
 osascript -l JavaScript docs/test/code_generator_jxa.js <temporary-directory>
-julia --compiled-modules=no --startup-file=no --project=docs \
+julia --compiled-modules=no --startup-file=no --project=. \
   <temporary-directory>/generated_smoke.jl
 /Applications/Julia-1.10.app/Contents/Resources/julia/bin/julia \
-  --compiled-modules=no --startup-file=no --project=docs \
+  --compiled-modules=no --startup-file=no --project=. \
   <temporary-directory>/generated_smoke.jl
 
 julia --compiled-modules=no --startup-file=no --project=quality \
@@ -244,7 +246,8 @@ julia --compiled-modules=no --startup-file=no --project=quality \
   quality/run_quality.jl
 
 julia --compiled-modules=no --startup-file=no --project=benchmark \
-  benchmark/benchmarks.jl --quick --no-save
+  benchmark/benchmarks.jl --quick \
+  --output=/private/tmp/qet-performance-final-20260908
 
 julia --compiled-modules=no --startup-file=no --project=. \
   scripts/check_qetlab_completion.jl --strict
@@ -295,28 +298,28 @@ julia --compiled-modules=no --startup-file=no --project=. \
 - The first fresh-depot archive smoke was blocked only by sandbox DNS. The
   permitted reruns downloaded registry metadata into disposable depots and
   passed on both Julia 1.12.6 and 1.10.11.
-- The ignored docs manifest required a version-specific refresh for each Julia
-  line. It currently reflects Julia 1.12.6 and is not a tracked source change.
-- The first Julia 1.10 documentation attempt found the Julia 1.12-flavored
-  ignored manifest without its version-specific OpenSSL artifact. Refreshing
-  that environment with Julia 1.10 resolved the artifact; the strict build
-  passed, and the ignored manifest was then restored with Julia 1.12.6.
+- A direct Julia 1.10 documentation attempt exposed an ignored Julia
+  1.12-generated manifest whose bundled OpenSSL entry had no Julia 1.10 source.
+  A fresh Julia 1.10 environment built the strict docs successfully. The new
+  `scripts/build_docs.jl` helper always resolves a disposable environment for
+  the running Julia version and therefore does not reuse or rewrite the
+  ignored `docs/Manifest.toml`.
 - Node.js was unavailable. The documented JavaScriptCore/JXA fallback passed
   all 178 generator checks and emitted the two-version smoke bundle.
 - `cffconvert` was not installed, so schema-tool validation of `CITATION.cff`
   remains a release-checklist item. The package release preflight's metadata
   consistency checks passed.
-- The repository owner selected **Settings → Pages → GitHub Actions**.
-  Enabling the source did not trigger a workflow. The local Pages repair has
-  not been committed or pushed, so no successful post-fix deployment exists
-  yet; treat site visibility as a separate decision for this private
-  repository.
+- The repository owner selected **Settings → Pages → GitHub Actions**. The
+  repaired Documentation workflow subsequently deployed commit `1d611e4`, and
+  the root and code-generator routes were verified with HTTP 200. Treat site
+  visibility as a separate decision for this private repository.
 - Documentation emitted only size warnings: five API/migration pages exceeded
   100 KiB but remained below the 200 KiB hard limit; `search_index.js`
   exceeded the 500 KiB warning threshold.
-- The exact current dirty tree completed all 114 declared quick benchmark
-  cases with `--quick --no-save`; those timings remain local smoke evidence,
-  not a comparative-performance claim.
+- The exact current dirty tree completed all 120 declared quick benchmark
+  cases with results saved under
+  `/private/tmp/qet-performance-final-20260908`; those timings remain local
+  smoke evidence, not a comparative-performance claim.
 - Claim reconciliation emitted Julia 1.12 world-age warnings for anonymous
   test bindings created by repeated `include` calls. The measured core and
   extension testsets still passed; no package runtime failure was observed.
@@ -329,7 +332,7 @@ occupation enumeration and rank/unrank, multiqudit Dicke states, product-state
 coordinates, collective one-body operators, bipartition isometries, direct
 compressed reductions, and maximally mixed symmetric states. Their 1,014
 focused assertions pass on Julia 1.12.6 and 1.10.11; both complete package runs
-pass 9,484/9,484. The public-API/provenance gate, generated completion-artifact
+pass 9,759/9,759. The public-API/provenance gate, generated completion-artifact
 freshness check, strict completion checker, and strict Documenter build pass.
 
 Occupation-tuple materialization has a hard 1,000-level safety cap for Julia
@@ -359,17 +362,34 @@ run-specific `documentation-<run-id>-<run-attempt>` artifact.
 Focused Tiles runs and the complete 84-assertion tutorial suite pass on Julia
 1.12.6 and 1.10.11. The 178-check JavaScriptCore/JXA generator harness and its
 13-module generated Julia smoke pass on both Julia lines. Strict CI-shaped
-Documenter builds pass on both lines after the normal version-specific ignored
-manifest refresh; they emit only the previously recorded HTML/search-index size
+Documenter builds pass on both lines through disposable per-version docs
+environments; they emit only the previously recorded HTML/search-index size
 warnings. The formatter gate and `git diff --check` pass. Node.js was
 unavailable, so the documented JavaScriptCore/JXA fallback was used.
 
-The remote `main` branch remains at
-`c69185f46c7027906e07d4965ed58dbfeab6457f`. The five implementation/evidence
-repair files, two status records, and reconciled generated snapshot remain
-uncommitted locally. A specifically authorized commit and push will trigger the
-next Documentation workflow; only after that workflow succeeds should the live
-root and `/code_generator/` routes be treated as deployed.
+The repair is committed at
+`1d611e4f61f2d740602018dce05afd47f2ecf620`. Its Documentation workflow
+deployed successfully, and the live root and `/code_generator/` routes both
+returned HTTP 200 in the preceding session.
+
+## Performance and stability pass (2026-09-08)
+
+This uncommitted pass adds structure-aware fast paths for diagonal scalar and
+coherence measures, coefficient-only Schmidt analysis, and dense order-two
+additive compounds. It also closes silent-result hazards around sparse array
+wrappers, fixed-width integer overflow, Boolean partial-trace accumulation,
+and large `Float16` equal-superposition normalization. Tests exercise dense,
+sparse, wrapped, exact, generic-float, overflow, boundary, nonmutation, and
+resource-policy behavior on both supported local Julia lines.
+
+The complete core/tutorial corpus passes 9,759/9,759, both optional JuMP
+suites pass 847/847, the compatible EntanglementDetection.jl suite passes
+141/141, and all 27 source-free comparator groups pass 1,347/1,347 on both
+Julia lines. All 120 quick benchmark cases completed on Julia 1.12.6 with one
+Julia and one BLAS thread. Targeted minima remain local diagnostics; they are
+not speed guarantees or a comparative regression baseline. Checked arithmetic
+currently covers real fixed-width integer element types, not `Complex{Int}`;
+ordinary floating-point underflow remains governed by the requested type.
 
 ## Remaining external gates
 
@@ -379,12 +399,12 @@ this implementation task:
 
 1. maintainer mathematical, API, provenance, licensing, generated-ledger, and
    release review;
-2. an explicitly authorized commit and push of the Pages repair, followed by a
-   successful exact-commit Documentation workflow and verification of the live
-   root and `/code_generator/` routes;
-3. verification of the deployed site's intended access level;
-4. exact-commit supported-platform CI, Codecov ingestion, and archive
+2. an explicitly authorized commit and push of the current performance and
+   stability candidate;
+3. exact-commit supported-platform CI, Documentation deployment, Codecov
+   ingestion, and archive
    validation;
+4. verification of the deployed site's intended access level;
 5. separate explicit decisions for tagging, a private GitHub release, public
    visibility, and Julia General registration;
 6. authoritative MATLAB comparison if broader MATLAB/QETLAB parity is ever to

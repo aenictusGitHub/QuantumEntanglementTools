@@ -1,13 +1,78 @@
 # Benchmark report
 
-Evidence date: 2026-07-30.
+Evidence date: 2026-09-08.
 
 Status: paired local quick-run diagnostic; no stable comparative-performance
 claim or regression threshold.
 
-## Current 114-case quick smoke
+## Current 120-case quick smoke
 
 <!-- qetlab-current-claims: begin -->
+
+The complete set of 120 declared quick benchmark cases completed with exit
+status zero on Julia 1.12.6 for the uncommitted performance-and-stability
+worktree based on `1d611e4f61f2d740602018dce05afd47f2ecf620`:
+
+```sh
+JULIA_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  julia --compiled-modules=no --startup-file=no --project=benchmark \
+  benchmark/benchmarks.jl --quick \
+  --output=/private/tmp/qet-performance-final-20260908
+```
+
+Each case produced 20 samples with one evaluation. The environment was an
+Apple M4 (`apple-m4`) on arm64 macOS, Julia 1.12.6, BenchmarkTools 1.8.0,
+and ILP64 OpenBLAS through libblastrampoline, with one Julia and one BLAS
+thread. `Manifest.toml` and `benchmark/Manifest.toml` had SHA-256 digests
+`6faecb9f1c414a769c09ad82d5cbcb5188ec1c36fba0a465688485631bf1245f` and
+`73b333138b13ff43b3d8470bedaaed547c855a51ab1d9cc49dab19f02500aa86`.
+
+The raw JSON/TOML SHA-256 pair is
+`ceda9894530b72eddd76df145189a234a8d7368d129f5781ffb018a26c10347a` /
+`78b2e4efa676a6097598c95954b28c4e8c39c2e115acd9633569fb2d86dcc067`.
+The files are temporary local artifacts under `/private/tmp`; their hashes
+detect accidental substitution but do not make the evidence durable.
+
+### Targeted paired diagnostics
+
+The following minima compare the specialized candidate with the retained
+generic/vector-producing path on the same worktree, except for the additive
+compound rows, whose reference is a clean archive of `1d611e4`. Diagonal rows
+used 100 samples, Schmidt rows used 300, and additive rows used 1,000 (`n=16`)
+or 300 (`n=32`), always with one evaluation and the same one-thread runtime.
+
+| Operation and input | Reference minimum | Candidate minimum | Reference → candidate memory | Allocations |
+|---|---:|---:|---:|---:|
+| diagonal purity, `n=512`, `Float64` | 17,935,750 ns | 375 ns | 14,890,384 → 16 bytes | 49 → 1 |
+| diagonal fidelity, `n=512`, `Float64` | 82,447,709 ns | 1,166 ns | 42,687,872 → 16 bytes | 125 → 1 |
+| diagonal trace distance, `n=512`, `Float64` | 67,037,958 ns | 958 ns | 34,290,624 → 16 bytes | 107 → 1 |
+| diagonal `l1` coherence, `n=512`, `Float64` | 17,871,875 ns | 292 ns | 14,894,544 → 16 bytes | 52 → 1 |
+| diagonal relative-entropy coherence, `n=512`, `Float64` | 17,965,667 ns | 333 ns | 14,898,736 → 16 bytes | 55 → 1 |
+| Schmidt coefficients, `32 × 32`, `ComplexF64` | 110,458 ns | 41,000 ns | 167,552 → 87,536 bytes | 46 → 40 |
+| dense order-two additive compound, `n=16`, `Float64` | 69,917 ns | 3,666 ns | 429,016 → 132,488 bytes | 7,297 → 68 |
+| dense order-two additive compound, `n=32`, `Float64` | 633,334 ns | 30,333 ns | 4,476,296 → 1,983,880 bytes | 61,607 → 68 |
+
+The diagonal formulas agreed with the retained dense methods in 800 seeded
+Float32/Float64 comparisons; the largest absolute difference was
+`6.88e-7`, from Float32 relative-entropy cancellation. Values-only Schmidt
+results were compared with the full decomposition over real and complex,
+square and rectangular inputs. Additive-compound results were bitwise equal to
+the retained generic construction for floating inputs and exact for integer and
+rational inputs in the focused suite. Sparse and higher-order additive paths
+are unchanged.
+
+These quick-run and paired minima are diagnostic observations, not stable
+speedup guarantees. The additive rows were rerun after final review with seed
+`0x4144445045524632`, 1,000/300 samples for dimensions 16/32, one evaluation,
+and a three-second limit in both this tree and an extracted archive of
+`1d611e4`. The other targeted commands and all raw trial objects were not
+retained, so those rows remain ephemeral observations rather than durable
+benchmark evidence. There is no repeated-session noise study, acceptance
+threshold, cross-platform comparison, or regression gate.
+
+<!-- qetlab-current-claims: end -->
+
+## Previous 114-case paired smoke (2026-07-30)
 
 The complete set of 114 declared quick benchmark cases completed with exit
 status zero on Julia 1.12.6 for both the clean baseline
@@ -61,8 +126,6 @@ make them durable repository evidence.
 These quick-run minima are diagnostic observations, not stable speedup
 guarantees. There is no repeated-session noise study, acceptance threshold,
 cross-platform comparison, or regression gate.
-
-<!-- qetlab-current-claims: end -->
 
 ## Historical 42-case quick smoke
 

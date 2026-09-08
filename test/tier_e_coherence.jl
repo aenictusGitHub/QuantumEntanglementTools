@@ -28,6 +28,11 @@ end
         coherent = plus_state * plus_state'
         @test QETCoherence.l1_coherence(incoherent) == 0.0
         @test QETCoherence.l1_coherence(coherent) ≈ 3.0
+        big_incoherent = Diagonal(BigFloat[0.25, 0.75])
+        @test QETCoherence.l1_coherence(big_incoherent) isa BigFloat
+        @test iszero(QETCoherence.l1_coherence(big_incoherent))
+        near_boundary = Diagonal([-1e-12, 1 + 1e-12])
+        @test iszero(QETCoherence.l1_coherence(near_boundary; atol=1e-10, rtol=0))
         @test QETCoherence.l1_coherence(Float32[inv(sqrt(2.0f0)), inv(sqrt(2.0f0))]) isa
             Float32
         big_plus = BigFloat[1, 1] / sqrt(big(2))
@@ -56,6 +61,15 @@ end
 
         diagonal = Diagonal([0.2, 0.3, 0.5])
         @test QETCoherence.relative_entropy_coherence(diagonal; base=2) ≈ 0.0 atol = 5e-15
+        big_diagonal = Diagonal(BigFloat[0.25, 0.75])
+        big_diagonal_coherence = QETCoherence.relative_entropy_coherence(
+            big_diagonal; base=big(2)
+        )
+        @test big_diagonal_coherence isa BigFloat
+        @test iszero(big_diagonal_coherence)
+        @test_throws DomainError QETCoherence.relative_entropy_coherence(
+            Diagonal([-1e-12, 1 + 1e-12]); base=2, atol=1e-10, rtol=0
+        )
 
         pure_density = plus_qubit * plus_qubit'
         @test QETCoherence.relative_entropy_coherence(pure_density; base=2) ≈ 1.0

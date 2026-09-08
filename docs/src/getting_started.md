@@ -189,8 +189,8 @@ status, 36/36 internal helpers assigned terminal dispositions, no queued rows,
 and 477 exported bindings with matching provenance entries. The API may still
 change before publication or in later `0.x` releases.
 
-The direct local full corpus passes 9,484/9,484 assertions: the core accounts
-for 9,400 assertions, and the seven standalone executable tutorials
+The direct local full corpus passes 9,759/9,759 assertions: the core accounts
+for 9,675 assertions, and the seven standalone executable tutorials
 pass 84/84 assertions (48 existing plus 36 for the two new workflows), on Julia
 1.12.6 and the installed Julia 1.10.11. This is local implementation and
 validation evidence, not MATLAB/QETLAB parity, remote supported-platform CI,
@@ -206,12 +206,13 @@ julia --startup-file=no --project=. tutorials/runtests.jl
 ## Build these docs
 
 ```sh
-julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-julia --project=docs docs/make.jl
+julia --startup-file=no scripts/build_docs.jl
 ```
 
-The first command records the local package path in the disposable docs
-environment. `docs/Manifest.toml` is intentionally not versioned.
+The helper copies `docs/Project.toml` into a temporary environment, resolves it
+for the running Julia version, and leaves the rendered site in `docs/build`.
+It does not reuse or write the ignored `docs/Manifest.toml`, and exits with an
+error when dependency resolution or the strict build fails.
 
 ## Before relying on a function
 

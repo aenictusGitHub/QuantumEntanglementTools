@@ -398,6 +398,10 @@ function benchmark_suite()
     tier_d_other_factor = randn(rng, ComplexF64, 64, 64)
     tier_d_other_density = tier_d_other_factor * adjoint(tier_d_other_factor)
     tier_d_other_density ./= real(tr(tier_d_other_density))
+    diagonal_probabilities = collect(1.0:512.0)
+    diagonal_probabilities ./= sum(diagonal_probabilities)
+    diagonal_density = Diagonal(diagonal_probabilities)
+    reverse_diagonal_density = Diagonal(reverse(diagonal_probabilities))
     induced_norm_rng = MersenneTwister(0x5145544c4142494d)
     induced_norm_start = randn(rng, ComplexF64, size(tier_d_operator, 2))
     fidelity_factor = randn(rng, ComplexF64, 32, 32)
@@ -423,11 +427,15 @@ function benchmark_suite()
         max_iterations=25,
     )
     suite["measures/purity_density_d64"] = @benchmarkable purity($tier_d_density)
+    suite["measures/purity_diagonal_d512"] = @benchmarkable purity($diagonal_density)
     suite["measures/entropy_density_d64"] = @benchmarkable von_neumann_entropy(
         $tier_d_density; base=2
     )
     suite["measures/fidelity_density_d32"] = @benchmarkable fidelity(
         $fidelity_density, $fidelity_other_density
+    )
+    suite["measures/fidelity_diagonal_d512"] = @benchmarkable fidelity(
+        $diagonal_density, $reverse_diagonal_density
     )
     suite["measures/matsumoto_fidelity_density_d32"] = @benchmarkable matsumoto_fidelity(
         $fidelity_density, $fidelity_other_density
@@ -440,6 +448,9 @@ function benchmark_suite()
     suite["measures/trace_distance_density_d64"] = @benchmarkable trace_distance(
         $tier_d_density, $tier_d_other_density
     )
+    suite["measures/trace_distance_diagonal_d512"] = @benchmarkable trace_distance(
+        $diagonal_density, $reverse_diagonal_density
+    )
     suite["measures/concurrence_mixed_two_qubit"] = @benchmarkable concurrence(
         $concurrence_density
     )
@@ -450,6 +461,9 @@ function benchmark_suite()
         $tier_d_density, (8, 8); base=2
     )
     suite["entanglement/schmidt_decomposition_32x32"] = @benchmarkable schmidt_decomposition(
+        $schmidt_vector, (32, 32)
+    )
+    suite["entanglement/schmidt_coefficients_32x32"] = @benchmarkable schmidt_coefficients(
         $schmidt_vector, (32, 32)
     )
     suite["entanglement/schmidt_rank_32x32"] = @benchmarkable schmidt_rank(
@@ -468,8 +482,12 @@ function benchmark_suite()
     coherence_state = randn(rng, ComplexF64, 64)
     coherence_state ./= norm(coherence_state)
     suite["coherence/l1_pure_d4096"] = @benchmarkable l1_coherence($coherence_plus)
+    suite["coherence/l1_diagonal_d512"] = @benchmarkable l1_coherence($diagonal_density)
     suite["coherence/relative_entropy_pure_d4096"] = @benchmarkable relative_entropy_coherence(
         $coherence_plus; base=2
+    )
+    suite["coherence/relative_entropy_diagonal_d512"] = @benchmarkable relative_entropy_coherence(
+        $diagonal_density; base=2
     )
     suite["coherence/rank_basis_transform_d64"] = @benchmarkable coherence_rank(
         $coherence_state; basis=($coherence_basis)

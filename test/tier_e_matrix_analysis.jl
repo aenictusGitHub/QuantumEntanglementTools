@@ -346,6 +346,57 @@ end
             additive_compound_matrix(first, 2) + additive_compound_matrix(second, 2)
         @test eltype(additive_compound_matrix(first, 2)) == Rational{Int}
 
+        @testset "dense order-two pair indexing" begin
+            pair_rng = MersenneTwister(0x4144445041495253)
+            for element_type in (Float32, Float64, ComplexF32, ComplexF64)
+                for dimension in 2:8
+                    sample = randn(pair_rng, element_type, dimension, dimension)
+                    sample_before = copy(sample)
+                    dense_result = additive_compound_matrix(sample, 2)
+                    generic_result = Matrix(
+                        additive_compound_matrix(sample, 2; sparse_output=true)
+                    )
+                    @test isequal(dense_result, generic_result)
+                    @test eltype(dense_result) == element_type
+                    @test isequal(sample, sample_before)
+                end
+            end
+
+            integer_sample = rand(pair_rng, -9:9, 7, 7)
+            rational_sample = integer_sample .// 7
+            complex_rational_sample = complex.(rational_sample, 2 .* rational_sample)
+            unsigned_sample = UInt.(rand(pair_rng, 0:9, 7, 7))
+            boolean_sample = rand(pair_rng, Bool, 7, 7)
+            for sample in (
+                integer_sample,
+                rational_sample,
+                complex_rational_sample,
+                unsigned_sample,
+                boolean_sample,
+            )
+                dense_result = additive_compound_matrix(sample, 2)
+                generic_result = Matrix(
+                    additive_compound_matrix(sample, 2; sparse_output=true)
+                )
+                @test isequal(dense_result, generic_result)
+                @test eltype(dense_result) == eltype(generic_result)
+            end
+
+            sparse_sample = sparse(randn(pair_rng, 7, 7))
+            @test isequal(
+                additive_compound_matrix(sparse_sample, 2; sparse_output=false),
+                Matrix(additive_compound_matrix(sparse_sample, 2)),
+            )
+
+            signed_zero_sample = zeros(3, 3)
+            signed_zero_sample[1, 1] = -0.0
+            signed_zero_sample[2, 2] = -0.0
+            @test isequal(
+                additive_compound_matrix(signed_zero_sample, 2),
+                Matrix(additive_compound_matrix(signed_zero_sample, 2; sparse_output=true)),
+            )
+        end
+
         rng = MersenneTwister(20260728)
         floating_matrix = randn(rng, 4, 4)
         step = 1e-5

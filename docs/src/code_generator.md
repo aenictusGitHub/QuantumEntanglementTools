@@ -17,12 +17,13 @@ and fixed choices; it does not accept or evaluate arbitrary Julia code.
 > To build the same documentation from a local checkout, run:
 >
 > ```sh
-> julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-> julia --startup-file=no --project=docs docs/make.jl
+> julia --startup-file=no scripts/build_docs.jl
 > ```
 >
-> Then open `docs/build/code_generator.html` in a browser. For examples that run
-> without a browser, use the [executable tutorials](tutorials.md).
+> The helper uses a temporary environment for the running Julia version and
+> exits with an error if resolution or the strict build fails. Then open
+> `docs/build/code_generator.html` in a browser. For examples that run without a
+> browser, use the [executable tutorials](tutorials.md).
 
 ## Interactive generator
 

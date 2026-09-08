@@ -146,6 +146,26 @@ function _checked_power(base::Int, exponent::Int, name::AbstractString)
     return result
 end
 
+function _checked_bitinteger_mul(
+    left::L, right::R, operation::AbstractString
+) where {L<:Base.BitInteger,R<:Base.BitInteger}
+    (iszero(left) || iszero(right)) && return zero(promote_type(L, R))
+    return try
+        Base.checked_mul(left, right)
+    catch err
+        (err isa OverflowError || err isa InexactError) || rethrow()
+        throw(OverflowError("$operation overflowed fixed-width integer multiplication"))
+    end
+end
+
+function _narrow_bitinteger(
+    ::Type{T}, value::Integer, operation::AbstractString
+) where {T<:Base.BitInteger}
+    typemin(T) <= value <= typemax(T) ||
+        throw(OverflowError("$operation result is not representable as $T"))
+    return T(value)
+end
+
 function SubsystemLayout(dims::Tuple)
     all(dim -> dim isa Integer && !(dim isa Bool), dims) ||
         throw(ArgumentError("dims must contain only positive integers; got $(repr(dims))"))

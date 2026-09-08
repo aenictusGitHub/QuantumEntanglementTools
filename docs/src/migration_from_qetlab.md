@@ -6,7 +6,7 @@ At pinned QETLAB revision
 checker passes with 127/127 public rows verified with final status,
 36/36 internal helpers assigned terminal dispositions, no queued rows, and
 477 exported bindings with matching provenance entries. The direct local full
-corpus passes 9,484/9,484 assertions: 9,400 core plus 84
+corpus passes 9,759/9,759 assertions: 9,675 core plus 84
 executable-tutorial assertions, on Julia 1.12.6 and the installed Julia 1.10.11.
 
 This is package-local implementation and validation evidence. It does not
@@ -315,7 +315,7 @@ and safe compatibility surfaces:
 
 The focused WP6 suites pass 211/211 native, 42/42 compatibility, and 72/72
 optional Hypatia/SCS extension assertions on Julia 1.12.6 and the installed
-Julia 1.10.0. The source-free QETLAB comparators pass 26/26 separability and
+Julia 1.10.11. The source-free QETLAB comparators pass 26/26 separability and
 18/18 local-discrimination assertions on both Julia lines. The oracle covers
 deterministic solver-free branches only; MATLAB and CVX were not run. See
 [Separability and local discrimination](separability_optimization.md) for

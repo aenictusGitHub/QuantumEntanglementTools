@@ -300,7 +300,7 @@ function _matrix_analysis_work_type(value_type::Type)
     return value_type
 end
 
-function _matrix_analysis_narrow(target_type::Type, value, context::AbstractString)
+@inline function _matrix_analysis_narrow(target_type::Type, value, context::AbstractString)
     try
         return convert(target_type, value)
     catch err
@@ -657,6 +657,64 @@ function _matrix_analysis_minor_determinant(
     return _matrix_analysis_narrow(R, determinant, "minor determinant")
 end
 
+@inline function _additive_compound_pair_index(first::Int, second::Int, dimension::Int)
+    # Pairs are ordered as (1,2), (1,3), ..., (n-1,n). The resource plan has
+    # already established that the dense result and this index fit in `Int`.
+    return ((first - 1) * (2 * dimension - first)) ÷ 2 + second - first
+end
+
+function _additive_compound_order_two_dense(
+    matrix::AbstractMatrix, dimension::Int, count::Int, ::Type{R}
+) where {R}
+    work_type = _matrix_analysis_work_type(R)
+    result = fill(zero(R), count, count)
+
+    @inbounds for first in 1:(dimension - 1)
+        for second in (first + 1):dimension
+            column = _additive_compound_pair_index(first, second, dimension)
+            # Match the generic exterior-action accumulation order, including
+            # IEEE signed-zero behavior: start from +zero, then add each term.
+            diagonal_value = zero(work_type)
+            diagonal_value += convert(work_type, matrix[first, first])
+            diagonal_value += convert(work_type, matrix[second, second])
+            result[column, column] = _matrix_analysis_narrow(
+                R, diagonal_value, "additive-compound diagonal entry"
+            )
+
+            for replacement in 1:dimension
+                (replacement == first || replacement == second) && continue
+
+                first_value = convert(work_type, matrix[replacement, first])
+                if !iszero(first_value)
+                    row = if replacement < second
+                        _additive_compound_pair_index(replacement, second, dimension)
+                    else
+                        first_value = -first_value
+                        _additive_compound_pair_index(second, replacement, dimension)
+                    end
+                    result[row, column] = _matrix_analysis_narrow(
+                        R, first_value, "additive-compound off-diagonal entry"
+                    )
+                end
+
+                second_value = convert(work_type, matrix[replacement, second])
+                if !iszero(second_value)
+                    row = if replacement < first
+                        second_value = -second_value
+                        _additive_compound_pair_index(replacement, first, dimension)
+                    else
+                        _additive_compound_pair_index(first, replacement, dimension)
+                    end
+                    result[row, column] = _matrix_analysis_narrow(
+                        R, second_value, "additive-compound off-diagonal entry"
+                    )
+                end
+            end
+        end
+    end
+    return result
+end
+
 """
     compound_matrix(
         matrix, order;
@@ -775,7 +833,8 @@ The direct exterior-action construction takes
 produce dense outputs by default, sparse inputs remain sparse, and
 `sparse_output` can select either representation explicitly. Exact integer and
 rational arithmetic is widened internally and checked when converted to the
-result type.
+result type. Dense order-two output uses direct lexicographic pair indexing;
+higher orders and sparse output use the general exterior-action construction.
 
 `max_entries` bounds conservative result, coordinate-array, combination-table,
 and lookup-key storage before allocation. `max_work` also accounts for the
@@ -815,6 +874,9 @@ function additive_compound_matrix(
         else
             Matrix{result_type}(undef, count, count)
         end
+    end
+    if !sparse_output && checked_order == 2
+        return _additive_compound_order_two_dense(matrix, dimension, count, result_type)
     end
     result = sparse_output ? nothing : fill(zero(result_type), count, count)
     result_rows = Int[]

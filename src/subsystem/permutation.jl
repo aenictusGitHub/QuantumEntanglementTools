@@ -66,6 +66,9 @@ end
 
 function _permute_vector(vector::AbstractVector, plan::SubsystemPermutationPlan)
     _validate_vector_dimension(vector, plan.layout)
+    if issparse(vector)
+        return _permute_vector(sparse(vector), plan)
+    end
     result = Vector{eltype(vector)}(undef, length(vector))
     @inbounds for old_index in eachindex(plan.forward)
         result[plan.forward[old_index]] = vector[old_index]
@@ -88,6 +91,9 @@ function _permute_matrix_rows(matrix::AbstractMatrix, row_plan::SubsystemPermuta
             "matrix has $(size(matrix, 1)) rows; expected $(row_plan.layout.total_dimension) for row dims=$(row_plan.layout.dims)",
         ),
     )
+    if issparse(matrix)
+        return _permute_matrix_rows(sparse(matrix), row_plan)
+    end
     result = Matrix{eltype(matrix)}(undef, size(matrix))
     @inbounds for column in axes(matrix, 2), old_row in axes(matrix, 1)
         result[row_plan.forward[old_row], column] = matrix[old_row, column]
@@ -114,6 +120,9 @@ function _permute_matrix(
     column_plan::SubsystemPermutationPlan,
 )
     _validate_matrix_dimensions(matrix, row_plan.layout, column_plan.layout)
+    if issparse(matrix)
+        return _permute_matrix(sparse(matrix), row_plan, column_plan)
+    end
     result = Matrix{eltype(matrix)}(undef, size(matrix))
     @inbounds for old_column in axes(matrix, 2), old_row in axes(matrix, 1)
         result[row_plan.forward[old_row], column_plan.forward[old_column]] = matrix[

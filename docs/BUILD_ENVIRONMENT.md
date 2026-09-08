@@ -1,6 +1,6 @@
 # Build environment
 
-Current convergence evidence observed locally on 2026-08-09. Environment
+Current convergence evidence observed locally on 2026-09-08. Environment
 details and predecessor results dated 2026-07-29 are retained below as a
 historical baseline.
 
@@ -10,16 +10,16 @@ historical baseline.
 
 | Item | Current local evidence |
 |---|---|
-| Repository | Dirty release-hardening worktree on `main` at `8b2fcbafc646c528aade8bbf695b1112e45511a9`; `origin/main` is the same base; no commit or publication action in this pass |
+| Repository | Dirty performance-and-stability worktree on `main` at `1d611e4f61f2d740602018dce05afd47f2ecf620`; `origin/main` is the same base; no commit or publication action in this pass |
 | Julia | 1.12.6 and installed minimum-line binary 1.10.11 |
 | Completion ledger | 127/127 public rows are verified with final status; completion queue contains 0 public rows; 36/36 internal helpers have terminal dispositions; 0 required helpers remain; 0 static completion failures |
 | API/provenance | 477 exports (347 native/module and 130 `MATLABCompat`) and 477 matching provenance records |
-| Package corpus | 9,484/9,484 assertions: 9,400 core plus 84 tutorials on both installed Julia lines |
+| Package corpus | 9,759/9,759 assertions: 9,675 core plus 84 tutorials on both installed Julia lines |
 | JuMP optimization | 847/847 assertions with package-managed Hypatia/SCS on both installed Julia lines |
 | EntanglementDetection.jl | Exact 0.2.2 environment; 141/141 assertions on Julia 1.12.6; effective resolver floor Julia 1.11 |
 | Source-free oracles | 27/27 comparators and 1,347/1,347 assertions on both installed Julia lines; all fixture digests verified |
 | Quality | Aqua 11/11, JET 25/25, formatter gate passing, randomized matrix predicates 130/130 on both lines |
-| Benchmarks | All 114 declared quick benchmark cases completed without failure on the current uncommitted worktree; this is local smoke evidence only, and targeted paired results remain diagnostic rather than comparative evidence |
+| Benchmarks | All 120 declared quick benchmark cases completed without failure on the current uncommitted worktree; this is local smoke evidence only, and targeted paired results remain diagnostic rather than comparative evidence |
 | Distribution preflight | Isolated dirty-worktree archive and fresh-depot load smoke pass on Julia 1.12.6 and 1.10.11; not committed-tree release evidence |
 
 `Pkg.test()` initially encountered sandbox-only permission failures when Julia

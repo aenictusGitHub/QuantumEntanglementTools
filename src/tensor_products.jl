@@ -4,12 +4,38 @@
 # QETLAB: Copyright 2014 Nathaniel Johnston, BSD-2-Clause.
 # Full upstream terms: licenses/QETLAB-LICENSE.txt.
 
+function _tensor_product_values(factor::Union{AbstractVector,AbstractMatrix})
+    if factor isa Union{SparseVector,SparseMatrixCSC}
+        return nonzeros(factor)
+    elseif issparse(factor)
+        canonical = sparse(factor)
+        return nonzeros(canonical)
+    end
+    return factor
+end
+
+function _check_tensor_product_arithmetic(
+    left::Union{AbstractVector,AbstractMatrix}, right::Union{AbstractVector,AbstractMatrix}
+)
+    if eltype(left) <: Base.BitInteger && eltype(right) <: Base.BitInteger
+        left_values = _tensor_product_values(left)
+        right_values = _tensor_product_values(right)
+        for right_value in right_values, left_value in left_values
+            _checked_bitinteger_mul(left_value, right_value, "tensor_product")
+        end
+    end
+    return nothing
+end
+
 """
     tensor_product(A, B, ...)
     tensor_product(A; copies=1)
 
 Compute a Kronecker tensor product without changing element types or
 densifying sparse factors.
+
+Products that fit in a fixed-width integer element type preserve that type;
+an unrepresentable scalar product raises `OverflowError` instead of wrapping.
 
 Factors are ordered conventionally: in `tensor_product(A, B)`, `A` is
 subsystem 1 and `B` is subsystem 2.  Consequently the basis index of `B`
@@ -37,6 +63,7 @@ function tensor_product(
 
     result = copy(first_factor)
     for factor in remaining_factors
+        _check_tensor_product_arithmetic(result, factor)
         result = kron(result, factor)
     end
     return result
@@ -55,6 +82,7 @@ function tensor_power(factor::Union{AbstractVector,AbstractMatrix}, copies::Inte
     count == 0 && return one(eltype(factor))
     result = copy(factor)
     for _ in 2:count
+        _check_tensor_product_arithmetic(result, factor)
         result = kron(result, factor)
     end
     return result

@@ -57,6 +57,27 @@ function _unit_interval_parameter(value, name::AbstractString)
     return checked
 end
 
+function _equal_superposition_amplitude(count::Int, ::Type{T}) where {T<:AbstractFloat}
+    count > 0 || throw(ArgumentError("count must be positive; got $count"))
+    # Float16 overflows on ordinary dimensions above 65_504.  Evaluate its
+    # normalization in Float32, while retaining the requested arithmetic for
+    # Float32, Float64, BigFloat, and custom AbstractFloat implementations.
+    work_type = T === Float16 ? Float32 : T
+    work_count = convert(work_type, count)
+    isfinite(work_count) || throw(
+        ArgumentError(
+            "count=$count is not representable in the normalization work type $work_type",
+        ),
+    )
+    value = convert(T, inv(sqrt(work_count)))
+    isfinite(value) && !iszero(value) || throw(
+        ArgumentError(
+            "the normalized amplitude for count=$count is not representable as a nonzero $T",
+        ),
+    )
+    return value
+end
+
 """
     maximally_entangled(dim; normalized=true, sparse_output=false, T=Float64)
 
@@ -65,6 +86,8 @@ Return the standard bipartite vector
 
 Subsystem 1 is the slowest-varying tensor factor, so nonzeros occur at
 indices `1, dim+2, 2dim+3, ...`.  `T` controls the real element type.
+Normalization throws `ArgumentError` if `T` cannot represent the required
+amplitude as a finite, nonzero value.
 """
 function maximally_entangled(
     dim; normalized::Bool=true, sparse_output::Bool=false, T::Type{<:AbstractFloat}=Float64
@@ -72,7 +95,7 @@ function maximally_entangled(
     dimension = _positive_int(dim, "dim")
     total = _checked_power(dimension, 2, "dim")
     indices = [1 + (position - 1) * (dimension + 1) for position in 1:dimension]
-    value = normalized ? inv(sqrt(T(dimension))) : one(T)
+    value = normalized ? _equal_superposition_amplitude(dimension, T) : one(T)
     result = sparsevec(indices, fill(value, dimension), total)
     return sparse_output ? result : Vector(result)
 end
@@ -91,7 +114,7 @@ function bell_state(
     T::Type{<:AbstractFloat}=Float64,
 )
     checked_index = _operator_index(index, 3, "index")
-    scale = normalized ? inv(sqrt(T(2))) : one(T)
+    scale = normalized ? _equal_superposition_amplitude(2, T) : one(T)
     indices = checked_index < 2 ? [1, 4] : [2, 3]
     values = T[scale, isodd(checked_index) ? -scale : scale]
     result = sparsevec(indices, values, 4)
@@ -104,6 +127,8 @@ end
 Construct ``\\sum_j c_j |j\\rangle^{\\otimes parties}`` in local dimension
 `dim`.  The default coefficients are all `1/sqrt(dim)`.  Supplied
 coefficients are used exactly and are never silently normalized.
+Default normalization throws `ArgumentError` if `T` cannot represent the
+required amplitude as a finite, nonzero value.
 """
 function ghz_state(
     dim,
@@ -115,7 +140,7 @@ function ghz_state(
     dimension = _positive_int(dim, "dim")
     party_count = _positive_int(parties, "parties")
     total = _checked_power(dimension, party_count, "dim")
-    default_value = inv(sqrt(T(dimension)))
+    default_value = _equal_superposition_amplitude(dimension, T)
     values = _state_coefficients(coefficients, dimension, default_value)
 
     repeated_digit_stride = 0
@@ -135,6 +160,8 @@ end
 Construct the `parties`-qubit one-excitation W state.  Coefficient `j`
 multiplies the term whose excitation is on subsystem `j`.  The default is
 the normalized equal superposition; supplied coefficients are not altered.
+Default normalization throws `ArgumentError` if `T` cannot represent the
+required amplitude as a finite, nonzero value.
 """
 function w_state(
     parties;
@@ -145,7 +172,7 @@ function w_state(
     party_count = _positive_int(parties, "parties")
     party_count >= 2 || throw(ArgumentError("parties must be at least 2 for a W state"))
     total = _checked_power(2, party_count, "parties")
-    default_value = inv(sqrt(T(party_count)))
+    default_value = _equal_superposition_amplitude(party_count, T)
     values = _state_coefficients(coefficients, party_count, default_value)
     indices = [
         1 + _checked_power(2, party_count - party, "parties") for party in 1:party_count
@@ -215,7 +242,8 @@ exactly `excitations` ones among `parties` qubits.  The vector contains
 index allocation. `max_dense_entries` bounds the ambient vector length when
 `sparse_output=false`. Set an individual guard to `nothing` only after
 reviewing the requested memory and work; the ambient dimension must always fit
-`Int`.
+`Int`. Normalization throws `ArgumentError` if `T` cannot represent the
+required amplitude as a finite, nonzero value.
 """
 function dicke_state(
     parties,
@@ -254,7 +282,7 @@ function dicke_state(
         nonzero_count * (BigInt(1) + BigInt(excitation_count) * BigInt(party_count))
     _dicke_check_resource(work, work_limit, "max_work", "estimated scalar operations")
     indices = _dicke_indices(party_count, excitation_count)
-    value = normalized ? inv(sqrt(T(length(indices)))) : one(T)
+    value = normalized ? _equal_superposition_amplitude(length(indices), T) : one(T)
     result = sparsevec(indices, fill(value, length(indices)), total)
     return sparse_output ? result : Vector(result)
 end

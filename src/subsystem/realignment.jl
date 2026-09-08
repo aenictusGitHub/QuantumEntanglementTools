@@ -203,6 +203,9 @@ end
 
 function _realign(matrix::AbstractMatrix, plan::RealignmentPlan)
     _validate_matrix_dimensions(matrix, plan.row_layout, plan.column_layout)
+    if issparse(matrix)
+        return _realign(sparse(matrix), plan)
+    end
     result = Matrix{eltype(matrix)}(undef, plan.output_size)
     @inbounds for old_column in axes(matrix, 2), old_row in axes(matrix, 1)
         result[_realigned_row(plan, old_row, old_column), _realigned_column(plan, old_row, old_column)] = matrix[
@@ -231,6 +234,9 @@ function _inverse_realign(matrix::AbstractMatrix, plan::RealignmentPlan)
             "realigned matrix size $(size(matrix)) must be $(plan.output_size) for this plan",
         ),
     )
+    if issparse(matrix)
+        return _inverse_realign(sparse(matrix), plan)
+    end
     result = Matrix{eltype(matrix)}(
         undef, plan.row_layout.total_dimension, plan.column_layout.total_dimension
     )

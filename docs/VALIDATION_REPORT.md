@@ -1,6 +1,6 @@
 # Validation report
 
-Evidence date: 2026-08-09.
+Evidence date: 2026-09-08.
 
 Status: local completion and release-gate evidence for the uncommitted
 convergence worktree; no MATLAB parity, remote supported-platform, production
@@ -16,7 +16,7 @@ backend, performance, or release-approval claim.
   static completion failures.
 - The API checker matches 477 runtime exports (347 native/module and 130
   `MATLABCompat`) to 477 provenance records.
-- The full package corpus passes 9,484/9,484 assertions: 9,400
+- The full package corpus passes 9,759/9,759 assertions: 9,675
   core assertions plus 84 executable-tutorial assertions, on Julia 1.12.6 and
   the installed Julia 1.10.11.
 - Seven standalone tutorials pass 84/84 and independent matrix-predicate
@@ -33,7 +33,7 @@ backend, performance, or release-approval claim.
   was not run.
 - Aqua passes 11/11 and the representative JET set passes 25/25. The formatter
   gate passes after applying the repository formatter.
-- All 114 declared quick benchmark cases completed without failure on the
+- All 120 declared quick benchmark cases completed without failure on the
   current uncommitted worktree, with one Julia and one BLAS thread. The
   targeted paired observations remain local diagnostics, not a stable
   comparative-performance or regression-baseline claim.
@@ -43,7 +43,7 @@ backend, performance, or release-approval claim.
   exact committed-tree release evidence.
 
 This evidence applies to a dirty local worktree based on
-`8b2fcbafc646c528aade8bbf695b1112e45511a9`. It is not exact committed-tree
+`1d611e4f61f2d740602018dce05afd47f2ecf620`. It is not exact committed-tree
 remote CI, API-stability evidence, release approval, or the maintainer's
 non-delegable review.
 
@@ -450,7 +450,7 @@ evidence is not:
   equivalence.
 - Remote Linux/macOS/Windows CI and accepted Codecov ingestion have not run on
   an exact commit containing this convergence work.
-- The 114-case quick benchmark is a smoke suite, not a reviewed regression
+- The 120-case quick benchmark is a smoke suite, not a reviewed regression
   baseline or performance comparison.
 - The optional EntanglementDetection environment has an effective Julia 1.11
   resolver floor and treats the trusted child worker as local IPC, not a

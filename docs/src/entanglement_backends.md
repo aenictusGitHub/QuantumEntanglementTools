@@ -10,7 +10,7 @@ At pinned QETLAB revision
 checker records 127/127 public rows with final `verified` status, 36/36 internal
 helpers with terminal dispositions, no queued rows, and 477 exported bindings
 with matching provenance entries. The direct local full corpus passes
-9,484/9,484 assertions: 9,400 core plus 84 executable-tutorial
+9,759/9,759 assertions: 9,675 core plus 84 executable-tutorial
 assertions, on Julia 1.12.6 and the installed Julia 1.10.11. This evidence does not establish
 MATLAB/QETLAB parity, remote supported-platform CI, comparative performance,
 API stability, release approval, or human review.
@@ -109,7 +109,7 @@ residual evidence; the wrapper never substitutes the Hermitian part.
 
 The focused separability and local-discrimination suites pass 211/211 native,
 42/42 compatibility, and 72/72 optional Hypatia/SCS extension assertions on
-Julia 1.12.6 and the installed Julia 1.10.0. The source-free QETLAB
+Julia 1.12.6 and the installed Julia 1.10.11. The source-free QETLAB
 comparators pass 26/26 separability and 18/18 local-discrimination assertions
 on both Julia lines. The earlier Tier D supplemental Octave/QETLAB artifact
 has 13 fixtures and 34 passing comparisons; its SHA-256 is

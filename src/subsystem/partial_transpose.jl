@@ -149,6 +149,9 @@ end
 
 function _partial_transpose(matrix::AbstractMatrix, plan::PartialTransposePlan)
     _validate_matrix_dimensions(matrix, plan.row_layout, plan.column_layout)
+    if issparse(matrix)
+        return _partial_transpose(sparse(matrix), plan)
+    end
     result = Matrix{eltype(matrix)}(
         undef,
         plan.output_row_layout.total_dimension,

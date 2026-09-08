@@ -29,15 +29,15 @@ described as an official QETLAB project.
   failures.
 - The public API contains 477 public bindings (347 native/module and 130
   `MATLABCompat`) with matching provenance entries.
-- The 9,484-assertion full package suite passed 9,484/9,484: 9,400 core
+- The 9,759-assertion full package suite passed 9,759/9,759: 9,675 core
   assertions plus 84 executable-tutorial assertions, including 36
   for the two QETLAB-introduction workflows. It passes on Julia 1.12.6 and the
   installed Julia 1.10.11. The full optional JuMP suite passed 847/847 on both
   Julia lines. The exact
   EntanglementDetection.jl 0.2.2 extension passed 141/141 focused assertions on
   the current compatible Julia.
-- All 114 declared quick benchmark cases completed without failure on the
-  current uncommitted release-hardening tree based on `8b2fcbaf`. This is
+- All 120 declared quick benchmark cases completed without failure on the
+  current uncommitted performance-and-stability tree based on `1d611e4`. This is
   local smoke evidence only; targeted paired observations remain diagnostics,
   not a stable comparative-performance baseline.
 - These local and static results do not establish QETLAB/MATLAB parity,
@@ -109,8 +109,7 @@ Run the smallest relevant test while iterating, then the full applicable checks:
 julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
 julia --startup-file=no --project=. tutorials/runtests.jl
 julia --startup-file=no --project=. scripts/check_release.jl
-julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-julia --project=docs docs/make.jl
+julia --startup-file=no scripts/build_docs.jl
 julia --project=benchmark benchmark/benchmarks.jl --quick --no-save
 julia --startup-file=no --project=test/extensions/jump_optimization \
   test/extensions/jump_optimization/runtests.jl

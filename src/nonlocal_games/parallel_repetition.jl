@@ -109,6 +109,8 @@ Julia's standard sparse arrays are two-dimensional. `max_entries` guards the
 allocation and `max_work` guards the estimated number of scalar
 multiplications; either guard may be disabled explicitly with `nothing`.
 Inputs are never normalized or otherwise repaired.
+Fixed-width integer coefficients are multiplied with checked arithmetic and
+raise `OverflowError` instead of wrapping.
 
 # Examples
 
@@ -172,7 +174,12 @@ function parallel_repetition(
                 mod(
                     div(packed_index[4] - 1, packed_strides[4, copy_index]), input_dims[4]
                 ) + 1
-            coefficient *= game[a, b, x, y]
+            value = game[a, b, x, y]
+            coefficient = if T <: Base.BitInteger
+                _checked_bitinteger_mul(coefficient, value, "parallel_repetition")
+            else
+                coefficient * value
+            end
         end
         @inbounds repeated[packed_index] = coefficient
     end
