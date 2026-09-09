@@ -94,6 +94,21 @@ end
         exact_repeated = parallel_repetition(exact_game, 2; max_entries=1, max_work=2)
         @test only(exact_repeated) == big(large_integer)^2
         @test eltype(exact_repeated) === BigInt
+
+        unsigned_game = fill(UInt8(2), 1, 1, 1, 1)
+        unsigned_repeated = parallel_repetition(
+            unsigned_game, 3; max_entries=1, max_work=3
+        )
+        @test only(unsigned_repeated) === UInt8(8)
+        @test eltype(unsigned_repeated) === UInt8
+        zeroed_game = fill(UInt8(0), 1, 1, 1, 1)
+        zeroed_repeated = parallel_repetition(
+            zeroed_game, 10; max_entries=1, max_work=10
+        )
+        @test only(zeroed_repeated) === zero(UInt8)
+        @test_throws OverflowError parallel_repetition(
+            fill(UInt16(50000), 1, 1, 1, 1), 2; max_entries=1, max_work=2
+        )
     end
 
     @testset "limits and validation" begin

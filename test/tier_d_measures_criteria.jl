@@ -73,10 +73,10 @@ end
     @test QETD.schatten_norm(sparse_matrix, 2; allow_densify=true) ≈ sqrt(14.0)
 end
 
-@testset "Tier D density-matrix scalar measures" begin
-    pure_zero = [1.0 0.0; 0.0 0.0]
-    pure_one = [0.0 0.0; 0.0 1.0]
-    maximally_mixed = Matrix{Float64}(I, 4, 4) / 4
+    @testset "Tier D density-matrix scalar measures" begin
+        pure_zero = [1.0 0.0; 0.0 0.0]
+        pure_one = [0.0 0.0; 0.0 1.0]
+        maximally_mixed = Matrix{Float64}(I, 4, 4) / 4
 
     @test QETD.purity(pure_zero) == 1.0
     @test QETD.purity(maximally_mixed) == 0.25
@@ -133,13 +133,31 @@ end
     @test QETD.purity(diagonal_big; allow_densify=false) == big_purity
     @test_throws DimensionMismatch QETD.fidelity(diagonal_big, Diagonal(BigFloat[0.5, 0.5]))
 
-    # A tiny negative eigenvalue is not silently clipped even when it lies
-    # within a deliberately coarse state-validation tolerance.
-    boundary_invalid = Diagonal([-1e-10, 0.5, 0.3, 0.2000000001])
-    @test_throws DomainError QETD.von_neumann_entropy(
-        boundary_invalid; base=2, atol=1e-9, rtol=0
-    )
-end
+        # A tiny negative eigenvalue is not silently clipped even when it lies
+        # within a deliberately coarse state-validation tolerance.
+        boundary_invalid = Diagonal([-1e-10, 0.5, 0.3, 0.2000000001])
+        @test_throws DomainError QETD.von_neumann_entropy(
+            boundary_invalid; base=2, atol=1e-9, rtol=0
+        )
+
+        diagonal_float32 = Diagonal(Float32[0.4, 0.3, 0.3])
+        @test QETD.purity(diagonal_float32) === Float32(0.34)
+        @test QETD.trace_distance(
+            Diagonal(Float32[0.4, 0.3, 0.3]),
+            Diagonal(Float32[0.2, 0.3, 0.5]),
+        ) ≈ Float32(0.2)
+        @test QETD.fidelity(
+            Diagonal(Float32[0.4, 0.3, 0.3]),
+            Diagonal(Float32[0.5, 0.2, 0.3]),
+        ) ==
+            Float32(sqrt(0.4 * 0.5) + sqrt(0.3 * 0.2) + sqrt(0.3 * 0.3))
+
+        diagonal_reject = Diagonal(Float64[0.5000000000005, -1e-12, 0.5])
+        @test_throws DomainError QETD.purity(diagonal_reject)
+        @test_throws DomainError QETD.fidelity(
+            diagonal_reject, Diagonal(Float64[0.5, 0.5, 0])
+        )
+    end
 
 @testset "Tier D density-matrix validation diagnostics" begin
     bell = [0.5 0.0 0.0 0.5; 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0; 0.5 0.0 0.0 0.5]

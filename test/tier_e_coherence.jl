@@ -44,6 +44,8 @@ end
         sparse_mixed = sparse(Matrix{Float64}(I, 4, 4) / 4)
         @test_throws ArgumentError QETCoherence.l1_coherence(sparse_mixed)
         @test QETCoherence.l1_coherence(sparse_mixed; allow_densify=true) == 0.0
+        float16_diagonal = Diagonal(Float16[0.25, 0.75])
+        @test QETCoherence.l1_coherence(float16_diagonal) === Float16(0.0)
 
         @test_throws ArgumentError QETCoherence.l1_coherence(0.9basis_state)
         @test_throws DimensionMismatch QETCoherence.l1_coherence(ones(2, 3))
@@ -78,6 +80,8 @@ end
         big_entropy = QETCoherence.relative_entropy_coherence(big_plus; base=big(2))
         @test big_entropy isa BigFloat
         @test big_entropy ≈ one(BigFloat)
+        float16_uniform = Diagonal(Float16[0.5, 0.5])
+        @test iszero(QETCoherence.relative_entropy_coherence(float16_uniform; base=2))
 
         @test_throws UndefKeywordError QETCoherence.relative_entropy_coherence(plus_qubit)
         @test_throws ArgumentError QETCoherence.relative_entropy_coherence(
