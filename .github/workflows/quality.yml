@@ -34,11 +34,11 @@ jobs:
           path: dev/upstream/QETLAB
           persist-credentials: false
       - name: Install Julia
-        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v3
+        uses: julia-actions/setup-julia@da908477b5db94c10ffce8cfea9f2b3b9d5db687 # v3
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@9353db09a0f2bbbdec6f41791918c75d37391b36 # v3
       - name: Instantiate core environment
         run: julia --startup-file=no --project=. -e 'using Pkg; Pkg.instantiate()'
       - name: Check release metadata and tag consistency
@@ -78,11 +78,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Julia
-        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v3
+        uses: julia-actions/setup-julia@da908477b5db94c10ffce8cfea9f2b3b9d5db687 # v3
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@9353db09a0f2bbbdec6f41791918c75d37391b36 # v3
       - name: Instantiate quality environment with local package
         run: >-
           julia --startup-file=no --project=quality -e
@@ -102,11 +102,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Julia
-        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v3
+        uses: julia-actions/setup-julia@da908477b5db94c10ffce8cfea9f2b3b9d5db687 # v3
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@9353db09a0f2bbbdec6f41791918c75d37391b36 # v3
       - name: Instantiate oracle environment with local package
         run: >-
           julia --startup-file=no --project=test/oracle -e
@@ -129,11 +129,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Julia
-        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v3
+        uses: julia-actions/setup-julia@da908477b5db94c10ffce8cfea9f2b3b9d5db687 # v3
         with:
           version: "1"
       - name: Cache Julia artifacts
-        uses: julia-actions/cache@a45e8fa8be21c18a06b7177052533149e61e9b38 # v3
+        uses: julia-actions/cache@9353db09a0f2bbbdec6f41791918c75d37391b36 # v3
       - name: Instantiate benchmark environment
         run: julia --startup-file=no --project=benchmark -e 'using Pkg; Pkg.instantiate()'
       - name: Run non-recording smoke suite
